@@ -119,7 +119,7 @@ std::vector<Fleet> PlanetWars::MyFleets() const {
 }
 
 std::vector<Fleet> PlanetWars::EnemyFleets() const {
-	std::vector<Fleet> r;
+	std::vector<Fleet> r; 
 	for (unsigned int i = 0; i < fleets_.size(); ++i) {
 		const Fleet& f = fleets_[i];
 		if (f.Owner() > 1) {

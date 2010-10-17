@@ -1,1 +1,1 @@
-java -jar tools/PlayGame.jar maps/map9.txt 1000 1000 log.txt "./Version2.exe" "java -jar example_bots/DualBot.jar" | java -jar tools/ShowGame.jar
+java -jar "C:\Users\Drew Gross\Documents\Projects\Google AI challenge\Version2\tools\PlayGame.jar" "C:\Users\Drew Gross\Documents\Projects\Google AI challenge\Version2\maps\map9.txt" 1000 1000 log.txt ./Version2.exe "java -jar example_bots/DualBot.jar" | java -jar "C:\Users\Drew Gross\Documents\Projects\Google AI challenge\Version2\tools\ShowGame.jar"
