@@ -1,13 +1,16 @@
+#ifndef PLANET_WARS_H_
+#define PLANET_WARS_H_
+
 // This file contains helper code that does all the boring stuff for you.
 // The code in this file takes care of storing lists of planets and fleets, as
 // well as communicating with the game engine. You can get along just fine
 // without ever looking at this file. However, you are welcome to modify it
 // if you want to.
-#ifndef PLANET_WARS_H_
-#define PLANET_WARS_H_
 
 #include <string>
 #include <vector>
+
+#include "Fleet.h"
 
 // This is a utility class that parses strings.
 class StringUtil {
@@ -22,50 +25,6 @@ class StringUtil {
   static std::vector<std::string> Tokenize(
                        const std::string& s,
                        const std::string& delimiters = std::string(" "));
-};
-
-// This class stores details about one fleet. There is one of these classes
-// for each fleet that is in flight at any given time.
-class Fleet {
- public:
-  // Initializes a fleet.
-  Fleet(int owner,
-        int num_ships,
-        int source_planet = -1,
-        int destination_planet = -1,
-        int total_trip_length = -1,
-        int turns_remaining = -1);
-
-  // Returns the playerID of the owner of the fleet. Your player ID is always
-  // 1. So if the owner is 1, you own the fleet. If the owner is 2 or some
-  // other number, then this fleet belongs to your enemy.
-  int Owner() const;
-
-  // Returns the number of ships that comprise this fleet.
-  int NumShips() const;
-
-  // Returns the ID of the planet where this fleet originated.
-  int SourcePlanet() const;
-
-  // Returns the ID of the planet where this fleet is headed.
-  int DestinationPlanet() const;
-
-  // Returns the total distance that is being traveled by this fleet. This
-  // is the distance between the source planet and the destination planet,
-  // rounded up to the nearest whole number.
-  int TotalTripLength() const;
-
-  // Returns the number of turns until this fleet reaches its destination. If
-  // this value is 1, then the fleet will hit the destination planet next turn.
-  int TurnsRemaining() const;
-
- private:
-  int owner_;
-  int num_ships_;
-  int source_planet_;
-  int destination_planet_;
-  int total_trip_length_;
-  int turns_remaining_;
 };
 
 // Stores information about one planet. There is one instance of this class
