@@ -1,10 +1,15 @@
+#include "Utilities.h"
 #include "PlanetWars.h"
+
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
+#include <exception>
+
+PlanetWars* PlanetWars::instance_ = nullptr;
 
 void StringUtil::Tokenize(const std::string& s,
 	const std::string& delimiters,
@@ -25,6 +30,25 @@ std::vector<std::string> StringUtil::Tokenize(const std::string& s,
 		return tokens;
 }
 
+
+void PlanetWars::Initialize(const std::string& game_state) {
+	if (instance_ == nullptr) return;
+	instance_ = new PlanetWars(game_state);
+}
+
+void PlanetWars::Uninitialize() {
+	delete instance_;
+	instance_ = nullptr;
+}
+
+PlanetWars& PlanetWars::Instance() {
+	if (instance_ != nullptr) {
+		return *instance_;
+	} else {
+		//throw std::runtime_error("Trying to use an uninitialised PlanetWars singleton!");
+	}
+}
+
 PlanetWars::PlanetWars(const std::string& gameState) {
 	ParseGameState(gameState);
 }
@@ -33,7 +57,7 @@ int PlanetWars::NumPlanets() const {
 	return planets_.size();
 }
 
-const Planet& PlanetWars::GetPlanet(int planet_id) const {
+Planet& PlanetWars::GetPlanet(int planet_id) {
 	return planets_[planet_id];
 }
 
@@ -129,6 +153,10 @@ std::vector<Fleet> PlanetWars::EnemyFleets() const {
 	return r;
 }
 
+void PlanetWars::AddFleet(Fleet const & new_fleet) {
+	fleets_.push_back(new_fleet);
+}
+
 std::string PlanetWars::ToString() const {
 	std::stringstream s;
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
@@ -153,13 +181,14 @@ int PlanetWars::Distance(int source_planet, int destination_planet) const {
 	return (int)ceil(sqrt(dx * dx + dy * dy));
 }
 
-void PlanetWars::IssueOrder(int source_planet,
-	int destination_planet,
-	int num_ships) const {
-		std::cout << source_planet << " "
-			<< destination_planet << " "
-			<< num_ships << std::endl;
-		std::cout.flush();
+void PlanetWars::IssueOrder(int source_planet, int destination_planet, int num_ships) {
+	if (source_planet == destination_planet) return;
+	if (num_ships >= GetPlanet(source_planet).NumShips()) return;
+	if (GetPlanet(source_planet).Owner() != SELF) return;
+	AddFleet(Fleet(SELF, num_ships, source_planet, destination_planet, Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
+	GetPlanet(source_planet).RemoveShips(num_ships);
+	std::cout << source_planet << " " << destination_planet << " " << num_ships << std::endl;
+	std::cout.flush();
 }
 
 bool PlanetWars::IsAlive(int player_id) const {

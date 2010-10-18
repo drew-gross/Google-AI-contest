@@ -11,16 +11,16 @@
 // starting point, or you can throw it out entirely and replace it with your
 // own. Check out the tutorials and articles on the contest website at
 // http://www.ai-contest.com/resources.
-void DoTurn(const PlanetWars& pw) {
+void DoTurn() {
 	// (1) If we currently have a fleet in flight, just do nothing.
-	if (pw.MyFleets().size() >= 1) {
+	if (PlanetWars::Instance().MyFleets().size() >= 1) {
 		return;
 	}
 	// (2) Find my strongest planet.
 	int source = -1;
 	double source_score = -999999.0;
 	int source_num_ships = 0;
-	std::vector<Planet> my_planets = pw.MyPlanets();
+	std::vector<Planet> my_planets = PlanetWars::Instance().MyPlanets();
 	for (unsigned int i = 0; i < my_planets.size(); ++i) {
 		const Planet& p = my_planets[i];
 		double score = (double)p.NumShips();
@@ -33,7 +33,7 @@ void DoTurn(const PlanetWars& pw) {
 	// (3) Find the weakest enemy or neutral planet.
 	int dest = -1;
 	double dest_score = -999999.0;
-	std::vector<Planet> not_my_planets = pw.NotMyPlanets();
+	std::vector<Planet> not_my_planets = PlanetWars::Instance().NotMyPlanets();
 	for (unsigned int i = 0; i < not_my_planets.size(); ++i) {
 		const Planet& p = not_my_planets[i];
 		double score = 1.0 / (1 + p.NumShips());
@@ -46,7 +46,7 @@ void DoTurn(const PlanetWars& pw) {
 	// planet that I do not own.
 	if (source >= 0 && dest >= 0) {
 		int num_ships = source_num_ships / 2;
-		pw.IssueOrder(source, dest, num_ships);
+		PlanetWars::Instance().IssueOrder(source, dest, num_ships);
 	}
 }
 
@@ -60,10 +60,11 @@ int main(int argc, char *argv[]) {
 		current_line += (char)c;
 		if (c == '\n') {
 			if (current_line.length() >= 2 && current_line.substr(0, 2) == "go") {
-				PlanetWars pw(map_data);
+				PlanetWars::Initialize(map_data);
 				map_data = "";
-				DoTurn(pw);
-				pw.FinishTurn();
+				DoTurn();
+				PlanetWars::Instance().FinishTurn();
+				PlanetWars::Uninitialize();
 			} else {
 				map_data += current_line;
 			}
