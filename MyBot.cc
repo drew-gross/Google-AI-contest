@@ -13,15 +13,11 @@
 // own. Check out the tutorials and articles on the contest website at
 // http://www.ai-contest.com/resources.
 
-Logger testLog = Logger("testing.txt");
-
 void DoTurn() {
-	testLog.Log("step 1");
 	// (1) If we currently have a fleet in flight, just do nothing.
 	if (PlanetWars::Instance().MyFleets().size() >= 1) {
 		return;
 	}
-	testLog.Log("step 2");
 	// (2) Find my strongest planet.
 	int source = -1;
 	double source_score = -999999.0;
@@ -36,7 +32,6 @@ void DoTurn() {
 			source_num_ships = p.NumShips();
 		}
 	}
-	testLog.Log("step 3");
 	// (3) Find the weakest enemy or neutral planet.
 	int dest = -1;
 	double dest_score = -999999.0;
@@ -49,7 +44,6 @@ void DoTurn() {
 			dest = p.PlanetID();
 		}
 	}
-	testLog.Log("step 4");
 	// (4) Send half the ships from my strongest planet to the weakest
 	// planet that I do not own.
 	if (source >= 0 && dest >= 0) {
@@ -68,18 +62,13 @@ int main(int argc, char *argv[]) {
 		current_line += (char)c;
 		if (c == '\n') {
 			if (current_line.length() >= 2 && current_line.substr(0, 2) == "go") {
-				testLog.Log("Initializing");
 				PlanetWars::Initialize(map_data);
 				map_data = "";
-				testLog.Log("Doing Turn");
 				try {
 					DoTurn();
 				} catch (std::runtime_error e) {
-					testLog.Log(e.what());
 				}
-				testLog.Log("Finishing Turn");
 				PlanetWars::Instance().FinishTurn();
-				testLog.Log("Uninitializing");
 				PlanetWars::Uninitialize();
 			} else {
 				map_data += current_line;
