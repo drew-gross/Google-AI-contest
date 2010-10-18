@@ -1,6 +1,7 @@
 #include "Planet.h"
 
 #include "Utilities.h"
+#include "Logger.h"
 
 #include "PlanetWars.h"
 
@@ -30,21 +31,29 @@ int Planet::NumShips() const {
 	return num_ships_;
 }
 
-int Planet::NumShipsInTurns(int turns) const {
-	unsigned int turnInFuture = 0;
+int Planet::NumShipsInTurns(unsigned int turns) const {
+	static Logger numShipsInTurn = Logger("numShipsInTurn.txt");
+	numShipsInTurn.Enable();
+	numShipsInTurn.Log("entered function");
 	unsigned int shipsInTurnInFuture = NumShips();
 	unsigned int ownerInTurnInFuture = Owner();
-	for (int turnInFuture = 0; turnInFuture < turns; ++turnInFuture) {
+	
+	numShipsInTurn.Log("entering first for loop");
+	for (unsigned int turnInFuture = 0; turnInFuture < turns; ++turnInFuture) {
+		numShipsInTurn.Log("adding up attacker fleets");
 		unsigned int totalEnemyShipsAttacking = 0;
 		unsigned int totalPlayerShipsAttacking = 0;
-		for (unsigned int i = 0; i < PlanetWars::Instance().Fleets().size(); ++i) {
-			if (PlanetWars::Instance().Fleets()[i].Owner() == SELF) {
-				totalPlayerShipsAttacking += PlanetWars::Instance().Fleets()[i].NumShips();
+		std::vector<Fleet> fleets = PlanetWars::Instance().Fleets();
+		for (unsigned int i = 0; i < fleets.size(); ++i) {
+			if (fleets[i].Owner() == SELF) {
+				totalPlayerShipsAttacking += fleets[i].NumShips();
 			}
-			if (PlanetWars::Instance().Fleets()[i].Owner() == ENEMY) {
-				totalEnemyShipsAttacking += PlanetWars::Instance().Fleets()[i].NumShips();
+			if (fleets[i].Owner() == ENEMY) {
+				totalEnemyShipsAttacking += fleets[i].NumShips();
 			}
 		}
+
+		numShipsInTurn.Log("calculating next turn");
 		switch (ownerInTurnInFuture) {
 		case NEUTRAL:
 			if (totalPlayerShipsAttacking > shipsInTurnInFuture && totalPlayerShipsAttacking > totalEnemyShipsAttacking) {
@@ -60,6 +69,7 @@ int Planet::NumShipsInTurns(int turns) const {
 				shipsInTurnInFuture = shipsInTurnInFuture - std::max(totalEnemyShipsAttacking, totalPlayerShipsAttacking);
 			}
 			break;
+
 		case SELF: 
 			shipsInTurnInFuture += GrowthRate();
 			shipsInTurnInFuture += totalPlayerShipsAttacking;
@@ -70,6 +80,7 @@ int Planet::NumShipsInTurns(int turns) const {
 				shipsInTurnInFuture -= totalEnemyShipsAttacking;
 			}
 			break;
+
 		case ENEMY:
 			shipsInTurnInFuture += GrowthRate();
 			shipsInTurnInFuture += totalEnemyShipsAttacking;

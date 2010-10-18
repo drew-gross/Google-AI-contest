@@ -8,5 +8,15 @@ Logger::~Logger() {
 }
 
 void Logger::Log(const char* str) {
-	out << str << std::endl;
+	if (enabled) {
+		out << str << std::endl;
+	}
+}
+
+void Logger::Enable() {
+	enabled = true;
+}
+
+void Logger::Disable() {
+	enabled = false;
 }

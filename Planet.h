@@ -26,7 +26,7 @@ public:
 	int NumShips() const;
 
 	// The number of ships on the planet in the specified amount of turns.
-	int NumShipsInTurns(int turns) const;
+	int NumShipsInTurns(unsigned int turns) const;
 
 	// Returns the growth rate of the planet. Unless the planet is neutral, the
 	// population of the planet grows by this amount each turn. The higher this

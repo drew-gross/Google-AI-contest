@@ -10,6 +10,8 @@
 #include "Planet.h"
 #include "Fleet.h"
 
+#include "Logger.h"
+
 #include <string>
 #include <vector>
 
@@ -104,6 +106,7 @@ public:
 	void FinishTurn() const;
 
 private:
+	// The PlanetWars Singleton
 	static PlanetWars* instance_;
 
 	// Parses a game state from a string. On success, returns 1. On failure,
@@ -114,6 +117,9 @@ private:
 	// planets and fleets, would we!?
 	std::vector<Planet> planets_;
 	std::vector<Fleet> fleets_;
+
+	// Output log for sending orders to the engine.
+	static Logger orders;
 };
 
 #endif

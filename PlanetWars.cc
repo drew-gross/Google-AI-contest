@@ -11,6 +11,7 @@
 #include <exception>
 
 PlanetWars* PlanetWars::instance_ = nullptr;
+Logger PlanetWars::orders = Logger("orders.txt");
 
 void PlanetWars::Initialize(const std::string& game_state) {
 	if (instance_ != nullptr) return;
