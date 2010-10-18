@@ -7,10 +7,10 @@
 
 class Logger {
 public:
-	Logger(std::string outputFile);
+	Logger(char* outputFile);
 	~Logger();
 
-	void Log(std::string str);
+	void Log(const char* str);
 
 private:
 	std::ofstream out;

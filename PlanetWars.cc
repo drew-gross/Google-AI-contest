@@ -32,7 +32,7 @@ std::vector<std::string> StringUtil::Tokenize(const std::string& s,
 
 
 void PlanetWars::Initialize(const std::string& game_state) {
-	if (instance_ == nullptr) return;
+	if (instance_ != nullptr) return;
 	instance_ = new PlanetWars(game_state);
 }
 
@@ -45,7 +45,7 @@ PlanetWars& PlanetWars::Instance() {
 	if (instance_ != nullptr) {
 		return *instance_;
 	} else {
-		//throw std::runtime_error("Trying to use an uninitialised PlanetWars singleton!");
+		throw std::runtime_error("Trying to use an uninitialised PlanetWars singleton!");
 	}
 }
 
