@@ -14,14 +14,10 @@
 // http://www.ai-contest.com/resources.
 
 void DoTurn() {
-	Logger mainLogger = Logger("main.txt");
-	mainLogger.Enable();
-	mainLogger.Log("Step 1");
 	// (1) If we currently have a fleet in flight, just do nothing.
 	if (PlanetWars::Instance().MyFleets().size() >= 1) {
 		return;
 	}
-	mainLogger.Log("Step 2");
 	// (2) Find my strongest planet.
 	int source = -1;
 	double source_score = -999999.0;
@@ -36,37 +32,31 @@ void DoTurn() {
 			source_num_ships = p.NumShips();
 		}
 	}
-	mainLogger.Log("Step 3");
 	// (3) Find the weakest enemy or neutral planet.
 	int dest = -1;
 	double dest_score = -999999.0;
 	std::vector<Planet> not_my_planets = PlanetWars::Instance().NotMyPlanets();
-	mainLogger.Log("Step 4");
 	for (unsigned int i = 0; i < not_my_planets.size(); ++i) {
 		const Planet& p = not_my_planets[i];
-		mainLogger.Log("calculating ships in future");
 		double score = 1.0 / (1 + p.NumShipsInTurns(PlanetWars::Distance(PlanetWars::Instance().GetPlanet(source), p)));
-		mainLogger.Log("done calculating ships in future");
 		if (score > dest_score) {
 			dest_score = score;
 			dest = p.PlanetID();
 		}
 	}
-	mainLogger.Log("Step 5");
 	if (source >= 0 && dest >= 0) {
-		int num_ships = source_num_ships / 2;
 		PlanetWars::Instance().IssueOrder(PlanetWars::Instance().GetPlanet(source), PlanetWars::Instance().GetPlanet(dest), PlanetWars::Instance().GetPlanet(dest).NumShipsInTurns(PlanetWars::Distance(PlanetWars::Instance().GetPlanet(source), PlanetWars::Instance().GetPlanet(dest))) + 1);
 	}
 }
 
 // This is just the main game loop that takes care of communicating with the
 // game engine for you. You don't have to understand or change the code below.
-int main(int argc, char *argv[]) {
+int main() {
 	Logger exceptions = Logger("exceptions.txt");
 	exceptions.Enable();
 	std::string current_line;
 	std::string map_data;
-	while (true) {
+	for (;;) {
 		int c = std::cin.get();
 		current_line += (char)c;
 		if (c == '\n') {
@@ -86,5 +76,4 @@ int main(int argc, char *argv[]) {
 			current_line = "";
 		}
 	}
-	return 0;
 }
