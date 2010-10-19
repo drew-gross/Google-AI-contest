@@ -45,7 +45,7 @@ void DoTurn() {
 	for (unsigned int i = 0; i < not_my_planets.size(); ++i) {
 		const Planet& p = not_my_planets[i];
 		mainLogger.Log("calculating ships in future");
-		double score = 1.0 / (1 + p.NumShipsInTurns(PlanetWars::Instance().Distance(source, p.PlanetID())));
+		double score = 1.0 / (1 + p.NumShipsInTurns(PlanetWars::Distance(PlanetWars::Instance().GetPlanet(source), p)));
 		mainLogger.Log("done calculating ships in future");
 		if (score > dest_score) {
 			dest_score = score;
@@ -55,7 +55,7 @@ void DoTurn() {
 	mainLogger.Log("Step 5");
 	if (source >= 0 && dest >= 0) {
 		int num_ships = source_num_ships / 2;
-		PlanetWars::Instance().IssueOrder(source, dest, PlanetWars::Instance().GetPlanet(dest).NumShipsInTurns(PlanetWars::Instance().Distance(source, dest)) + 1);
+		PlanetWars::Instance().IssueOrder(PlanetWars::Instance().GetPlanet(source), PlanetWars::Instance().GetPlanet(dest), PlanetWars::Instance().GetPlanet(dest).NumShipsInTurns(PlanetWars::Distance(PlanetWars::Instance().GetPlanet(source), PlanetWars::Instance().GetPlanet(dest))) + 1);
 	}
 }
 

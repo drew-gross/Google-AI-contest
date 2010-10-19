@@ -84,14 +84,14 @@ public:
 	// Returns the distance between two planets, rounded up to the next highest
 	// integer. This is the number of discrete time steps it takes to get between
 	// the two planets.
-	int Distance(int source_planet, int destination_planet) const;
+	static int Distance(Planet const & source_planet, Planet const & destination_planet);
 
 	// Sends an order to the game engine. The order is to send num_ships ships
 	// from source_planet to destination_planet. The order must be valid, or
 	// else your bot will get kicked and lose the game. For example, you must own
 	// source_planet, and you can't send more ships than you actually have on
 	// that planet.
-	void IssueOrder(int source_planet, int destination_planet, int num_ships);
+	void IssueOrder(Planet & source_planet, Planet const & destination_planet, int num_ships);
 
 	// Returns true if the named player owns at least one planet or fleet.
 	// Otherwise, the player is deemed to be dead and false is returned.

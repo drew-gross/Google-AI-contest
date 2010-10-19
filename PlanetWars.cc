@@ -155,21 +155,19 @@ std::string PlanetWars::ToString() const {
 	return s.str();
 }
 
-int PlanetWars::Distance(int source_planet, int destination_planet) const {
-	const Planet& source = planets_[source_planet];
-	const Planet& destination = planets_[destination_planet];
-	double dx = source.X() - destination.X();
-	double dy = source.Y() - destination.Y();
+int PlanetWars::Distance(Planet const & source_planet, Planet const & destination_planet) {
+	double dx = source_planet.X() - destination_planet.X();
+	double dy = source_planet.Y() - destination_planet.Y();
 	return (int)ceil(sqrt(dx * dx + dy * dy));
 }
 
-void PlanetWars::IssueOrder(int source_planet, int destination_planet, int num_ships) {
-	if (source_planet == destination_planet) return;
-	if (num_ships >= GetPlanet(source_planet).NumShips()) return;
-	if (GetPlanet(source_planet).Owner() != SELF) return;
-	AddFleet(Fleet(SELF, num_ships, source_planet, destination_planet, Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
-	GetPlanet(source_planet).RemoveShips(num_ships);
-	std::cout << source_planet << " " << destination_planet << " " << num_ships << std::endl;
+void PlanetWars::IssueOrder(Planet & source_planet, Planet const & destination_planet, int num_ships) {
+	if (source_planet.PlanetID() == destination_planet.PlanetID()) return;
+	if (num_ships >= source_planet.NumShips()) return;
+	if (source_planet.Owner() != SELF) return;
+	AddFleet(Fleet(SELF, num_ships, source_planet.PlanetID(), destination_planet.PlanetID(), Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
+	source_planet.RemoveShips(num_ships);
+	std::cout << source_planet.PlanetID() << " " << destination_planet.PlanetID() << " " << num_ships << std::endl;
 	std::cout.flush();
 }
 
