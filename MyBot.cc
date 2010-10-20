@@ -19,33 +19,31 @@ void DoTurn() {
 		return;
 	}
 	// (2) Find my strongest planet.
-	int source = -1;
+	Planet* source = nullptr;
 	double source_score = -999999.0;
-	int source_num_ships = 0;
 	std::vector<Planet> my_planets = PlanetWars::Instance().MyPlanets();
 	for (unsigned int i = 0; i < my_planets.size(); ++i) {
-		const Planet& p = my_planets[i];
+		Planet& p = my_planets[i];
 		double score = (double)p.NumShips();
 		if (score > source_score) {
 			source_score = score;
-			source = p.PlanetID();
-			source_num_ships = p.NumShips();
+			source = &p;
 		}
 	}
 	// (3) Find the weakest enemy or neutral planet.
-	int dest = -1;
 	double dest_score = -999999.0;
 	std::vector<Planet> not_my_planets = PlanetWars::Instance().NotMyPlanets();
+	Planet* dest = nullptr;
 	for (unsigned int i = 0; i < not_my_planets.size(); ++i) {
-		const Planet& p = not_my_planets[i];
-		double score = 1.0 / (1 + p.NumShipsInTurns(PlanetWars::Distance(PlanetWars::Instance().GetPlanet(source), p)));
+		Planet& p = not_my_planets[i];
+		double score = 1.0 / (1 + p.NumShipsInTurns(PlanetWars::Distance(*source, p)));
 		if (score > dest_score) {
 			dest_score = score;
-			dest = p.PlanetID();
+			dest = &p;
 		}
 	}
-	if (source >= 0 && dest >= 0) {
-		PlanetWars::Instance().IssueOrder(PlanetWars::Instance().GetPlanet(source), PlanetWars::Instance().GetPlanet(dest), PlanetWars::Instance().GetPlanet(dest).NumShipsInTurns(PlanetWars::Distance(PlanetWars::Instance().GetPlanet(source), PlanetWars::Instance().GetPlanet(dest))) + 1);
+	if (source != nullptr && dest != nullptr) {
+		PlanetWars::Instance().IssueOrder(*source, *dest, dest->NumShipsInTurns(PlanetWars::Distance(*source, *dest)) + 1);
 	}
 }
 
@@ -53,7 +51,6 @@ void DoTurn() {
 // game engine for you. You don't have to understand or change the code below.
 int main() {
 	Logger exceptions = Logger("exceptions.txt");
-	exceptions.Enable();
 	std::string current_line;
 	std::string map_data;
 	for (;;) {
