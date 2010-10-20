@@ -6,7 +6,7 @@ Fleet::Fleet(int owner,
 	int source_planet,
 	int destination_planet,
 	int total_trip_length,
-	int turns_remaining) {
+	unsigned int turns_remaining) {
 		owner_ = owner;
 		num_ships_ = num_ships;
 		source_planet_ = source_planet;
@@ -35,6 +35,6 @@ int Fleet::TotalTripLength() const {
 	return total_trip_length_;
 }
 
-int Fleet::TurnsRemaining() const {
+unsigned int Fleet::TurnsRemaining() const {
 	return turns_remaining_;
 }

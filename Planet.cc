@@ -32,68 +32,89 @@ int Planet::NumShips() const {
 }
 
 int Planet::NumShipsInTurns(unsigned int turns) const {
-	static Logger numShipsInTurn = Logger("numShipsInTurn.txt");
-	numShipsInTurn.Enable();
-	numShipsInTurn.Log("entered function");
-	unsigned int shipsInTurnInFuture = NumShips();
+	return NumShips();
+	Logger log = Logger("ships in future.txt");
+	int shipsInTurnInFuture = NumShips();
 	unsigned int ownerInTurnInFuture = Owner();
-	
-	numShipsInTurn.Log("entering first for loop");
+
 	for (unsigned int turnInFuture = 0; turnInFuture < turns; ++turnInFuture) {
-		numShipsInTurn.Log("adding up attacker fleets");
-		unsigned int totalEnemyShipsAttacking = 0;
-		unsigned int totalPlayerShipsAttacking = 0;
+		int totalEnemyShipsAttacking = 0;
+		int totalPlayerShipsAttacking = 0;
 		std::vector<Fleet> fleets = PlanetWars::Instance().Fleets();
 		for (unsigned int i = 0; i < fleets.size(); ++i) {
-			if (fleets[i].Owner() == SELF) {
+			if (fleets[i].Owner() == SELF && fleets[i].TurnsRemaining() == turnInFuture) {
 				totalPlayerShipsAttacking += fleets[i].NumShips();
 			}
-			if (fleets[i].Owner() == ENEMY) {
+			if (fleets[i].Owner() == ENEMY && fleets[i].TurnsRemaining() == turnInFuture) {
 				totalEnemyShipsAttacking += fleets[i].NumShips();
 			}
 		}
 
-		numShipsInTurn.Log("calculating next turn");
 		switch (ownerInTurnInFuture) {
 		case NEUTRAL:
+			log.Log("NEUTRAL");
+			log.LogVar(turnInFuture);
+			log.LogVar(shipsInTurnInFuture);
+			log.LogVar(totalPlayerShipsAttacking);
+			log.LogVar(totalEnemyShipsAttacking);
+			log.LogVar(ownerInTurnInFuture);
 			if (totalPlayerShipsAttacking > shipsInTurnInFuture && totalPlayerShipsAttacking > totalEnemyShipsAttacking) {
 				ownerInTurnInFuture = SELF;
-				shipsInTurnInFuture = totalPlayerShipsAttacking - std::max(shipsInTurnInFuture, totalEnemyShipsAttacking);
 			}
 			if (totalEnemyShipsAttacking > shipsInTurnInFuture && totalEnemyShipsAttacking > totalPlayerShipsAttacking) {
 				ownerInTurnInFuture = ENEMY;
-				shipsInTurnInFuture = totalEnemyShipsAttacking - std::max(shipsInTurnInFuture, totalPlayerShipsAttacking);
 			}
 			if (shipsInTurnInFuture > totalPlayerShipsAttacking && shipsInTurnInFuture > totalEnemyShipsAttacking) {
 				ownerInTurnInFuture = NEUTRAL;
-				shipsInTurnInFuture = shipsInTurnInFuture - std::max(totalEnemyShipsAttacking, totalPlayerShipsAttacking);
 			}
+			shipsInTurnInFuture = std::max(shipsInTurnInFuture, totalPlayerShipsAttacking, totalEnemyShipsAttacking) - std::median(shipsInTurnInFuture, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
+			log.LogVar(turnInFuture);
+			log.LogVar(shipsInTurnInFuture);
+			log.LogVar(totalPlayerShipsAttacking);
+			log.LogVar(totalEnemyShipsAttacking);
+			log.LogVar(ownerInTurnInFuture);
 			break;
 
 		case SELF: 
-			shipsInTurnInFuture += GrowthRate();
-			shipsInTurnInFuture += totalPlayerShipsAttacking;
-			if (totalEnemyShipsAttacking > shipsInTurnInFuture) {
+			log.Log("SELF");
+			log.LogVar(turnInFuture);
+			log.LogVar(shipsInTurnInFuture);
+			log.LogVar(totalPlayerShipsAttacking);
+			log.LogVar(totalEnemyShipsAttacking);
+			log.LogVar(ownerInTurnInFuture);
+			shipsInTurnInFuture = shipsInTurnInFuture + GrowthRate() + totalPlayerShipsAttacking - totalEnemyShipsAttacking;
+			if (shipsInTurnInFuture < 0) {
+				shipsInTurnInFuture *= -1;
 				ownerInTurnInFuture = ENEMY;
-				shipsInTurnInFuture = totalEnemyShipsAttacking - shipsInTurnInFuture;
-			} else {
-				shipsInTurnInFuture -= totalEnemyShipsAttacking;
 			}
+			log.LogVar(turnInFuture);
+			log.LogVar(shipsInTurnInFuture);
+			log.LogVar(totalPlayerShipsAttacking);
+			log.LogVar(totalEnemyShipsAttacking);
+			log.LogVar(ownerInTurnInFuture);
 			break;
 
 		case ENEMY:
-			shipsInTurnInFuture += GrowthRate();
-			shipsInTurnInFuture += totalEnemyShipsAttacking;
-			if (totalPlayerShipsAttacking > shipsInTurnInFuture) {
+			log.Log("ENEMY");
+			log.LogVar(turnInFuture);
+			log.LogVar(shipsInTurnInFuture);
+			log.LogVar(totalPlayerShipsAttacking);
+			log.LogVar(totalEnemyShipsAttacking);
+			log.LogVar(ownerInTurnInFuture);
+			shipsInTurnInFuture = shipsInTurnInFuture + GrowthRate() + totalEnemyShipsAttacking - totalPlayerShipsAttacking;
+			if (shipsInTurnInFuture < 0) {
+				shipsInTurnInFuture *= -1;
 				ownerInTurnInFuture = SELF;
-				shipsInTurnInFuture = totalPlayerShipsAttacking - shipsInTurnInFuture;
-			} else {
-				shipsInTurnInFuture -= totalPlayerShipsAttacking;
 			}
+			log.LogVar(turnInFuture);
+			log.LogVar(shipsInTurnInFuture);
+			log.LogVar(totalPlayerShipsAttacking);
+			log.LogVar(totalEnemyShipsAttacking);
+			log.LogVar(ownerInTurnInFuture);
 			break;
 		}
+		if (turns - 1 == turnInFuture) return shipsInTurnInFuture;
 	}
-	return shipsInTurnInFuture;
 }
 
 int Planet::GrowthRate() const {

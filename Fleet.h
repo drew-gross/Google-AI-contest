@@ -8,10 +8,10 @@ public:
 	// Initializes a fleet.
 	Fleet(int owner,
 		int num_ships,
-		int source_planet = -1,
-		int destination_planet = -1,
-		int total_trip_length = -1,
-		int turns_remaining = -1);
+		int source_planet,
+		int destination_planet,
+		int total_trip_length,
+		unsigned int turns_remaining);
 
 	// Returns the playerID of the owner of the fleet. Your player ID is always
 	// 1. So if the owner is 1, you own the fleet. If the owner is 2 or some
@@ -34,7 +34,7 @@ public:
 
 	// Returns the number of turns until this fleet reaches its destination. If
 	// this value is 1, then the fleet will hit the destination planet next turn.
-	int TurnsRemaining() const;
+	unsigned int TurnsRemaining() const;
 
 private:
 	int owner_;

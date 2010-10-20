@@ -14,10 +14,6 @@
 // http://www.ai-contest.com/resources.
 
 void DoTurn() {
-	// (1) If we currently have a fleet in flight, just do nothing.
-	if (PlanetWars::Instance().MyFleets().size() >= 1) {
-		return;
-	}
 	// (2) Find my strongest planet.
 	Planet* source = nullptr;
 	double source_score = -999999.0;
