@@ -38,3 +38,7 @@ int Fleet::TotalTripLength() const {
 unsigned int Fleet::TurnsRemaining() const {
 	return turns_remaining_;
 }
+
+bool Fleet::ArrivesInTurns(unsigned int turns) const {
+	return (TurnsRemaining() == turns);
+}

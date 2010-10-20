@@ -1,6 +1,8 @@
 #ifndef FLEET_H_
 #define FLEET_H_
 
+#include "Planet.h"
+
 // This class stores details about one fleet. There is one of these classes
 // for each fleet that is in flight at any given time.
 class Fleet {
@@ -35,6 +37,9 @@ public:
 	// Returns the number of turns until this fleet reaches its destination. If
 	// this value is 1, then the fleet will hit the destination planet next turn.
 	unsigned int TurnsRemaining() const;
+
+	// Returns true if the fleet will be arriving at its target in the specified amount of turns.
+	bool ArrivesInTurns(unsigned int turns) const;
 
 private:
 	int owner_;

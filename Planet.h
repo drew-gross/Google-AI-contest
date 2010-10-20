@@ -46,6 +46,9 @@ public:
 	void AddShips(int amount);
 	void RemoveShips(int amount);
 
+	// Compares planets by their ID's.
+	bool operator==(Planet const & rhs);
+
 private:
 	int planet_id_;
 	int owner_;
