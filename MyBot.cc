@@ -42,8 +42,9 @@ void DoTurn() {
 			dest = &p;
 		}
 	}
-	if (source != nullptr && dest != nullptr) {
-		PlanetWars::Instance().IssueOrder(*source, *dest, dest->NumShipsInTurns(PlanetWars::Distance(*source, *dest)) + 1);
+	int shipsToSend = dest->NumShipsInTurns(PlanetWars::Distance(*source, *dest)) + 1;
+	if (source != nullptr && dest != nullptr && source->NumShips() > shipsToSend) {
+		PlanetWars::Instance().IssueOrder(*source, *dest, shipsToSend);
 	}
 }
 
