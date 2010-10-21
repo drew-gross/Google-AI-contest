@@ -32,10 +32,13 @@ void DoTurn() {
 	Planet* dest = nullptr;
 	for (unsigned int i = 0; i < not_my_planets.size(); ++i) {
 		Planet& p = not_my_planets[i];
-		double score = 1.0 / (1 + p.NumShipsInTurns(PlanetWars::Distance(*source, p)));
-		if (score > dest_score) {
-			dest_score = score;
-			dest = &p;
+		int distance = PlanetWars::Distance(*source, p);
+		if (p.OwnerInTurns(distance) != SELF) {
+			double score = 1.0 / (1 + p.NumShipsInTurns(distance));
+			if (score > dest_score) {
+				dest_score = score;
+				dest = &p;
+			}
 		}
 	}
 	int shipsToSend = dest->NumShipsInTurns(PlanetWars::Distance(*source, *dest)) + 1;

@@ -22,6 +22,9 @@ public:
 	// planet belongs to the enemy.
 	int Owner() const;
 
+	// Returns the ID of the player that will own the planet in the future
+	int OwnerInTurns(unsigned int turns) const;
+
 	// The number of ships on the planet. This is the "population" of the planet.
 	int NumShips() const;
 
