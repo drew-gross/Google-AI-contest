@@ -8,7 +8,9 @@
 // if you want to.
 
 #include "Planet.h"
+#include "PlanetList.h"
 #include "Fleet.h"
+#include "FleetList.h"
 
 #include "Logger.h"
 
@@ -48,31 +50,31 @@ public:
 	const Fleet& GetFleet(int fleet_id) const;
 
 	// Returns a list of all the planets.
-	std::vector<Planet> Planets() const;
+	PlanetList Planets() const;
 
 	// Return a list of all the planets owned by the current player. By
 	// convention, the current player is always player number 1.
-	std::vector<Planet> MyPlanets() const;
+	PlanetList MyPlanets() const;
 
 	// Return a list of all neutral planets.
-	std::vector<Planet> NeutralPlanets() const;
+	PlanetList NeutralPlanets() const;
 
 	// Return a list of all the planets owned by rival players. This excludes
 	// planets owned by the current player, as well as neutral planets.
-	std::vector<Planet> EnemyPlanets() const;
+	PlanetList EnemyPlanets() const;
 
 	// Return a list of all the planets that are not owned by the current
 	// player. This includes all enemy planets and neutral planets.
-	std::vector<Planet> NotMyPlanets() const;
+	PlanetList NotMyPlanets() const;
 
 	// Return a list of all the fleets.
-	std::vector<Fleet> Fleets() const;
+	FleetList Fleets() const;
 
 	// Return a list of all the fleets owned by the current player.
-	std::vector<Fleet> MyFleets() const;
+	FleetList MyFleets() const;
 
 	// Return a list of all the fleets owned by enemy players.
-	std::vector<Fleet> EnemyFleets() const;
+	FleetList EnemyFleets() const;
 
 	// Add a fleet to the game state.
 	void AddFleet(Fleet const & new_fleet);
@@ -115,8 +117,8 @@ private:
 
 	// Store all the planets and fleets. OMG we wouldn't wanna lose all the
 	// planets and fleets, would we!?
-	std::vector<Planet> planets_;
-	std::vector<Fleet> fleets_;
+	PlanetList planets_;
+	FleetList fleets_;
 
 	// Output log for sending orders to the engine.
 	static Logger orders;

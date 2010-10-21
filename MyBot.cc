@@ -17,7 +17,7 @@ void DoTurn() {
 	// (2) Find my strongest planet.
 	Planet* source = nullptr;
 	double source_score = -999999.0;
-	std::vector<Planet> my_planets = PlanetWars::Instance().MyPlanets();
+	PlanetList my_planets = PlanetWars::Instance().MyPlanets();
 	for (unsigned int i = 0; i < my_planets.size(); ++i) {
 		Planet& p = my_planets[i];
 		double score = (double)p.NumShips();
@@ -28,7 +28,7 @@ void DoTurn() {
 	}
 	// (3) Find the weakest enemy or neutral planet.
 	double dest_score = -999999.0;
-	std::vector<Planet> not_my_planets = PlanetWars::Instance().NotMyPlanets();
+	PlanetList not_my_planets = PlanetWars::Instance().NotMyPlanets();
 	Planet* dest = nullptr;
 	for (unsigned int i = 0; i < not_my_planets.size(); ++i) {
 		Planet& p = not_my_planets[i];
