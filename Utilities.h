@@ -1,9 +1,11 @@
 #ifndef UTILITIES_H_
 #define UTILITIES_H_
 
-#define NEUTRAL 0
-#define SELF 1
-#define ENEMY 2
+enum Player {
+	 neutral = 0,
+	 self = 1,
+	 enemy = 2
+};
 
 #define toString(x) #x
 

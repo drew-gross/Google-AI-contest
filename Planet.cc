@@ -6,7 +6,7 @@
 #include "PlanetWars.h"
 
 Planet::Planet(int planet_id,
-	int owner,
+	Player owner,
 	int num_ships,
 	int growth_rate,
 	double x,
@@ -23,62 +23,12 @@ int Planet::PlanetID() const {
 	return planet_id_;
 }
 
-int Planet::OwnerInTurns(unsigned int turns) const {
-	int shipsInTurnInFuture = NumShips();
-	unsigned int ownerInTurnInFuture = Owner();
-
-	for (unsigned int turnInFuture = 0; turnInFuture < turns; ++turnInFuture) {
-		int totalEnemyShipsAttacking = 0;
-		int totalPlayerShipsAttacking = 0;
-		std::vector<Fleet> fleets = PlanetWars::Instance().Fleets();
-		for (unsigned int i = 0; i < fleets.size(); ++i) {
-			Fleet const & curFleet = fleets[i];
-			if (curFleet.ArrivesInTurns(turnInFuture) && (curFleet.DestinationPlanet() == this->PlanetID())) {
-				if (curFleet.Owner() == SELF) {
-					totalPlayerShipsAttacking += curFleet.NumShips();
-				}
-				if (curFleet.Owner() == ENEMY) {
-					totalEnemyShipsAttacking += curFleet.NumShips();
-				}
-			}
-		}
-
-		switch (ownerInTurnInFuture) {
-		case NEUTRAL:
-			if (totalPlayerShipsAttacking > shipsInTurnInFuture && totalPlayerShipsAttacking > totalEnemyShipsAttacking) {
-				ownerInTurnInFuture = SELF;
-			}
-			if (totalEnemyShipsAttacking > shipsInTurnInFuture && totalEnemyShipsAttacking > totalPlayerShipsAttacking) {
-				ownerInTurnInFuture = ENEMY;
-			}
-			if (shipsInTurnInFuture > totalPlayerShipsAttacking && shipsInTurnInFuture > totalEnemyShipsAttacking) {
-				ownerInTurnInFuture = NEUTRAL;
-			}
-			shipsInTurnInFuture = std::max(shipsInTurnInFuture, totalPlayerShipsAttacking, totalEnemyShipsAttacking) - std::median(shipsInTurnInFuture, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
-			break;
-
-		case SELF: 
-			shipsInTurnInFuture = shipsInTurnInFuture + GrowthRate() + totalPlayerShipsAttacking - totalEnemyShipsAttacking;
-			if (shipsInTurnInFuture < 0) {
-				shipsInTurnInFuture *= -1;
-				ownerInTurnInFuture = ENEMY;
-			}
-			break;
-
-		case ENEMY:
-			shipsInTurnInFuture = shipsInTurnInFuture + GrowthRate() + totalEnemyShipsAttacking - totalPlayerShipsAttacking;
-			if (shipsInTurnInFuture < 0) {
-				shipsInTurnInFuture *= -1;
-				ownerInTurnInFuture = SELF;
-			}
-			break;
-		}
-	}
-	return ownerInTurnInFuture;
+Player Planet::Owner() const {
+	return owner_;
 }
 
-int Planet::Owner() const {
-	return owner_;
+Player Planet::OwnerInTurns(unsigned int turns) const {
+	return StateInTurns(turns).second;
 }
 
 int Planet::NumShips() const {
@@ -86,57 +36,7 @@ int Planet::NumShips() const {
 }
 
 int Planet::NumShipsInTurns(unsigned int turns) const {
-	int shipsInTurnInFuture = NumShips();
-	unsigned int ownerInTurnInFuture = Owner();
-
-	for (unsigned int turnInFuture = 0; turnInFuture < turns; ++turnInFuture) {
-		int totalEnemyShipsAttacking = 0;
-		int totalPlayerShipsAttacking = 0;
-		std::vector<Fleet> fleets = PlanetWars::Instance().Fleets();
-		for (unsigned int i = 0; i < fleets.size(); ++i) {
-			Fleet const & curFleet = fleets[i];
-			if (curFleet.ArrivesInTurns(turnInFuture) && (curFleet.DestinationPlanet() == this->PlanetID())) {
-				if (curFleet.Owner() == SELF) {
-					totalPlayerShipsAttacking += curFleet.NumShips();
-				}
-				if (curFleet.Owner() == ENEMY) {
-					totalEnemyShipsAttacking += curFleet.NumShips();
-				}
-			}
-		}
-
-		switch (ownerInTurnInFuture) {
-		case NEUTRAL:
-			if (totalPlayerShipsAttacking > shipsInTurnInFuture && totalPlayerShipsAttacking > totalEnemyShipsAttacking) {
-				ownerInTurnInFuture = SELF;
-			}
-			if (totalEnemyShipsAttacking > shipsInTurnInFuture && totalEnemyShipsAttacking > totalPlayerShipsAttacking) {
-				ownerInTurnInFuture = ENEMY;
-			}
-			if (shipsInTurnInFuture > totalPlayerShipsAttacking && shipsInTurnInFuture > totalEnemyShipsAttacking) {
-				ownerInTurnInFuture = NEUTRAL;
-			}
-			shipsInTurnInFuture = std::max(shipsInTurnInFuture, totalPlayerShipsAttacking, totalEnemyShipsAttacking) - std::median(shipsInTurnInFuture, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
-			break;
-
-		case SELF: 
-			shipsInTurnInFuture = shipsInTurnInFuture + GrowthRate() + totalPlayerShipsAttacking - totalEnemyShipsAttacking;
-			if (shipsInTurnInFuture < 0) {
-				shipsInTurnInFuture *= -1;
-				ownerInTurnInFuture = ENEMY;
-			}
-			break;
-
-		case ENEMY:
-			shipsInTurnInFuture = shipsInTurnInFuture + GrowthRate() + totalEnemyShipsAttacking - totalPlayerShipsAttacking;
-			if (shipsInTurnInFuture < 0) {
-				shipsInTurnInFuture *= -1;
-				ownerInTurnInFuture = SELF;
-			}
-			break;
-		}
-	}
-	return shipsInTurnInFuture;
+	return StateInTurns(turns).first;
 }
 
 int Planet::GrowthRate() const {
@@ -151,7 +51,7 @@ double Planet::Y() const {
 	return y_;
 }
 
-void Planet::Owner(int new_owner) {
+void Planet::Owner(Player new_owner) {
 	owner_ = new_owner;
 }
 
@@ -169,4 +69,57 @@ void Planet::RemoveShips(int amount) {
 
 bool Planet::operator==(Planet const & rhs) {
 	return PlanetID() == rhs.PlanetID();
+}
+
+std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
+	std::pair<int, Player> stateInTurn(NumShips(), Owner());
+
+	for (unsigned int turnInFuture = 0; turnInFuture < turns; ++turnInFuture) {
+		int totalEnemyShipsAttacking = 0;
+		int totalPlayerShipsAttacking = 0;
+		FleetList fleets = PlanetWars::Instance().Fleets();
+		for (unsigned int i = 0; i < fleets.size(); ++i) {
+			Fleet const & curFleet = fleets[i];
+			if (curFleet.ArrivesInTurns(turnInFuture) && (curFleet.DestinationPlanet() == this->PlanetID())) {
+				if (curFleet.Owner() == self) {
+					totalPlayerShipsAttacking += curFleet.NumShips();
+				}
+				if (curFleet.Owner() == enemy) {
+					totalEnemyShipsAttacking += curFleet.NumShips();
+				}
+			}
+		}
+
+		switch (stateInTurn.second) {
+		case neutral:
+			if (totalPlayerShipsAttacking > stateInTurn.first && totalPlayerShipsAttacking > totalEnemyShipsAttacking) {
+				stateInTurn.second = self;
+			}
+			if (totalEnemyShipsAttacking > stateInTurn.first && totalEnemyShipsAttacking > totalPlayerShipsAttacking) {
+				stateInTurn.second = enemy;
+			}
+			if (stateInTurn.first > totalPlayerShipsAttacking && stateInTurn.first > totalEnemyShipsAttacking) {
+				stateInTurn.second = neutral;
+			}
+			stateInTurn.first = std::max(stateInTurn.first, totalPlayerShipsAttacking, totalEnemyShipsAttacking) - std::median(stateInTurn.first, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
+			break;
+
+		case self: 
+			stateInTurn.first = stateInTurn.first + GrowthRate() + totalPlayerShipsAttacking - totalEnemyShipsAttacking;
+			if (stateInTurn.first < 0) {
+				stateInTurn.first *= -1;
+				stateInTurn.second = enemy;
+			}
+			break;
+
+		case enemy:
+			stateInTurn.first = stateInTurn.first + GrowthRate() + totalEnemyShipsAttacking - totalPlayerShipsAttacking;
+			if (stateInTurn.first < 0) {
+				stateInTurn.first *= -1;
+				stateInTurn.second = self;
+			}
+			break;
+		}
+	}
+	return stateInTurn;
 }

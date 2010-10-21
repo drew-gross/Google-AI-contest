@@ -33,7 +33,7 @@ void DoTurn() {
 	for (unsigned int i = 0; i < not_my_planets.size(); ++i) {
 		Planet& p = not_my_planets[i];
 		int distance = PlanetWars::Distance(*source, p);
-		if (p.OwnerInTurns(distance) != SELF) {
+		if (p.OwnerInTurns(distance) != self) {
 			double score = 1.0 / (1 + p.NumShipsInTurns(distance));
 			if (score > dest_score) {
 				dest_score = score;

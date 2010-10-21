@@ -164,8 +164,8 @@ int PlanetWars::Distance(Planet const & source_planet, Planet const & destinatio
 void PlanetWars::IssueOrder(Planet & source_planet, Planet const & destination_planet, int num_ships) {
 	if (source_planet.PlanetID() == destination_planet.PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
 	if (num_ships >= source_planet.NumShips()) throw std::runtime_error("Not Enough Ships to send");
-	if (source_planet.Owner() != SELF) throw std::runtime_error("You don't own that planet");
-	AddFleet(Fleet(SELF, num_ships, source_planet.PlanetID(), destination_planet.PlanetID(), Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
+	if (source_planet.Owner() != self) throw std::runtime_error("You don't own that planet");
+	AddFleet(Fleet(self, num_ships, source_planet.PlanetID(), destination_planet.PlanetID(), Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
 	source_planet.RemoveShips(num_ships);
 	std::cout << source_planet.PlanetID() << " " << destination_planet.PlanetID() << " " << num_ships << std::endl;
 	std::cout.flush();
@@ -220,7 +220,7 @@ int PlanetWars::ParseGameState(const std::string& s) {
 				return 0;
 			}
 			Planet p(planet_id++,              // The ID of this planet
-				atoi(tokens[3].c_str()),  // Owner
+				Player(atoi(tokens[3].c_str())),  // Owner
 				atoi(tokens[4].c_str()),  // Num ships
 				atoi(tokens[5].c_str()),  // Growth rate
 				atof(tokens[1].c_str()),  // X

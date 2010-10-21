@@ -3,11 +3,14 @@
 
 // Stores information about one planet. There is one instance of this class
 // for each planet on the map.
+#include <utility>
+#include "Utilities.h"
+
 class Planet {
 public:
 	// Initializes a planet.
 	Planet(int planet_id,
-		int owner,
+		Player owner,
 		int num_ships,
 		int growth_rate,
 		double x,
@@ -20,10 +23,10 @@ public:
 	// always 1. If the owner is 1, this is your planet. If the owner is 0, then
 	// the planet is neutral. If the owner is 2 or some other number, then this
 	// planet belongs to the enemy.
-	int Owner() const;
+	Player Owner() const;
 
 	// Returns the ID of the player that will own the planet in the future
-	int OwnerInTurns(unsigned int turns) const;
+	Player OwnerInTurns(unsigned int turns) const;
 
 	// The number of ships on the planet. This is the "population" of the planet.
 	int NumShips() const;
@@ -44,7 +47,7 @@ public:
 	// that these functions only affect your program's copy of the game state.
 	// You can't steal your opponent's planets just by changing the owner to 1
 	// using the Owner(int) function! :-)
-	void Owner(int new_owner);
+	void Owner(Player new_owner);
 	void NumShips(int new_num_ships);
 	void AddShips(int amount);
 	void RemoveShips(int amount);
@@ -53,8 +56,10 @@ public:
 	bool operator==(Planet const & rhs);
 
 private:
+	std::pair<int, Player> StateInTurns(unsigned int turns) const;
+
 	int planet_id_;
-	int owner_;
+	Player owner_;
 	int num_ships_;
 	int growth_rate_;
 	double x_, y_;
