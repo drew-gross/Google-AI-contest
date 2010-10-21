@@ -14,8 +14,6 @@ Planet* PlanetList::Weakest() {
 			weakestPlanet = curPlanet;
 		}
 	}
-	Logger("return of weakest.txt").LogVar(weakestPlanet);
-	Logger("return of weakest.txt").LogVar(weakestPlanet->PlanetID());
 	return weakestPlanet;
 }
 
@@ -28,8 +26,6 @@ Planet* PlanetList::Strongest() {
 			strongestPlanet = curPlanet;
 		}
 	}
-	Logger("return of strongest.txt").LogVar(strongestPlanet);
-	Logger("return of strongest.txt").LogVar(strongestPlanet->PlanetID());
 	return strongestPlanet;
 }
 
