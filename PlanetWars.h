@@ -39,7 +39,7 @@ public:
 
 	// Returns the planet with the given planet_id. There are NumPlanets()
 	// planets. They are numbered starting at 0.
-	Planet& GetPlanet(int planet_id);
+	Planet const * GetPlanet(int planet_id);
 
 	// Returns the number of fleets.
 	int NumFleets() const;
@@ -47,7 +47,7 @@ public:
 	// Returns the fleet with the given fleet_id. Fleets are numbered starting
 	// with 0. There are NumFleets() fleets. fleet_id's are not consistent from
 	// one turn to the next.
-	const Fleet& GetFleet(int fleet_id) const;
+	Fleet const * GetFleet(int fleet_id) const;
 
 	// Returns a list of all the planets.
 	PlanetList Planets() const;
@@ -77,7 +77,7 @@ public:
 	FleetList EnemyFleets() const;
 
 	// Add a fleet to the game state.
-	void AddFleet(Fleet const & new_fleet);
+	void AddFleet(Fleet* new_fleet);
 
 	// Writes a string which represents the current game state. This string
 	// conforms to the Point-in-Time format from the project Wiki.

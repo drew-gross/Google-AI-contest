@@ -79,13 +79,13 @@ std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 		int totalPlayerShipsAttacking = 0;
 		FleetList fleets = PlanetWars::Instance().Fleets();
 		for (unsigned int i = 0; i < fleets.size(); ++i) {
-			Fleet const & curFleet = fleets[i];
-			if (curFleet.ArrivesInTurns(turnInFuture) && (curFleet.DestinationPlanet() == this->PlanetID())) {
-				if (curFleet.Owner() == self) {
-					totalPlayerShipsAttacking += curFleet.NumShips();
+			Fleet* curFleet = fleets[i];
+			if (curFleet->ArrivesInTurns(turnInFuture) && (curFleet->DestinationPlanet() == this->PlanetID())) {
+				if (curFleet->Owner() == self) {
+					totalPlayerShipsAttacking += curFleet->NumShips();
 				}
-				if (curFleet.Owner() == enemy) {
-					totalEnemyShipsAttacking += curFleet.NumShips();
+				if (curFleet->Owner() == enemy) {
+					totalEnemyShipsAttacking += curFleet->NumShips();
 				}
 			}
 		}

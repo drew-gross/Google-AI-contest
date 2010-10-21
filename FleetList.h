@@ -5,9 +5,10 @@
 #include "Fleet.h"
 #include "Planet.h"
 
-class FleetList : public std::vector<Fleet> {
+class FleetList : public std::vector<Fleet*> {
 public:
 	int NumShips();
+	void DeleteAll();
 private:
 };
 

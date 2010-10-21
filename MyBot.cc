@@ -14,33 +14,11 @@
 // http://www.ai-contest.com/resources.
 
 void DoTurn() {
-	// (2) Find my strongest planet.
-	Planet* source = nullptr;
-	double source_score = -999999.0;
-	PlanetList my_planets = PlanetWars::Instance().MyPlanets();
-	for (unsigned int i = 0; i < my_planets.size(); ++i) {
-		Planet& p = my_planets[i];
-		double score = (double)p.NumShips();
-		if (score > source_score) {
-			source_score = score;
-			source = &p;
-		}
-	}
-	// (3) Find the weakest enemy or neutral planet.
-	double dest_score = -999999.0;
-	PlanetList not_my_planets = PlanetWars::Instance().NotMyPlanets();
-	Planet* dest = nullptr;
-	for (unsigned int i = 0; i < not_my_planets.size(); ++i) {
-		Planet& p = not_my_planets[i];
-		int distance = PlanetWars::Distance(*source, p);
-		if (p.OwnerInTurns(distance) != self) {
-			double score = 1.0 / (1 + p.NumShipsInTurns(distance));
-			if (score > dest_score) {
-				dest_score = score;
-				dest = &p;
-			}
-		}
-	}
+	Logger log = Logger("planets.txt");
+	Planet* source = PlanetWars::Instance().MyPlanets().Strongest();
+	Planet* dest = PlanetWars::Instance().NotMyPlanets().Weakest();
+	log.LogVar(source);
+	log.LogVar(dest);
 	int shipsToSend = dest->NumShipsInTurns(PlanetWars::Distance(*source, *dest)) + 1;
 	if (source != nullptr && dest != nullptr && source->NumShips() > shipsToSend) {
 		PlanetWars::Instance().IssueOrder(*source, *dest, shipsToSend);

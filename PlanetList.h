@@ -4,10 +4,11 @@
 #include <vector>
 #include "Planet.h"
 
-class PlanetList : public std::vector<Planet> {
+class PlanetList : public std::vector<Planet*> {
 public:
-	Planet const * Weakest();
-	Planet const * Strongest();
+	Planet* Weakest();
+	Planet* Strongest();
+	void DeleteAll();
 private:
 };
 

@@ -19,6 +19,8 @@ void PlanetWars::Initialize(const std::string& game_state) {
 }
 
 void PlanetWars::Uninitialize() {
+	instance_->planets_.DeleteAll();
+	instance_->fleets_.DeleteAll();
 	delete instance_;
 	instance_ = nullptr;
 }
@@ -39,7 +41,7 @@ int PlanetWars::NumPlanets() const {
 	return planets_.size();
 }
 
-Planet& PlanetWars::GetPlanet(int planet_id) {
+Planet const * PlanetWars::GetPlanet(int planet_id) {
 	return planets_[planet_id];
 }
 
@@ -47,14 +49,14 @@ int PlanetWars::NumFleets() const {
 	return fleets_.size();
 }
 
-const Fleet& PlanetWars::GetFleet(int fleet_id) const {
+Fleet const * PlanetWars::GetFleet(int fleet_id) const {
 	return fleets_[fleet_id];
 }
 
 PlanetList PlanetWars::Planets() const {
 	PlanetList r;
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		const Planet& p = planets_[i];
+		Planet* p = planets_[i];
 		r.push_back(p);
 	}
 	return r;
@@ -63,8 +65,8 @@ PlanetList PlanetWars::Planets() const {
 PlanetList PlanetWars::MyPlanets() const {
 	PlanetList r;
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		const Planet& p = planets_[i];
-		if (p.Owner() == 1) {
+		Planet* p = planets_[i];
+		if (p->Owner() == 1) {
 			r.push_back(p);
 		}
 	}
@@ -74,8 +76,8 @@ PlanetList PlanetWars::MyPlanets() const {
 PlanetList PlanetWars::NeutralPlanets() const {
 	PlanetList r;
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		const Planet& p = planets_[i];
-		if (p.Owner() == 0) {
+		Planet* p = planets_[i];
+		if (p->Owner() == neutral) {
 			r.push_back(p);
 		}
 	}
@@ -85,8 +87,8 @@ PlanetList PlanetWars::NeutralPlanets() const {
 PlanetList PlanetWars::EnemyPlanets() const {
 	PlanetList r;
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		const Planet& p = planets_[i];
-		if (p.Owner() > 1) {
+		Planet* p = planets_[i];
+		if (p->Owner() > 1) {
 			r.push_back(p);
 		}
 	}
@@ -96,8 +98,8 @@ PlanetList PlanetWars::EnemyPlanets() const {
 PlanetList PlanetWars::NotMyPlanets() const {
 	PlanetList r;
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		const Planet& p = planets_[i];
-		if (p.Owner() != 1) {
+		Planet* p = planets_[i];
+		if (p->Owner() != self) {
 			r.push_back(p);
 		}
 	}
@@ -107,7 +109,7 @@ PlanetList PlanetWars::NotMyPlanets() const {
 FleetList PlanetWars::Fleets() const {
 	FleetList r;
 	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		const Fleet& f = fleets_[i];
+		Fleet* f = fleets_[i];
 		r.push_back(f);
 	}
 	return r;
@@ -116,8 +118,8 @@ FleetList PlanetWars::Fleets() const {
 FleetList PlanetWars::MyFleets() const {
 	FleetList r;
 	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		const Fleet& f = fleets_[i];
-		if (f.Owner() == 1) {
+		Fleet* f = fleets_[i];
+		if (f->Owner() == self) {
 			r.push_back(f);
 		}
 	}
@@ -127,30 +129,30 @@ FleetList PlanetWars::MyFleets() const {
 FleetList PlanetWars::EnemyFleets() const {
 	FleetList r; 
 	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		const Fleet& f = fleets_[i];
-		if (f.Owner() > 1) {
+		Fleet* f = fleets_[i];
+		if (f->Owner() == enemy) {
 			r.push_back(f);
 		}
 	}
 	return r;
 }
 
-void PlanetWars::AddFleet(Fleet const & new_fleet) {
+void PlanetWars::AddFleet(Fleet* new_fleet) {
 	fleets_.push_back(new_fleet);
 }
 
 std::string PlanetWars::ToString() const {
 	std::stringstream s;
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		const Planet& p = planets_[i];
-		s << "P " << p.X() << " " << p.Y() << " " << p.Owner()
-			<< " " << p.NumShips() << " " << p.GrowthRate() << std::endl;
+		Planet* p = planets_[i];
+		s << "P " << p->X() << " " << p->Y() << " " << p->Owner()
+			<< " " << p->NumShips() << " " << p->GrowthRate() << std::endl;
 	}
 	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		const Fleet& f = fleets_[i];
-		s << "F " << f.Owner() << " " << f.NumShips() << " "
-			<< f.SourcePlanet() << " " << f.DestinationPlanet() << " "
-			<< f.TotalTripLength() << " " << f.TurnsRemaining() << std::endl;
+		Fleet* f = fleets_[i];
+		s << "F " << f->Owner() << " " << f->NumShips() << " "
+			<< f->SourcePlanet() << " " << f->DestinationPlanet() << " "
+			<< f->TotalTripLength() << " " << f->TurnsRemaining() << std::endl;
 	}
 	return s.str();
 }
@@ -165,7 +167,7 @@ void PlanetWars::IssueOrder(Planet & source_planet, Planet const & destination_p
 	if (source_planet.PlanetID() == destination_planet.PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
 	if (num_ships >= source_planet.NumShips()) throw std::runtime_error("Not Enough Ships to send");
 	if (source_planet.Owner() != self) throw std::runtime_error("You don't own that planet");
-	AddFleet(Fleet(self, num_ships, source_planet.PlanetID(), destination_planet.PlanetID(), Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
+	AddFleet(new Fleet(self, num_ships, source_planet.PlanetID(), destination_planet.PlanetID(), Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
 	source_planet.RemoveShips(num_ships);
 	std::cout << source_planet.PlanetID() << " " << destination_planet.PlanetID() << " " << num_ships << std::endl;
 	std::cout.flush();
@@ -173,12 +175,12 @@ void PlanetWars::IssueOrder(Planet & source_planet, Planet const & destination_p
 
 bool PlanetWars::IsAlive(int player_id) const {
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		if (planets_[i].Owner() == player_id) {
+		if (planets_[i]->Owner() == player_id) {
 			return true;
 		}
 	}
 	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		if (fleets_[i].Owner() == player_id) {
+		if (fleets_[i]->Owner() == player_id) {
 			return true;
 		}
 	}
@@ -188,13 +190,13 @@ bool PlanetWars::IsAlive(int player_id) const {
 int PlanetWars::NumShips(int player_id) const {
 	int num_ships = 0;
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		if (planets_[i].Owner() == player_id) {
-			num_ships += planets_[i].NumShips();
+		if (planets_[i]->Owner() == player_id) {
+			num_ships += planets_[i]->NumShips();
 		}
 	}
 	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		if (fleets_[i].Owner() == player_id) {
-			num_ships += fleets_[i].NumShips();
+		if (fleets_[i]->Owner() == player_id) {
+			num_ships += fleets_[i]->NumShips();
 		}
 	}
 	return num_ships;
@@ -219,7 +221,7 @@ int PlanetWars::ParseGameState(const std::string& s) {
 			if (tokens.size() != 6) {
 				return 0;
 			}
-			Planet p(planet_id++,              // The ID of this planet
+			Planet* p = new Planet(planet_id++,              // The ID of this planet
 				Player(atoi(tokens[3].c_str())),  // Owner
 				atoi(tokens[4].c_str()),  // Num ships
 				atoi(tokens[5].c_str()),  // Growth rate
@@ -230,7 +232,7 @@ int PlanetWars::ParseGameState(const std::string& s) {
 			if (tokens.size() != 7) {
 				return 0;
 			}
-			Fleet f(atoi(tokens[1].c_str()),  // Owner
+			Fleet* f = new Fleet(atoi(tokens[1].c_str()),  // Owner
 				atoi(tokens[2].c_str()),  // Num ships
 				atoi(tokens[3].c_str()),  // Source
 				atoi(tokens[4].c_str()),  // Destination
