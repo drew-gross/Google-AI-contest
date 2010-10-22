@@ -11,7 +11,7 @@
 
 class Logger {
 public:
-	Logger(char* outputFile);
+	Logger(char const * outputFile);
 	~Logger();
 	
 	template<typename T>
@@ -39,7 +39,7 @@ void Logger::Log(T str) {
 }
 
 template<typename T, typename U>
-void Logger::Log(T str, U str2) {
+void Logger::Log(T str1, U str2) {
 	if (enabled) {
 		out << str1 << str2 << std::endl;
 	}

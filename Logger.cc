@@ -1,6 +1,6 @@
 #include "Logger.h"
 
-Logger::Logger(char* outputFile) : out(outputFile) {
+Logger::Logger(char const * outputFile) : out(outputFile) {
 	enabled = true;
 }
 

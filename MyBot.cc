@@ -1,4 +1,7 @@
 #include <iostream>
+#include <exception>
+#include <stdexcept>
+
 #include "PlanetWars.h"
 #include "Logger.h"
 
@@ -26,7 +29,7 @@ void DoTurn() {
 // This is just the main game loop that takes care of communicating with the
 // game engine for you. You don't have to understand or change the code below.
 int main() {
-	Logger exceptions = Logger("exceptions.txt");
+	Logger exceptions("exceptions.txt");
 	std::string current_line;
 	std::string map_data;
 	for (;;) {

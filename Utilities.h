@@ -1,6 +1,12 @@
 #ifndef UTILITIES_H_
 #define UTILITIES_H_
 
+#include <algorithm>
+
+#ifndef nullptr
+#define nullptr 0
+#endif
+
 enum Player {
 	 neutral = 0,
 	 self = 1,

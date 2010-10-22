@@ -9,9 +9,10 @@
 #include <string>
 #include <vector>
 #include <exception>
+#include <stdexcept>
 
 PlanetWars* PlanetWars::instance_ = nullptr;
-Logger PlanetWars::orders = Logger("orders.txt");
+Logger PlanetWars::orders("orders.txt");
 
 void PlanetWars::Initialize(const std::string& game_state) {
 	if (instance_ != nullptr) return;
