@@ -1,0 +1,9 @@
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.log
+*.sdf
+*.sln
+*.suo
+*.vcproj
