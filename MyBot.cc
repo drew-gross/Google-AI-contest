@@ -17,8 +17,8 @@
 // http://www.ai-contest.com/resources.
 
 void DoTurn() {
-	Planet* source = PlanetWars::Instance().MyPlanets().Strongest();
-	Planet* dest = PlanetWars::Instance().NotMyPlanets().Weakest();
+	Planet* source = PlanetWars::Instance().PlanetsOwnedBy(self).Strongest();
+	Planet* dest = PlanetWars::Instance().PlanetsNotOwnedBy(self).Weakest();
 	int shipsToSend = dest->NumShipsInTurns(PlanetWars::Distance(*source, *dest)) + 1;
 	Player ownerAtArrival = dest->OwnerInTurns(PlanetWars::Distance(*source, *dest));
 	if (source != nullptr && dest != nullptr && source->NumShips() > shipsToSend && ownerAtArrival != self) {

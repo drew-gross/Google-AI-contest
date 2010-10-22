@@ -63,44 +63,22 @@ PlanetList PlanetWars::Planets() const {
 	return r;
 }
 
-PlanetList PlanetWars::MyPlanets() const {
+PlanetList PlanetWars::PlanetsOwnedBy(Player player) const {
 	PlanetList r;
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
 		Planet* p = planets_[i];
-		if (p->Owner() == 1) {
+		if (p->Owner() == player) {
 			r.push_back(p);
 		}
 	}
 	return r;
 }
 
-PlanetList PlanetWars::NeutralPlanets() const {
+PlanetList PlanetWars::PlanetsNotOwnedBy(Player player) const {
 	PlanetList r;
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
 		Planet* p = planets_[i];
-		if (p->Owner() == neutral) {
-			r.push_back(p);
-		}
-	}
-	return r;
-}
-
-PlanetList PlanetWars::EnemyPlanets() const {
-	PlanetList r;
-	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		Planet* p = planets_[i];
-		if (p->Owner() > 1) {
-			r.push_back(p);
-		}
-	}
-	return r;
-}
-
-PlanetList PlanetWars::NotMyPlanets() const {
-	PlanetList r;
-	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		Planet* p = planets_[i];
-		if (p->Owner() != self) {
+		if (p->Owner() != player) {
 			r.push_back(p);
 		}
 	}
@@ -116,22 +94,11 @@ FleetList PlanetWars::Fleets() const {
 	return r;
 }
 
-FleetList PlanetWars::MyFleets() const {
+FleetList PlanetWars::FleetsOwnedBy(Player player) const {
 	FleetList r;
 	for (unsigned int i = 0; i < fleets_.size(); ++i) {
 		Fleet* f = fleets_[i];
-		if (f->Owner() == self) {
-			r.push_back(f);
-		}
-	}
-	return r;
-}
-
-FleetList PlanetWars::EnemyFleets() const {
-	FleetList r; 
-	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		Fleet* f = fleets_[i];
-		if (f->Owner() == enemy) {
+		if (f->Owner() == player) {
 			r.push_back(f);
 		}
 	}

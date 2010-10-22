@@ -51,30 +51,18 @@ public:
 
 	// Returns a list of all the planets.
 	PlanetList Planets() const;
+	
+	// Returns a list of all planets owned by the specified player
+	PlanetList PlanetsOwnedBy(Player player) const;
 
-	// Return a list of all the planets owned by the current player. By
-	// convention, the current player is always player number 1.
-	PlanetList MyPlanets() const;
-
-	// Return a list of all neutral planets.
-	PlanetList NeutralPlanets() const;
-
-	// Return a list of all the planets owned by rival players. This excludes
-	// planets owned by the current player, as well as neutral planets.
-	PlanetList EnemyPlanets() const;
-
-	// Return a list of all the planets that are not owned by the current
-	// player. This includes all enemy planets and neutral planets.
-	PlanetList NotMyPlanets() const;
+	// Returns a list of all planets owned by the specified player
+	PlanetList PlanetsNotOwnedBy(Player player) const;
 
 	// Return a list of all the fleets.
 	FleetList Fleets() const;
 
-	// Return a list of all the fleets owned by the current player.
-	FleetList MyFleets() const;
-
-	// Return a list of all the fleets owned by enemy players.
-	FleetList EnemyFleets() const;
+	// Return a list of all the fleets owned by the specified player.
+	FleetList FleetsOwnedBy(Player player) const;
 
 	// Add a fleet to the game state.
 	void AddFleet(Fleet* new_fleet);
