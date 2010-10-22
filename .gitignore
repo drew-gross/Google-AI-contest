@@ -6,4 +6,14 @@
 *.sdf
 *.sln
 *.suo
-*.vcproj
+*.vcxproj
+MyBot.zip
+*.tlog
+*.filters
+*.user
+*.txt
+*.manifest
+*.lastbuildstate
+*.idb
+*.opensdf
+*.ipch
