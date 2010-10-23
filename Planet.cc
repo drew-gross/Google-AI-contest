@@ -77,29 +77,20 @@ void Planet::ClearFutureCache() const {
 }
 
 std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
-	static Logger log("state in future.txt");
 	if (stateInFuture.size() > turns) {
-		log.Log("Returning cached value");
-		log.LogVar(stateInFuture[turns]);
 		return stateInFuture[turns];
 	}
 	std::pair<int, Player> stateInTurn;
 	if (stateInFuture.size() == 0) {
-		log.Log("Initializing cache");
-		log.LogVar(NumShips());
-		log.LogVar(Owner());
 		stateInTurn = std::pair<int, Player>(NumShips(), Owner());
 		stateInFuture.push_back(stateInTurn);
-		log.LogVar(stateInFuture[0]);
 	}
 	unsigned int maxCachedTurnIndex = stateInFuture.size() - 1;
 	stateInTurn = stateInFuture.back();
 	stateInFuture.resize(turns + 1);
-	log.LogVar(stateInFuture.back());
-	
+
 	for (unsigned int turnInFuture = maxCachedTurnIndex; turnInFuture <= turns; ++turnInFuture) {
 		stateInFuture[turnInFuture] = stateInTurn;
-		log.LogVar(stateInTurn);
 
 		int totalEnemyShipsAttacking = 0;
 		int totalPlayerShipsAttacking = 0;
@@ -115,39 +106,41 @@ std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 				}
 			}
 		}
-
-		switch (stateInTurn.second) {
-		case neutral:
-			if (totalPlayerShipsAttacking > stateInTurn.first && totalPlayerShipsAttacking > totalEnemyShipsAttacking) {
-				stateInTurn.second = self;
-			}
-			if (totalEnemyShipsAttacking > stateInTurn.first && totalEnemyShipsAttacking > totalPlayerShipsAttacking) {
-				stateInTurn.second = enemy;
-			}
-			if (stateInTurn.first > totalPlayerShipsAttacking && stateInTurn.first > totalEnemyShipsAttacking) {
-				stateInTurn.second = neutral;
-			}
-			stateInTurn.first = std::max(stateInTurn.first, totalPlayerShipsAttacking, totalEnemyShipsAttacking) - std::median(stateInTurn.first, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
-			break;
-
-		case self: 
-			stateInTurn.first = stateInTurn.first + GrowthRate() + totalPlayerShipsAttacking - totalEnemyShipsAttacking;
-			if (stateInTurn.first < 0) {
-				stateInTurn.first *= -1;
-				stateInTurn.second = enemy;
-			}
-			break;
-
-		case enemy:
-			stateInTurn.first = stateInTurn.first + GrowthRate() + totalEnemyShipsAttacking - totalPlayerShipsAttacking;
-			if (stateInTurn.first < 0) {
-				stateInTurn.first *= -1;
-				stateInTurn.second = self;
-			}
-			break;
+		if (stateInTurn.second != neutral) {
+			stateInTurn.first += GrowthRate();
 		}
+		ResolveAttack(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
 	}
-	log.Log("Returning");
-	log.LogVar(stateInFuture[turns]);
 	return stateInFuture[turns];
+}
+
+void Planet::ResolveAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers) {
+	switch (curState.second) {
+	case neutral:
+		if (playerAttackers > curState.first && playerAttackers > enemyAttackers) {
+			curState.second = self;
+		}
+		if (enemyAttackers > curState.first && enemyAttackers > playerAttackers) {
+			curState.second = enemy;
+		}
+		if (curState.first > playerAttackers && curState.first > enemyAttackers) {
+			curState.second = neutral;
+		}
+		curState.first = std::max(curState.first, playerAttackers, enemyAttackers) - std::median(curState.first, playerAttackers, enemyAttackers);
+		return;
+	case self: 
+		curState.first = curState.first + playerAttackers - enemyAttackers;
+		if (curState.first < 0) {
+			curState.first *= -1;
+			curState.second = enemy;
+		}
+		return;
+	case enemy:
+		curState.first = curState.first + enemyAttackers - playerAttackers;
+		if (curState.first < 0) {
+			curState.first *= -1;
+			curState.second = self;
+		}
+		return;
+	}
 }
