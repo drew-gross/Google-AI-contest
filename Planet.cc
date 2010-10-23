@@ -6,6 +6,8 @@
 
 #include "PlanetWars.h"
 
+#include "DontNeedToAttackException.h"
+
 Planet::Planet(int planet_id,
 	Player owner,
 	int num_ships,
@@ -45,7 +47,7 @@ int Planet::OptimalAttackTime() const {
 	int leastShips = std::numeric_limits<int>::max();
 	for (int i = 0; i < PlanetWars::MaxDistance(); ++i) {
 		if (OwnerInTurns(i) == self) {
-			throw std::runtime_error("I do not need to attack this planet!");
+			throw DontNeedToAttackException(*this);
 		}
 		if (NumShipsInTurns(i) < leastShips) {
 			optimalAttackTime = i;

@@ -5,6 +5,8 @@
 #include "PlanetWars.h"
 #include "Logger.h"
 
+#include "DontNeedToAttackException.h"
+
 // The DoTurn function is where your code goes. The PlanetWars object contains
 // the state of the game, including information about all planets and fleets
 // that currently exist. Inside this function, you issue orders using the
@@ -17,15 +19,41 @@
 // http://www.ai-contest.com/resources.
 
 void DoTurn() {
-	for (;;) {
+	static Logger log("main.txt");
+	bool enoughShipsToAttack = true;
+
+	PlanetList needToAttack = PlanetWars::Instance().Planets();
+	while (enoughShipsToAttack) {
 		Planet* source = PlanetWars::Instance().PlanetsOwnedBy(self).Strongest();
-		Planet* dest = PlanetWars::Instance().PlanetsNotOwnedBy(self).WeakestFromPlanet(*source);
-		int shipsToSend = dest->NumShipsInTurns(PlanetWars::Distance(*source, *dest)) + 1;
-		Player ownerAtArrival = dest->OwnerInTurns(PlanetWars::Distance(*source, *dest));
-		if ((source != nullptr) && (dest != nullptr) && (source->NumShips() > shipsToSend) && (ownerAtArrival != self)) {
-			PlanetWars::Instance().IssueOrder(*source, *dest, shipsToSend);
-		} else {
-			break;
+		int shipsToSend = 0;
+		while (enoughShipsToAttack) {
+			PlanetList attackFromHere = needToAttack;
+			Planet* dest = attackFromHere.WeakestFromPlanet(*source);
+			int sourceDestSeparation = PlanetWars::Distance(*source, *dest);
+			shipsToSend = dest->NumShipsInTurns(sourceDestSeparation) + 1;
+
+
+			log.Log("Weakest of need to attack: ", dest->PlanetID());
+			if ((source != nullptr) && (dest != nullptr) && (source->NumShips() > shipsToSend)) {
+				try {
+					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
+						log.Log("Attacking planet: ", dest->PlanetID());
+						PlanetWars::Instance().IssueOrder(*source, *dest, shipsToSend);
+					} else {
+						log.Log("Removing planet that I don't need to attack: ", dest->PlanetID());
+						attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest));
+						log.Log("Planets that need attacking: ", attackFromHere.size());
+					}
+				} catch (DontNeedToAttackException e) {
+					log.Log("Removing planet that I don't need to attack: ", (&(e.getPlanet()))->PlanetID());
+					needToAttack.erase(std::remove(needToAttack.begin(), needToAttack.end(), &(e.getPlanet())));
+					attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), &(e.getPlanet())));
+					log.Log("Planets that need attacking: ", needToAttack.size());
+				}
+			} else {
+				log.Log("Not enough ships to attack");
+				enoughShipsToAttack = false;
+			}
 		}
 	}
 }
