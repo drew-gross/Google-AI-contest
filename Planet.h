@@ -4,6 +4,8 @@
 // Stores information about one planet. There is one instance of this class
 // for each planet on the map.
 #include <utility>
+#include <vector>
+
 #include "Utilities.h"
 
 class Planet {
@@ -55,6 +57,8 @@ public:
 	// Compares planets by their ID's.
 	bool operator==(Planet const & rhs);
 
+	void ClearFutureCache() const;
+
 private:
 	std::pair<int, Player> StateInTurns(unsigned int turns) const;
 
@@ -63,6 +67,8 @@ private:
 	int num_ships_;
 	int growth_rate_;
 	double x_, y_;
+
+	mutable std::vector<std::pair<int, Player>> stateInFuture;
 };
 
 #endif //PLANET_H_

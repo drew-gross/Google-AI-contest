@@ -1,6 +1,7 @@
 #include "Planet.h"
 
-#include "Utilities.h"
+#include <algorithm>
+
 #include "Logger.h"
 
 #include "PlanetWars.h"
@@ -71,10 +72,35 @@ bool Planet::operator==(Planet const & rhs) {
 	return PlanetID() == rhs.PlanetID();
 }
 
-std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
-	std::pair<int, Player> stateInTurn(NumShips(), Owner());
+void Planet::ClearFutureCache() const {
+	stateInFuture.resize(0);
+}
 
-	for (unsigned int turnInFuture = 0; turnInFuture <= turns; ++turnInFuture) {
+std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
+	static Logger log("state in future.txt");
+	if (stateInFuture.size() > turns) {
+		log.Log("Returning cached value");
+		log.LogVar(stateInFuture[turns]);
+		return stateInFuture[turns];
+	}
+	std::pair<int, Player> stateInTurn;
+	if (stateInFuture.size() == 0) {
+		log.Log("Initializing cache");
+		log.LogVar(NumShips());
+		log.LogVar(Owner());
+		stateInTurn = std::pair<int, Player>(NumShips(), Owner());
+		stateInFuture.push_back(stateInTurn);
+		log.LogVar(stateInFuture[0]);
+	}
+	unsigned int maxCachedTurnIndex = stateInFuture.size() - 1;
+	stateInTurn = stateInFuture.back();
+	stateInFuture.resize(turns + 1);
+	log.LogVar(stateInFuture.back());
+	
+	for (unsigned int turnInFuture = maxCachedTurnIndex; turnInFuture <= turns; ++turnInFuture) {
+		stateInFuture[turnInFuture] = stateInTurn;
+		log.LogVar(stateInTurn);
+
 		int totalEnemyShipsAttacking = 0;
 		int totalPlayerShipsAttacking = 0;
 		FleetList fleets = PlanetWars::Instance().Fleets();
@@ -121,5 +147,7 @@ std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 			break;
 		}
 	}
-	return stateInTurn;
+	log.Log("Returning");
+	log.LogVar(stateInFuture[turns]);
+	return stateInFuture[turns];
 }

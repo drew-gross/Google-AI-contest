@@ -29,4 +29,10 @@ namespace std {
 	}
 }
 
-#endif //UTISITIES_H_
+
+template<typename T, typename U> std::ostream& operator<<(std::ostream& out, const std::pair<T, U>& pair) {
+  out << "first: " << pair.first << ", second: " << pair.second;
+  return out;
+}
+
+#endif //UTILITIES_H_

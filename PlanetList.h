@@ -7,6 +7,7 @@
 class PlanetList : public std::vector<Planet*> {
 public:
 	Planet* Weakest();
+	Planet* WeakestFromPlanet(Planet const & p);
 	Planet* Strongest();
 	void DeleteAll();
 private:

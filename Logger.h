@@ -7,7 +7,7 @@
 
 #include "Utilities.h"
 
-#define LogVar(var) LogVarHelper(toString(var), var)
+#define LogVar(var) xLogVarHelper(toString(var), var)
 
 class Logger {
 public:
@@ -21,7 +21,7 @@ public:
 	void Log(T str1, U str2);
 
 	template<typename T, typename U>
-	void LogVarHelper(T str1, U str2);
+	void xLogVarHelper(T str1, U str2);
 	
 	void Enable();
 	void Disable();
@@ -46,7 +46,7 @@ void Logger::Log(T str1, U str2) {
 }
 
 template<typename T, typename U>
-void Logger::LogVarHelper(T varName, U var) {
+void Logger::xLogVarHelper(T varName, U var) {
 	if (enabled) {
 		out << "Value of " << varName << ": " << var << std::endl;
 	}

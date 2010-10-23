@@ -19,7 +19,7 @@
 void DoTurn() {
 	for (;;) {
 		Planet* source = PlanetWars::Instance().PlanetsOwnedBy(self).Strongest();
-		Planet* dest = PlanetWars::Instance().PlanetsNotOwnedBy(self).Weakest();
+		Planet* dest = PlanetWars::Instance().PlanetsNotOwnedBy(self).WeakestFromPlanet(*source);
 		int shipsToSend = dest->NumShipsInTurns(PlanetWars::Distance(*source, *dest)) + 1;
 		Player ownerAtArrival = dest->OwnerInTurns(PlanetWars::Distance(*source, *dest));
 		if ((source != nullptr) && (dest != nullptr) && (source->NumShips() > shipsToSend) && (ownerAtArrival != self)) {
