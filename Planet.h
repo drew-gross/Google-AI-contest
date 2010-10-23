@@ -62,6 +62,7 @@ public:
 private:
 	std::pair<int, Player> StateInTurns(unsigned int turns) const;
 	static void ResolveAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers);
+	static void ResolveNonNeutralAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers);
 
 	int planet_id_;
 	Player owner_;

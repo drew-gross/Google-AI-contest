@@ -115,8 +115,7 @@ std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 }
 
 void Planet::ResolveAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers) {
-	switch (curState.second) {
-	case neutral:
+	if (curState.second == neutral) {
 		if (playerAttackers > curState.first && playerAttackers > enemyAttackers) {
 			curState.second = self;
 		}
@@ -128,14 +127,20 @@ void Planet::ResolveAttack(std::pair<int, Player> & curState, int playerAttacker
 		}
 		curState.first = std::max(curState.first, playerAttackers, enemyAttackers) - std::median(curState.first, playerAttackers, enemyAttackers);
 		return;
-	case self: 
+	}
+	ResolveNonNeutralAttack(curState, playerAttackers, enemyAttackers);
+}
+
+void Planet::ResolveNonNeutralAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers) {
+	if (curState.second == self) {
 		curState.first = curState.first + playerAttackers - enemyAttackers;
 		if (curState.first < 0) {
 			curState.first *= -1;
 			curState.second = enemy;
 		}
 		return;
-	case enemy:
+	}
+	if (curState.second == enemy) {
 		curState.first = curState.first + enemyAttackers - playerAttackers;
 		if (curState.first < 0) {
 			curState.first *= -1;
@@ -143,4 +148,5 @@ void Planet::ResolveAttack(std::pair<int, Player> & curState, int playerAttacker
 		}
 		return;
 	}
+	throw std::logic_error("Attempted to resolve a non-neutral attack with a neutral planet involved!");
 }
