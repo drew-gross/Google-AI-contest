@@ -40,6 +40,21 @@ int Planet::NumShipsInTurns(unsigned int turns) const {
 	return StateInTurns(turns).first;
 }
 
+int Planet::OptimalAttackTime() const {
+	int optimalAttackTime = 0;
+	int leastShips = std::numeric_limits<int>::max();
+	for (int i = 0; i < PlanetWars::MaxDistance(); ++i) {
+		if (OwnerInTurns(i) == self) {
+			throw std::runtime_error("I do not need to attack this planet!");
+		}
+		if (NumShipsInTurns(i) < leastShips) {
+			optimalAttackTime = i;
+			leastShips = NumShipsInTurns(i);
+		}
+	}
+	return optimalAttackTime;
+}
+
 int Planet::GrowthRate() const {
 	return growth_rate_;
 }

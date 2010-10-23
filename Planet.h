@@ -36,6 +36,10 @@ public:
 	// The number of ships on the planet in the specified amount of turns.
 	int NumShipsInTurns(unsigned int turns) const;
 
+	// Calculates the time when the planet will have the lowest amount of enemy ships on it.
+	// Throws an exception if I will own the planet at some point
+	int OptimalAttackTime() const;
+
 	// Returns the growth rate of the planet. Unless the planet is neutral, the
 	// population of the planet grows by this amount each turn. The higher this
 	// number is, the faster this planet produces ships.

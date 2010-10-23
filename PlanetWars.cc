@@ -121,7 +121,7 @@ int PlanetWars::Distance(Planet const & source_planet, Planet const & destinatio
 	return (int)ceil(sqrt(dx * dx + dy * dy));
 }
 
-static int MaxDistance() {
+int PlanetWars::MaxDistance() {
 	static int max_planet_separation_ = -1;
 	if (max_planet_separation_ < 0) {
 		for (unsigned int i = 0; i < PlanetWars::Instance().Planets().size(); ++i) {
