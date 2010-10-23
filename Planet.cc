@@ -74,7 +74,7 @@ bool Planet::operator==(Planet const & rhs) {
 std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 	std::pair<int, Player> stateInTurn(NumShips(), Owner());
 
-	for (unsigned int turnInFuture = 0; turnInFuture < turns; ++turnInFuture) {
+	for (unsigned int turnInFuture = 0; turnInFuture <= turns; ++turnInFuture) {
 		int totalEnemyShipsAttacking = 0;
 		int totalPlayerShipsAttacking = 0;
 		FleetList fleets = PlanetWars::Instance().Fleets();

@@ -55,12 +55,7 @@ Fleet const * PlanetWars::GetFleet(int fleet_id) const {
 }
 
 PlanetList PlanetWars::Planets() const {
-	PlanetList r;
-	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		Planet* p = planets_[i];
-		r.push_back(p);
-	}
-	return r;
+	return planets_;
 }
 
 PlanetList PlanetWars::PlanetsOwnedBy(Player player) const {
@@ -86,12 +81,7 @@ PlanetList PlanetWars::PlanetsNotOwnedBy(Player player) const {
 }
 
 FleetList PlanetWars::Fleets() const {
-	FleetList r;
-	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		Fleet* f = fleets_[i];
-		r.push_back(f);
-	}
-	return r;
+	return fleets_;
 }
 
 FleetList PlanetWars::FleetsOwnedBy(Player player) const {
