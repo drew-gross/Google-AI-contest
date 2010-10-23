@@ -76,6 +76,9 @@ public:
 	// the two planets.
 	static int Distance(Planet const & source_planet, Planet const & destination_planet);
 
+	// Returns the maximum separation between planets.
+	static int MaxDistance();
+
 	// Sends an order to the game engine. The order is to send num_ships ships
 	// from source_planet to destination_planet. The order must be valid, or
 	// else your bot will get kicked and lose the game. For example, you must own

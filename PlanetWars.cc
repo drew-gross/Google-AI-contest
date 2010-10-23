@@ -121,6 +121,18 @@ int PlanetWars::Distance(Planet const & source_planet, Planet const & destinatio
 	return (int)ceil(sqrt(dx * dx + dy * dy));
 }
 
+static int MaxDistance() {
+	static int max_planet_separation_ = -1;
+	if (max_planet_separation_ < 0) {
+		for (unsigned int i = 0; i < PlanetWars::Instance().Planets().size(); ++i) {
+			for (unsigned int j = 0; j < PlanetWars::Instance().Planets().size(); ++j) {
+				max_planet_separation_ = std::max(max_planet_separation_, PlanetWars::Distance(*PlanetWars::Instance().Planets()[i],* PlanetWars::Instance().Planets()[j]));
+			}
+		}
+	}
+	return max_planet_separation_;
+}
+
 void PlanetWars::IssueOrder(Planet & source_planet, Planet const & destination_planet, int num_ships) {
 	if (source_planet.PlanetID() == destination_planet.PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
 	if (num_ships >= source_planet.NumShips()) throw std::runtime_error("Not Enough Ships to send");
