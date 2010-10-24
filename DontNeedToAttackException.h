@@ -10,7 +10,7 @@ public:
 	DontNeedToAttackException(Planet const * newPlanet);
 	~DontNeedToAttackException();
 
-	Planet const * getPlanet();
+	Planet const * GetPlanet();
 private:
 	Planet const * planet;
 };

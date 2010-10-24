@@ -7,6 +7,7 @@
 #include "PlanetWars.h"
 
 #include "DontNeedToAttackException.h"
+#include "DontNeedToDefendException.h"
 
 Planet::Planet(int planet_id,
 	Player owner,
@@ -55,6 +56,27 @@ int Planet::OptimalAttackTime() const {
 		}
 	}
 	return optimalAttackTime;
+}
+
+int Planet::OptimalDefenseTime() const {
+	int optimalDefenseTime = 0;
+	while (OwnerInTurns(optimalDefenseTime) != self) {
+		optimalDefenseTime++;
+		if (optimalDefenseTime > PlanetWars::MaxDistance()) {
+			throw DontNeedToDefendException(this);
+		}
+	}
+	while (OwnerInTurns(optimalDefenseTime) == self) {
+		optimalDefenseTime++;
+		if (optimalDefenseTime > PlanetWars::MaxDistance()) {
+			throw DontNeedToDefendException(this);
+		}
+	}
+	return optimalDefenseTime - 1;
+}
+
+bool Planet::NeedToDefend() const {
+	return (OwnerInTurns(PlanetWars::MaxDistance()) != self);
 }
 
 int Planet::GrowthRate() const {

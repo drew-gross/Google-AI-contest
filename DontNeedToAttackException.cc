@@ -6,6 +6,6 @@ DontNeedToAttackException::DontNeedToAttackException(Planet const * newPlanet) :
 DontNeedToAttackException::~DontNeedToAttackException() {
 }
 
-Planet const * DontNeedToAttackException::getPlanet() {
+Planet const * DontNeedToAttackException::GetPlanet() {
 	return planet;
 }

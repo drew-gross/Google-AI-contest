@@ -40,6 +40,13 @@ public:
 	// Throws an exception if I will own the planet at some point
 	int OptimalAttackTime() const;
 
+	// Calculates the turn immediately before when the planet will get taken over by the enemy.
+	int OptimalDefenseTime() const;
+
+	// Determines whether the planet needs to be defended. Returns true if the 
+	// enemy will eventually own the planet given the current game state
+	bool NeedToDefend() const;
+
 	// Returns the growth rate of the planet. Unless the planet is neutral, the
 	// population of the planet grows by this amount each turn. The higher this
 	// number is, the faster this planet produces ships.

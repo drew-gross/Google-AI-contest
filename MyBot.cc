@@ -6,6 +6,7 @@
 #include "Logger.h"
 
 #include "DontNeedToAttackException.h"
+#include "DontNeedToDefendException.h"
 
 // The DoTurn function is where your code goes. The PlanetWars object contains
 // the state of the game, including information about all planets and fleets
@@ -19,20 +20,50 @@
 // http://www.ai-contest.com/resources.
 
 void DoTurn() {
-	static Logger log("main.txt");
-	bool enoughShipsToAttack = true;
+	//Defending phase
+	PlanetList needToDefend = PlanetWars::Instance().Planets();
+	for (unsigned int i = 0; i < needToDefend.size(); ++i) {
+		try {
+			if (needToDefend[i]->NeedToDefend()) {
+				int optimalDefenseTime = needToDefend[i]->OptimalDefenseTime();
+				PlanetList defendersAtOptimalTime;
+				PlanetList defendersAfterOptimalTime;
+				PlanetList defendersBeforeOptimalTime;
 
+				PlanetList myPlanets = PlanetWars::Instance().PlanetsOwnedBy(self);
+				for (unsigned int j = 0; j < myPlanets.size(); ++j) {
+					int defenderDefendeeDistance = PlanetWars::Distance(*myPlanets[j], *needToDefend[i]);
+					if (defenderDefendeeDistance == optimalDefenseTime) {
+						defendersAtOptimalTime.push_back(myPlanets[j]);
+					} else if (defenderDefendeeDistance < optimalDefenseTime) {
+						defendersBeforeOptimalTime.push_back(myPlanets[j]);
+					} else if (defenderDefendeeDistance > optimalDefenseTime) {
+						defendersAfterOptimalTime.push_back(myPlanets[j]);
+					}
+				}
+				for (unsigned int j = 0; j < defendersAtOptimalTime.size(); ++j) {
+					if (!defendersAtOptimalTime[j]->NeedToDefend() && needToDefend[i]->NeedToDefend()) {
+						PlanetWars::Instance().IssueOrder(*defendersAtOptimalTime[j], *needToDefend[i], std::max(defendersAtOptimalTime[j]->NumShips() - 1, needToDefend[i]->NumShipsInTurns(optimalDefenseTime +1)));
+					}
+				}
+			}
+		} catch (DontNeedToDefendException e) {
+			//simply ignore, the for loop will continue to the next planet that needs defense anyway.
+		}
+	}
+
+	// Attacking phase
+	bool enoughShipsToAttack = true;
 	PlanetList needToAttack = PlanetWars::Instance().Planets();
 	while (enoughShipsToAttack) {
 		Planet* source = PlanetWars::Instance().PlanetsOwnedBy(self).Strongest();
 		int shipsToSend = 0;
-		
+
 		PlanetList attackFromHere = needToAttack;
 		while (enoughShipsToAttack) {
 			Planet* dest = attackFromHere.WeakestFromPlanet(*source);
 			int sourceDestSeparation = PlanetWars::Distance(*source, *dest);
 			shipsToSend = dest->NumShipsInTurns(sourceDestSeparation) + 1;
-
 
 			if ((source != nullptr) && (dest != nullptr) && (source->NumShips() > shipsToSend)) {
 				try {
@@ -40,16 +71,10 @@ void DoTurn() {
 						PlanetWars::Instance().IssueOrder(*source, *dest, shipsToSend);
 					} else {
 						attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest));
-						log.Log("Removing from attackFromHere (else): ", dest->PlanetID());
-						log.LogVar(attackFromHere.size());
-						log.LogVar(dest);
-						log.LogVar(attackFromHere);
 					}
 				} catch (DontNeedToAttackException e) {
-					log.Log("Removing from attackFromHere (catch): ", dest->PlanetID());
-					log.LogVar(attackFromHere.size());
-					needToAttack.erase(std::remove(needToAttack.begin(), needToAttack.end(), e.getPlanet()));
-					attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), e.getPlanet()));
+					needToAttack.erase(std::remove(needToAttack.begin(), needToAttack.end(), e.GetPlanet()));
+					attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), e.GetPlanet()));
 				}
 			} else {
 				enoughShipsToAttack = false;
