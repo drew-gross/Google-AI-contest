@@ -7,6 +7,9 @@
 #include <vector>
 
 #include "Utilities.h"
+#include "Player.h"
+
+class PlanetList;
 
 class Planet {
 public:
@@ -47,6 +50,9 @@ public:
 	// enemy will eventually own the planet given the current game state
 	bool NeedToDefend() const;
 
+	// Takes the list of planets specified and requests defense from them until the planet no longer needs defense
+	void SeekDefenseFrom(PlanetList &defendersAtOptimalTime, int optimalDefenseTime);
+
 	// Returns the growth rate of the planet. Unless the planet is neutral, the
 	// population of the planet grows by this amount each turn. The higher this
 	// number is, the faster this planet produces ships.
@@ -73,6 +79,7 @@ public:
 private:
 	std::pair<int, Player> StateInTurns(unsigned int turns) const;
 	static void ResolveAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers);
+	static void ResolveNeutralAttack( std::pair<int, Player> &curState, int playerAttackers, int enemyAttackers );
 	static void ResolveNonNeutralAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers);
 
 	int planet_id_;
@@ -81,7 +88,7 @@ private:
 	int growth_rate_;
 	double x_, y_;
 
-	mutable std::vector<std::pair<int, Player>> stateInFuture;
+	mutable std::vector<std::pair<int, Player> > stateInFuture;
 };
 
 #endif //PLANET_H_

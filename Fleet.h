@@ -8,7 +8,7 @@
 class Fleet {
 public:
 	// Initializes a fleet.
-	Fleet(int owner,
+	Fleet(Player owner,
 		int num_ships,
 		int source_planet,
 		int destination_planet,
@@ -18,7 +18,7 @@ public:
 	// Returns the playerID of the owner of the fleet. Your player ID is always
 	// 1. So if the owner is 1, you own the fleet. If the owner is 2 or some
 	// other number, then this fleet belongs to your enemy.
-	int Owner() const;
+	Player Owner() const;
 
 	// Returns the number of ships that comprise this fleet.
 	int NumShips() const;
@@ -42,7 +42,7 @@ public:
 	bool ArrivesInTurns(unsigned int turns) const;
 
 private:
-	int owner_;
+	Player owner_;
 	int num_ships_;
 	int source_planet_;
 	int destination_planet_;

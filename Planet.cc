@@ -5,22 +5,18 @@
 #include "Logger.h"
 
 #include "PlanetWars.h"
+#include "PlanetList.h"
 
 #include "DontNeedToAttackException.h"
 #include "DontNeedToDefendException.h"
+#include "Player.h"
 
 Planet::Planet(int planet_id,
-	Player owner,
+	Player ownerNum,
 	int num_ships,
 	int growth_rate,
 	double x,
-	double y) {
-		planet_id_ = planet_id;
-		owner_ = owner;
-		num_ships_ = num_ships;
-		growth_rate_ = growth_rate;
-		x_ = x;
-		y_ = y;
+	double y) : planet_id_(planet_id) , owner_(ownerNum) , num_ships_(num_ships) , growth_rate_(growth_rate) , x_(x) , y_(y) {
 }
 
 int Planet::PlanetID() const {
@@ -47,7 +43,7 @@ int Planet::OptimalAttackTime() const {
 	int optimalAttackTime = 0;
 	int leastShips = std::numeric_limits<int>::max();
 	for (int i = 0; i < PlanetWars::MaxDistance(); ++i) {
-		if (OwnerInTurns(i) == self) {
+		if (OwnerInTurns(i) == Player::self()) {
 			throw DontNeedToAttackException(this);
 		}
 		if (NumShipsInTurns(i) < leastShips) {
@@ -60,13 +56,13 @@ int Planet::OptimalAttackTime() const {
 
 int Planet::OptimalDefenseTime() const {
 	int optimalDefenseTime = 0;
-	while (OwnerInTurns(optimalDefenseTime) != self) {
+	while (OwnerInTurns(optimalDefenseTime) != Player::self()) {
 		optimalDefenseTime++;
 		if (optimalDefenseTime > PlanetWars::MaxDistance()) {
 			throw DontNeedToDefendException(this);
 		}
 	}
-	while (OwnerInTurns(optimalDefenseTime) == self) {
+	while (OwnerInTurns(optimalDefenseTime) == Player::self()) {
 		optimalDefenseTime++;
 		if (optimalDefenseTime > PlanetWars::MaxDistance()) {
 			throw DontNeedToDefendException(this);
@@ -76,7 +72,16 @@ int Planet::OptimalDefenseTime() const {
 }
 
 bool Planet::NeedToDefend() const {
-	return (OwnerInTurns(PlanetWars::MaxDistance()) != self);
+	return (OwnerInTurns(PlanetWars::MaxDistance()) != Player::self());
+}
+
+
+void Planet::SeekDefenseFrom( PlanetList &defendersAtOptimalTime, int optimalDefenseTime) {
+	for (unsigned int j = 0; j < defendersAtOptimalTime.size(); ++j) {
+		if (!defendersAtOptimalTime[j]->NeedToDefend() && NeedToDefend()) {
+			PlanetWars::Instance().IssueOrder(*defendersAtOptimalTime[j], *this, std::max(defendersAtOptimalTime[j]->NumShips() - 1, NumShipsInTurns(optimalDefenseTime + 1)));
+		}
+	}
 }
 
 int Planet::GrowthRate() const {
@@ -137,15 +142,15 @@ std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 		for (unsigned int i = 0; i < fleets.size(); ++i) {
 			Fleet* curFleet = fleets[i];
 			if (curFleet->ArrivesInTurns(turnInFuture) && (curFleet->DestinationPlanet() == this->PlanetID())) {
-				if (curFleet->Owner() == self) {
+				if (curFleet->Owner() == Player::self()) {
 					totalPlayerShipsAttacking += curFleet->NumShips();
 				}
-				if (curFleet->Owner() == enemy) {
+				if (curFleet->Owner() == Player::enemy()) {
 					totalEnemyShipsAttacking += curFleet->NumShips();
 				}
 			}
 		}
-		if (stateInTurn.second != neutral) {
+		if (stateInTurn.second != Player::neutral()) {
 			stateInTurn.first += GrowthRate();
 		}
 		ResolveAttack(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
@@ -154,38 +159,32 @@ std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 }
 
 void Planet::ResolveAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers) {
-	if (curState.second == neutral) {
-		if (playerAttackers > curState.first && playerAttackers > enemyAttackers) {
-			curState.second = self;
-		}
-		if (enemyAttackers > curState.first && enemyAttackers > playerAttackers) {
-			curState.second = enemy;
-		}
-		if (curState.first > playerAttackers && curState.first > enemyAttackers) {
-			curState.second = neutral;
-		}
-		curState.first = std::max(curState.first, playerAttackers, enemyAttackers) - std::median(curState.first, playerAttackers, enemyAttackers);
-		return;
+	if (curState.second == Player::neutral()) {
+		ResolveNeutralAttack(curState, playerAttackers, enemyAttackers);
+	} else {
+		ResolveNonNeutralAttack(curState, playerAttackers, enemyAttackers);
 	}
-	ResolveNonNeutralAttack(curState, playerAttackers, enemyAttackers);
 }
 
-void Planet::ResolveNonNeutralAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers) {
-	if (curState.second == self) {
-		curState.first = curState.first + playerAttackers - enemyAttackers;
-		if (curState.first < 0) {
-			curState.first *= -1;
-			curState.second = enemy;
-		}
-		return;
+void Planet::ResolveNeutralAttack(std::pair<int, Player> &curState, int playerAttackers,  int enemyAttackers )
+{
+	if (playerAttackers > curState.first && playerAttackers > enemyAttackers) {
+		curState.second = Player::self();
 	}
-	if (curState.second == enemy) {
-		curState.first = curState.first + enemyAttackers - playerAttackers;
-		if (curState.first < 0) {
-			curState.first *= -1;
-			curState.second = self;
-		}
-		return;
+	if (enemyAttackers > curState.first && enemyAttackers > playerAttackers) {
+		curState.second = Player::enemy();
 	}
-	throw std::logic_error("Attempted to resolve a non-neutral attack with a neutral planet involved!");
+	if (curState.first > playerAttackers && curState.first > enemyAttackers) {
+		curState.second = Player::neutral();
+	}
+	curState.first = std::max(curState.first, playerAttackers, enemyAttackers) - std::median(curState.first, playerAttackers, enemyAttackers);
+}
+
+void Planet::ResolveNonNeutralAttack(std::pair<int, Player> & curState, int defenderShips, int attackerShips) {
+	curState.first = curState.first + defenderShips - attackerShips;
+	if (curState.first < 0) {
+		curState.first *= -1;
+		curState.second = curState.second.Opponent();
+	}
+	return;
 }

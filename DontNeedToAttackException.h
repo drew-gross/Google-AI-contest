@@ -8,7 +8,7 @@
 class DontNeedToAttackException : public std::exception {
 public:
 	DontNeedToAttackException(Planet const * newPlanet);
-	~DontNeedToAttackException();
+	~DontNeedToAttackException() throw();
 
 	Planet const * GetPlanet();
 private:

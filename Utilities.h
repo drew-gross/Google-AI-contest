@@ -3,16 +3,12 @@
 
 #include <algorithm>
 #include <vector>
+#include <fstream>
+#include <iostream>
 
 #ifndef nullptr
 #define nullptr 0
 #endif
-
-enum Player {
-	 neutral = 0,
-	 self = 1,
-	 enemy = 2
-};
 
 #define toString(x) #x
 

@@ -8,7 +8,7 @@
 class DontNeedToDefendException : public std::exception {
 public:
 	DontNeedToDefendException(Planet const * newPlanet);
-	~DontNeedToDefendException();
+	~DontNeedToDefendException() throw();
 
 	Planet const * GetPlanet();
 private:

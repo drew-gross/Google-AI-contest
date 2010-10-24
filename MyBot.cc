@@ -8,19 +8,8 @@
 #include "DontNeedToAttackException.h"
 #include "DontNeedToDefendException.h"
 
-// The DoTurn function is where your code goes. The PlanetWars object contains
-// the state of the game, including information about all planets and fleets
-// that currently exist. Inside this function, you issue orders using the
-// pw.IssueOrder() function. For example, to send 10 ships from planet 3 to
-// planet 8, you would say pw.IssueOrder(3, 8, 10).
-//
-// There is already a basic strategy in place here. You can use it as a
-// starting point, or you can throw it out entirely and replace it with your
-// own. Check out the tutorials and articles on the contest website at
-// http://www.ai-contest.com/resources.
-
-void DoTurn() {
-	//Defending phase
+void DefensePhase() 
+{
 	PlanetList needToDefend = PlanetWars::Instance().Planets();
 	for (unsigned int i = 0; i < needToDefend.size(); ++i) {
 		try {
@@ -30,7 +19,7 @@ void DoTurn() {
 				PlanetList defendersAfterOptimalTime;
 				PlanetList defendersBeforeOptimalTime;
 
-				PlanetList myPlanets = PlanetWars::Instance().PlanetsOwnedBy(self);
+				PlanetList myPlanets = PlanetWars::Instance().PlanetsOwnedBy(Player::self());
 				for (unsigned int j = 0; j < myPlanets.size(); ++j) {
 					int defenderDefendeeDistance = PlanetWars::Distance(*myPlanets[j], *needToDefend[i]);
 					if (defenderDefendeeDistance == optimalDefenseTime) {
@@ -41,22 +30,23 @@ void DoTurn() {
 						defendersAfterOptimalTime.push_back(myPlanets[j]);
 					}
 				}
-				for (unsigned int j = 0; j < defendersAtOptimalTime.size(); ++j) {
-					if (!defendersAtOptimalTime[j]->NeedToDefend() && needToDefend[i]->NeedToDefend()) {
-						PlanetWars::Instance().IssueOrder(*defendersAtOptimalTime[j], *needToDefend[i], std::max(defendersAtOptimalTime[j]->NumShips() - 1, needToDefend[i]->NumShipsInTurns(optimalDefenseTime +1)));
-					}
-				}
+				needToDefend[i]->SeekDefenseFrom(defendersAtOptimalTime, optimalDefenseTime);
+				needToDefend[i]->SeekDefenseFrom(defendersBeforeOptimalTime, optimalDefenseTime);
+				needToDefend[i]->SeekDefenseFrom(defendersAfterOptimalTime, optimalDefenseTime);
 			}
 		} catch (DontNeedToDefendException e) {
 			//simply ignore, the for loop will continue to the next planet that needs defense anyway.
 		}
 	}
+}
 
-	// Attacking phase
+
+void AttackPhase() 
+{
 	bool enoughShipsToAttack = true;
 	PlanetList needToAttack = PlanetWars::Instance().Planets();
 	while (enoughShipsToAttack) {
-		Planet* source = PlanetWars::Instance().PlanetsOwnedBy(self).Strongest();
+		Planet* source = PlanetWars::Instance().PlanetsOwnedBy(Player::self()).Strongest();
 		int shipsToSend = 0;
 
 		PlanetList attackFromHere = needToAttack;
@@ -81,6 +71,24 @@ void DoTurn() {
 			}
 		}
 	}
+}
+
+
+
+// The DoTurn function is where your code goes. The PlanetWars object contains
+// the state of the game, including information about all planets and fleets
+// that currently exist. Inside this function, you issue orders using the
+// pw.IssueOrder() function. For example, to send 10 ships from planet 3 to
+// planet 8, you would say pw.IssueOrder(3, 8, 10).
+//
+// There is already a basic strategy in place here. You can use it as a
+// starting point, or you can throw it out entirely and replace it with your
+// own. Check out the tutorials and articles on the contest website at
+// http://www.ai-contest.com/resources.
+
+void DoTurn() {
+	DefensePhase();
+	AttackPhase();
 }
 
 // This is just the main game loop that takes care of communicating with the

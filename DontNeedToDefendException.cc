@@ -3,7 +3,7 @@
 DontNeedToDefendException::DontNeedToDefendException(Planet const * newPlanet) : planet(newPlanet) {
 }
 
-DontNeedToDefendException::~DontNeedToDefendException() {
+DontNeedToDefendException::~DontNeedToDefendException() throw() {
 }
 
 Planet const * DontNeedToDefendException::GetPlanet() {
