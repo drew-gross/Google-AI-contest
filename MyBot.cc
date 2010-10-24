@@ -26,32 +26,32 @@ void DoTurn() {
 	while (enoughShipsToAttack) {
 		Planet* source = PlanetWars::Instance().PlanetsOwnedBy(self).Strongest();
 		int shipsToSend = 0;
+		
+		PlanetList attackFromHere = needToAttack;
 		while (enoughShipsToAttack) {
-			PlanetList attackFromHere = needToAttack;
 			Planet* dest = attackFromHere.WeakestFromPlanet(*source);
 			int sourceDestSeparation = PlanetWars::Distance(*source, *dest);
 			shipsToSend = dest->NumShipsInTurns(sourceDestSeparation) + 1;
 
 
-			log.Log("Weakest of need to attack: ", dest->PlanetID());
 			if ((source != nullptr) && (dest != nullptr) && (source->NumShips() > shipsToSend)) {
 				try {
 					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
-						log.Log("Attacking planet: ", dest->PlanetID());
 						PlanetWars::Instance().IssueOrder(*source, *dest, shipsToSend);
 					} else {
-						log.Log("Removing planet that I don't need to attack: ", dest->PlanetID());
 						attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest));
-						log.Log("Planets that need attacking: ", attackFromHere.size());
+						log.Log("Removing from attackFromHere (else): ", dest->PlanetID());
+						log.LogVar(attackFromHere.size());
+						log.LogVar(dest);
+						log.LogVar(attackFromHere);
 					}
 				} catch (DontNeedToAttackException e) {
-					log.Log("Removing planet that I don't need to attack: ", (&(e.getPlanet()))->PlanetID());
-					needToAttack.erase(std::remove(needToAttack.begin(), needToAttack.end(), &(e.getPlanet())));
-					attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), &(e.getPlanet())));
-					log.Log("Planets that need attacking: ", needToAttack.size());
+					log.Log("Removing from attackFromHere (catch): ", dest->PlanetID());
+					log.LogVar(attackFromHere.size());
+					needToAttack.erase(std::remove(needToAttack.begin(), needToAttack.end(), e.getPlanet()));
+					attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), e.getPlanet()));
 				}
 			} else {
-				log.Log("Not enough ships to attack");
 				enoughShipsToAttack = false;
 			}
 		}

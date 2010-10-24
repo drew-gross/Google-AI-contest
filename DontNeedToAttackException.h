@@ -7,12 +7,12 @@
 
 class DontNeedToAttackException : public std::exception {
 public:
-	DontNeedToAttackException(Planet const & newPlanet);
+	DontNeedToAttackException(Planet const * newPlanet);
 	~DontNeedToAttackException();
 
-	Planet const & getPlanet();
+	Planet const * getPlanet();
 private:
-	Planet const & planet;
+	Planet const * planet;
 };
 
 #endif //DONT_NEED_TO_ATTACK_EXCPETION

@@ -47,7 +47,7 @@ int Planet::OptimalAttackTime() const {
 	int leastShips = std::numeric_limits<int>::max();
 	for (int i = 0; i < PlanetWars::MaxDistance(); ++i) {
 		if (OwnerInTurns(i) == self) {
-			throw DontNeedToAttackException(*this);
+			throw DontNeedToAttackException(this);
 		}
 		if (NumShipsInTurns(i) < leastShips) {
 			optimalAttackTime = i;
