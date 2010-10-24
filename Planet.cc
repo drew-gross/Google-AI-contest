@@ -117,7 +117,7 @@ bool Planet::operator==(Planet const & rhs) {
 }
 
 void Planet::ClearFutureCache() const {
-	stateInFuture.resize(0);
+	stateInFuture.clear();
 }
 
 std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
@@ -150,10 +150,7 @@ std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 				}
 			}
 		}
-		if (stateInTurn.second != Player::neutral()) {
-			stateInTurn.first += GrowthRate();
-		}
-		ResolveAttack(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
+		NextState(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
 	}
 	return stateInFuture[turns];
 }
@@ -187,4 +184,12 @@ void Planet::ResolveNonNeutralAttack(std::pair<int, Player> & curState, int defe
 		curState.second = curState.second.Opponent();
 	}
 	return;
+}
+
+void Planet::NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShipsAttacking, int totalEnemyShipsAttacking ) const
+{
+	if (stateInTurn.second != Player::neutral()) {
+		stateInTurn.first += GrowthRate();
+	}
+	ResolveAttack(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
 }

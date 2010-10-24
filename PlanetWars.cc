@@ -137,9 +137,11 @@ void PlanetWars::IssueOrder(Planet & source_planet, Planet const & destination_p
 	if (source_planet.PlanetID() == destination_planet.PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
 	if (num_ships >= source_planet.NumShips()) throw std::runtime_error("Not Enough Ships to send");
 	if (source_planet.Owner() != Player::self()) throw std::runtime_error("You don't own that planet");
+
 	AddFleet(new Fleet(Player::self(), num_ships, source_planet.PlanetID(), destination_planet.PlanetID(), Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
 	destination_planet.ClearFutureCache();
 	source_planet.RemoveShips(num_ships);
+
 	std::cout << source_planet.PlanetID() << " " << destination_planet.PlanetID() << " " << num_ships << std::endl;
 	std::cout.flush();
 }
