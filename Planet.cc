@@ -141,7 +141,7 @@ std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 		FleetList fleets = PlanetWars::Instance().Fleets();
 		for (unsigned int i = 0; i < fleets.size(); ++i) {
 			Fleet* curFleet = fleets[i];
-			if (curFleet->ArrivesInTurns(turnInFuture) && (curFleet->DestinationPlanet() == this->PlanetID())) {
+			if (curFleet->ArrivesInTurns(turnInFuture) && (curFleet->DestinationPlanet() == this)) {
 				if (curFleet->Owner() == Player::self()) {
 					totalPlayerShipsAttacking += curFleet->NumShips();
 				}
@@ -192,4 +192,26 @@ void Planet::NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShip
 		stateInTurn.first += GrowthRate();
 	}
 	ResolveAttack(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
+}
+
+int Planet::NeutralROI( int turns )
+{
+	return ((PlanetWars::MaxTurns() - turns) * GrowthRate()) - NumShipsInTurns(turns);
+}
+
+int Planet::NumShipsAvailable()
+{
+	if (NeedToDefend() == true) {
+		return 0;
+	}
+	FleetList fleets = PlanetWars::Instance().Fleets();
+
+	int shipsAvailable = NumShips();
+	for (unsigned int i = 0; i < fleets.size(); ++i)
+	{
+		if (fleets[i]->DestinationPlanet() == this) {
+			shipsAvailable = std::min(shipsAvailable, NumShipsInTurns(fleets[i]->TurnsRemaining()));
+		}
+	}
+	return std::min(shipsAvailable, NumShips());
 }

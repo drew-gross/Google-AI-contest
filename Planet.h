@@ -36,6 +36,9 @@ public:
 	// The number of ships on the planet. This is the "population" of the planet.
 	int NumShips() const;
 
+	// The number of ships that can be sent without causing loss of control of the planet.
+	int NumShipsAvailable();
+
 	// The number of ships on the planet in the specified amount of turns.
 	int NumShipsInTurns(unsigned int turns) const;
 
@@ -57,6 +60,10 @@ public:
 	// population of the planet grows by this amount each turn. The higher this
 	// number is, the faster this planet produces ships.
 	int GrowthRate() const;
+
+	// Returns the return over the course of the game of taking a planet over
+	// in the specified amount of turns
+	int NeutralROI(int turns);
 
 	// The position of the planet in space.
 	double X() const;

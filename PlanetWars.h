@@ -28,11 +28,9 @@ public:
 	// The PlanetWars singleton.
 	static PlanetWars& Instance();
 
-protected:
-	// Initializes the game state given a string containing game state data.
-	PlanetWars(const std::string& game_state);
+	// Runs the AI, completing a turn
+	void DoTurn();
 
-public:
 	// Returns the number of planets on the map. Planets are numbered starting
 	// with 0.
 	int NumPlanets() const;
@@ -79,6 +77,15 @@ public:
 	// Returns the maximum separation between planets.
 	static int MaxDistance();
 
+	// Returns the total number of turns in a game
+	static int MaxTurns();
+
+	// Returns the number of turns that have gone by
+	int Turns();
+
+	// Returns the number of turns remaining in the game
+	int TurnsRemaining();
+
 	// Sends an order to the game engine. The order is to send num_ships ships
 	// from source_planet to destination_planet. The order must be valid, or
 	// else your bot will get kicked and lose the game. For example, you must own
@@ -98,13 +105,29 @@ public:
 	// issuing orders for now.
 	void FinishTurn() const;
 
+	// Test all my functions to make sure they work.
+	static void UnitTest();
+
+protected:
+	// Initializes the game state given a string containing game state data.
+	PlanetWars(const std::string& game_state);
+
 private:
 	// The PlanetWars Singleton
 	static PlanetWars* instance_;
 
+	// The current game turn
+	int turn;
+
 	// Parses a game state from a string. On success, returns 1. On failure,
 	// returns 0.
 	int ParseGameState(const std::string& s);
+
+	// The phase in which planets I own are defended
+	void DefensePhase();
+
+	// The phase in which I attack planets
+	void AttackPhase();
 
 	// Store all the planets and fleets. OMG we wouldn't wanna lose all the
 	// planets and fleets, would we!?
@@ -113,6 +136,8 @@ private:
 
 	// Output log for sending orders to the engine.
 	static Logger orders;
+	// Output log for sending orders to the engine.
+	static Logger uncaughtExceptions;
 };
 
 #endif
