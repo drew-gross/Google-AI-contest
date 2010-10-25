@@ -89,8 +89,10 @@ public:
 
 private:
 	std::pair<int, Player> StateInTurns(unsigned int turns) const;
-	void NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShipsAttacking, int totalEnemyShipsAttacking ) const;
-	static void ResolveAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers);
+
+	static void NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate );
+	static void AdvancementPhase( std::pair<int, Player> &stateInTurn, int growthRate );
+	static void ArrivalPhase(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers);
 	static void ResolveNeutralAttack( std::pair<int, Player> &curState, int playerAttackers, int enemyAttackers );
 	static void ResolveNonNeutralAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers);
 

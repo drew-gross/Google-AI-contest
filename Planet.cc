@@ -155,12 +155,12 @@ std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 
 		int totalEnemyShipsAttacking = ShipsArrivingInTurns(Player::enemy(), turnInFuture);
 		int totalPlayerShipsAttacking = ShipsArrivingInTurns(Player::self(), turnInFuture);
-		NextState(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
+		NextState(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking, GrowthRate());
 	}
 	return stateInFuture[turns];
 }
 
-void Planet::ResolveAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers) {
+void Planet::ArrivalPhase(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers) {
 	if (curState.second == Player::neutral()) {
 		ResolveNeutralAttack(curState, playerAttackers, enemyAttackers);
 	} else {
@@ -191,12 +191,10 @@ void Planet::ResolveNonNeutralAttack(std::pair<int, Player> & curState, int defe
 	return;
 }
 
-void Planet::NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShipsAttacking, int totalEnemyShipsAttacking ) const
+void Planet::NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate )
 {
-	if (stateInTurn.second != Player::neutral()) {
-		stateInTurn.first += GrowthRate();
-	}
-	ResolveAttack(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
+	AdvancementPhase(stateInTurn, growthRate);
+	ArrivalPhase(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
 }
 
 int Planet::NeutralROI( int turns )
@@ -219,4 +217,11 @@ int Planet::NumShipsAvailable()
 		}
 	}
 	return std::min(shipsAvailable, NumShips() - 1);
+}
+
+void Planet::AdvancementPhase( std::pair<int, Player> &stateInTurn, int growthRate )
+{
+	if (stateInTurn.second != Player::neutral()) {
+		stateInTurn.first += growthRate;
+	}
 }
