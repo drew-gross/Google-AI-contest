@@ -76,10 +76,11 @@ bool Planet::NeedToDefend() const {
 }
 
 
-void Planet::SeekDefenseFrom( PlanetList &defendersAtOptimalTime, int optimalDefenseTime) {
-	for (unsigned int j = 0; j < defendersAtOptimalTime.size(); ++j) {
-		if (!defendersAtOptimalTime[j]->NeedToDefend() && NeedToDefend()) {
-			PlanetWars::Instance().IssueOrder(*defendersAtOptimalTime[j], *this, std::max(defendersAtOptimalTime[j]->NumShips() - 1, NumShipsInTurns(optimalDefenseTime + 1)));
+void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
+	for (unsigned int j = 0; j < defenders.size(); ++j) {
+		Planet * curDefender = defenders[j];
+		if (!curDefender->NeedToDefend() && NeedToDefend() && curDefender->NumShipsAvailable() > 0) {
+			PlanetWars::Instance().IssueOrder(*curDefender, *this, std::min(NumShipsInTurns(optimalDefenseTime + 1), curDefender->NumShipsAvailable()));
 		}
 	}
 }
@@ -213,5 +214,5 @@ int Planet::NumShipsAvailable()
 			shipsAvailable = std::min(shipsAvailable, NumShipsInTurns(fleets[i]->TurnsRemaining()));
 		}
 	}
-	return std::min(shipsAvailable, NumShips());
+	return std::min(shipsAvailable, NumShips() - 1);
 }

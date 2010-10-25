@@ -15,7 +15,7 @@
 #include <stdexcept>
 
 PlanetWars* PlanetWars::instance_ = nullptr;
-Logger PlanetWars::orders("orders.txt");
+Logger PlanetWars::generalPurpose("orders.txt");
 Logger PlanetWars::uncaughtExceptions("exceptions.txt");
 
 void PlanetWars::Initialize(const std::string& game_state) {
@@ -270,7 +270,7 @@ void PlanetWars::DoTurn() {
 
 void PlanetWars::DefensePhase()
 {
-	PlanetList needToDefend = PlanetWars::Instance().Planets();
+	PlanetList needToDefend = Planets();
 	for (unsigned int i = 0; i < needToDefend.size(); ++i) {
 		try {
 			if (needToDefend[i]->NeedToDefend()) {
@@ -279,9 +279,9 @@ void PlanetWars::DefensePhase()
 				PlanetList defendersAfterOptimalTime;
 				PlanetList defendersBeforeOptimalTime;
 
-				PlanetList myPlanets = PlanetWars::Instance().PlanetsOwnedBy(Player::self());
+				PlanetList myPlanets = PlanetsOwnedBy(Player::self());
 				for (unsigned int j = 0; j < myPlanets.size(); ++j) {
-					int defenderDefendeeDistance = PlanetWars::Distance(*myPlanets[j], *needToDefend[i]);
+					int defenderDefendeeDistance = Distance(*myPlanets[j], *needToDefend[i]);
 					if (defenderDefendeeDistance == optimalDefenseTime) {
 						defendersAtOptimalTime.push_back(myPlanets[j]);
 					} else if (defenderDefendeeDistance < optimalDefenseTime) {
@@ -303,21 +303,25 @@ void PlanetWars::DefensePhase()
 void PlanetWars::AttackPhase()
 {
 	bool enoughShipsToAttack = true;
-	PlanetList needToAttack = PlanetWars::Instance().Planets();
+	PlanetList needToAttack = Planets();
 	while (enoughShipsToAttack) {
-		Planet* source = PlanetWars::Instance().PlanetsOwnedBy(Player::self()).Strongest();
+		Planet* source = PlanetsOwnedBy(Player::self()).Strongest();
 		int shipsToSend = 0;
 
 		PlanetList attackFromHere = needToAttack;
 		while (enoughShipsToAttack) {
 			Planet* dest = attackFromHere.WeakestFromPlanet(*source);
-			int sourceDestSeparation = PlanetWars::Distance(*source, *dest);
+			int sourceDestSeparation = Distance(*source, *dest);
 			shipsToSend = dest->NumShipsInTurns(sourceDestSeparation) + 1;
 
-			if ((source != nullptr) && (dest != nullptr) && (source->NumShips() > shipsToSend)) {
+			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() > shipsToSend)) {
 				try {
 					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
-						PlanetWars::Instance().IssueOrder(*source, *dest, std::min(shipsToSend, source->NumShipsAvailable()));
+						generalPurpose.Log("Issuing Order");
+						generalPurpose.LogVar(source->PlanetID());
+						generalPurpose.LogVar(dest->PlanetID());
+						generalPurpose.LogVar(std::min(shipsToSend, source->NumShipsAvailable()));
+						IssueOrder(*source, *dest, std::min(shipsToSend, source->NumShipsAvailable()));
 					} else {
 						attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest));
 					}

@@ -135,7 +135,8 @@ private:
 	FleetList fleets_;
 
 	// Output log for sending orders to the engine.
-	static Logger orders;
+	static Logger generalPurpose;
+
 	// Output log for sending orders to the engine.
 	static Logger uncaughtExceptions;
 };
