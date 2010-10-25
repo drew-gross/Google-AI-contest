@@ -42,7 +42,7 @@ int Planet::NumShipsInTurns(unsigned int turns) const {
 int Planet::OptimalAttackTime() const {
 	int optimalAttackTime = 0;
 	int leastShips = std::numeric_limits<int>::max();
-	for (int i = 0; i < PlanetWars::MaxDistance(); ++i) {
+	for (int i = 0; i < PlanetWars::Instance().MaxDistance(); ++i) {
 		if (OwnerInTurns(i) == Player::self()) {
 			throw DontNeedToAttackException(this);
 		}
@@ -58,13 +58,13 @@ int Planet::OptimalDefenseTime() const {
 	int optimalDefenseTime = 0;
 	while (OwnerInTurns(optimalDefenseTime) != Player::self()) {
 		optimalDefenseTime++;
-		if (optimalDefenseTime > PlanetWars::MaxDistance()) {
+		if (optimalDefenseTime > PlanetWars::Instance().MaxDistance()) {
 			throw DontNeedToDefendException(this);
 		}
 	}
 	while (OwnerInTurns(optimalDefenseTime) == Player::self()) {
 		optimalDefenseTime++;
-		if (optimalDefenseTime > PlanetWars::MaxDistance()) {
+		if (optimalDefenseTime > PlanetWars::Instance().MaxDistance()) {
 			throw DontNeedToDefendException(this);
 		}
 	}
@@ -72,7 +72,7 @@ int Planet::OptimalDefenseTime() const {
 }
 
 bool Planet::NeedToDefend() const {
-	return (OwnerInTurns(PlanetWars::MaxDistance()) != Player::self());
+	return (OwnerInTurns(PlanetWars::Instance().MaxDistance()) != Player::self());
 }
 
 

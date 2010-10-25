@@ -96,9 +96,9 @@ int PlanetWars::Distance(Planet const & source_planet, Planet const & destinatio
 int PlanetWars::MaxDistance() {
 	static int max_planet_separation_ = -1;
 	if (max_planet_separation_ < 0) {
-		for (unsigned int i = 0; i < PlanetWars::Instance().Planets().size(); ++i) {
-			for (unsigned int j = 0; j < PlanetWars::Instance().Planets().size(); ++j) {
-				max_planet_separation_ = std::max(max_planet_separation_, PlanetWars::Distance(*PlanetWars::Instance().Planets()[i],* PlanetWars::Instance().Planets()[j]));
+		for (unsigned int i = 0; i < Planets().size(); ++i) {
+			for (unsigned int j = 0; j < Planets().size(); ++j) {
+				max_planet_separation_ = std::max(max_planet_separation_, Distance(*Planets()[i], *Planets()[j]));
 			}
 		}
 	}

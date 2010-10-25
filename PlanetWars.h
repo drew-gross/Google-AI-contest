@@ -66,7 +66,7 @@ public:
 	static int Distance(Planet const & source_planet, Planet const & destination_planet);
 
 	// Returns the maximum separation between planets.
-	static int MaxDistance();
+	int MaxDistance();
 
 	// Returns the total number of turns in a game
 	static int MaxTurns();
