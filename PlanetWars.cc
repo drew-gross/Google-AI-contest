@@ -270,7 +270,7 @@ void PlanetWars::AttackPhase()
 			int sourceDestSeparation = Distance(*source, *dest);
 			shipsToSend = dest->NumShipsInTurns(sourceDestSeparation) + 1;
 
-			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() > shipsToSend)) {
+			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() >= shipsToSend)) {
 				try {
 					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
 						IssueOrder(*source, *dest, std::min(shipsToSend, source->NumShipsAvailable()));

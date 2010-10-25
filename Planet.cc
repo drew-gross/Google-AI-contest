@@ -216,7 +216,7 @@ int Planet::NumShipsAvailable()
 			shipsAvailable = std::min(shipsAvailable, NumShipsInTurns(fleets[i]->TurnsRemaining()));
 		}
 	}
-	return std::min(shipsAvailable, NumShips() - 1);
+	return std::min(shipsAvailable, NumShips());
 }
 
 void Planet::AdvancementPhase( std::pair<int, Player> &stateInTurn, int growthRate )
