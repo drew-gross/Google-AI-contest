@@ -15,3 +15,20 @@ void FleetList::DeleteAll() {
 	}
 	this->resize(0);
 }
+
+class isNotOwnedBy {
+public:
+	isNotOwnedBy(Player newPlayer) : player(newPlayer) {
+	}
+	bool operator()(Fleet * fleet) {
+		return fleet->Owner() != player;
+	}
+private:
+	Player player;
+};
+
+FleetList & FleetList::OwnedBy( Player player )
+{
+	this->erase(remove_if(this->begin(), this->end(), isNotOwnedBy(player)), this->end());
+	return *this;
+}

@@ -63,41 +63,8 @@ PlanetList PlanetWars::Planets() const {
 	return planets_;
 }
 
-PlanetList PlanetWars::PlanetsOwnedBy(Player player) const {
-	PlanetList r;
-	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		Planet* p = planets_[i];
-		if (p->Owner() == player) {
-			r.push_back(p);
-		}
-	}
-	return r;
-}
-
-PlanetList PlanetWars::PlanetsNotOwnedBy(Player player) const {
-	PlanetList r;
-	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		Planet* p = planets_[i];
-		if (p->Owner() != player) {
-			r.push_back(p);
-		}
-	}
-	return r;
-}
-
 FleetList PlanetWars::Fleets() const {
 	return fleets_;
-}
-
-FleetList PlanetWars::FleetsOwnedBy(Player player) const {
-	FleetList r;
-	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		Fleet* f = fleets_[i];
-		if (f->Owner() == player) {
-			r.push_back(f);
-		}
-	}
-	return r;
 }
 
 void PlanetWars::AddFleet(Fleet* new_fleet) {
@@ -279,7 +246,7 @@ void PlanetWars::DefensePhase()
 				PlanetList defendersAfterOptimalTime;
 				PlanetList defendersBeforeOptimalTime;
 
-				PlanetList myPlanets = PlanetsOwnedBy(Player::self());
+				PlanetList myPlanets = Planets().OwnedBy(Player::self());
 				for (unsigned int j = 0; j < myPlanets.size(); ++j) {
 					int defenderDefendeeDistance = Distance(*myPlanets[j], *needToDefend[i]);
 					if (defenderDefendeeDistance == optimalDefenseTime) {
@@ -305,7 +272,7 @@ void PlanetWars::AttackPhase()
 	bool enoughShipsToAttack = true;
 	PlanetList needToAttack = Planets();
 	while (enoughShipsToAttack) {
-		Planet* source = PlanetsOwnedBy(Player::self()).Strongest();
+		Planet* source = Planets().OwnedBy(Player::self()).Strongest();
 		int shipsToSend = 0;
 
 		PlanetList attackFromHere = needToAttack;
@@ -317,10 +284,6 @@ void PlanetWars::AttackPhase()
 			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() > shipsToSend)) {
 				try {
 					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
-						generalPurpose.Log("Issuing Order");
-						generalPurpose.LogVar(source->PlanetID());
-						generalPurpose.LogVar(dest->PlanetID());
-						generalPurpose.LogVar(std::min(shipsToSend, source->NumShipsAvailable()));
 						IssueOrder(*source, *dest, std::min(shipsToSend, source->NumShipsAvailable()));
 					} else {
 						attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest));

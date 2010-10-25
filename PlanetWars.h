@@ -49,18 +49,9 @@ public:
 
 	// Returns a list of all the planets.
 	PlanetList Planets() const;
-	
-	// Returns a list of all planets owned by the specified player
-	PlanetList PlanetsOwnedBy(Player player) const;
-
-	// Returns a list of all planets owned by the specified player
-	PlanetList PlanetsNotOwnedBy(Player player) const;
 
 	// Return a list of all the fleets.
 	FleetList Fleets() const;
-
-	// Return a list of all the fleets owned by the specified player.
-	FleetList FleetsOwnedBy(Player player) const;
 
 	// Add a fleet to the game state.
 	void AddFleet(Fleet* new_fleet);

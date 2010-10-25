@@ -9,6 +9,9 @@ class FleetList : public std::vector<Fleet*> {
 public:
 	int NumShips();
 	void DeleteAll();
+
+	FleetList & OwnedBy(Player player);
+
 private:
 };
 

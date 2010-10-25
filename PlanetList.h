@@ -9,6 +9,10 @@ public:
 	Planet* Weakest();
 	Planet* WeakestFromPlanet(Planet const & p);
 	Planet* Strongest();
+
+	PlanetList& OwnedBy(Player player);
+	PlanetList& NotOwnedBy(Player player);
+
 	void DeleteAll();
 private:
 };

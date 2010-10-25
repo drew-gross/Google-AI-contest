@@ -47,3 +47,36 @@ void PlanetList::DeleteAll() {
 	}
 	this->resize(0);
 }
+
+
+class isNotOwnedBy {
+public:
+	isNotOwnedBy(Player newPlayer) : player(newPlayer) {
+	}
+	bool operator()(Planet * planet) {
+		return planet->Owner() != player;
+	}
+private:
+	Player player;
+};
+
+PlanetList& PlanetList::OwnedBy(Player player) {
+	this->erase(remove_if(this->begin(), this->end(), isNotOwnedBy(player)), this->end());
+	return *this;
+}
+
+class isOwnedBy {
+public:
+	isOwnedBy(Player newPlayer) : player(newPlayer) {
+	}
+	bool operator()(Planet * planet) {
+		return planet->Owner() == player;
+	}
+private:
+	Player player;
+};
+
+PlanetList& PlanetList::NotOwnedBy(Player player) {
+	this->erase(remove_if(this->begin(), this->end(), isOwnedBy(player)), this->end());
+	return *this;
+}
