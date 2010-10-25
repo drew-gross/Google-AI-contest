@@ -11,12 +11,14 @@
 #include "DontNeedToDefendException.h"
 #include "Player.h"
 
-Planet::Planet(int planet_id,
-	Player ownerNum,
-	int num_ships,
-	int growth_rate,
-	double x,
-	double y) : planet_id_(planet_id) , owner_(ownerNum) , num_ships_(num_ships) , growth_rate_(growth_rate) , x_(x) , y_(y) {
+Planet::Planet(int planet_id, Player ownerNum, int num_ships, int growth_rate, double x, double y):
+	planet_id_(planet_id),
+	owner_(ownerNum), 
+	num_ships_(num_ships), 
+	growth_rate_(growth_rate), 
+	x_(x),
+	y_(y)
+{
 }
 
 int Planet::PlanetID() const {
@@ -79,7 +81,7 @@ bool Planet::NeedToDefend() const {
 void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	for (unsigned int j = 0; j < defenders.size(); ++j) {
 		Planet * curDefender = defenders[j];
-		if (!curDefender->NeedToDefend() && NeedToDefend() && curDefender->NumShipsAvailable() > 0) {
+		if (NeedToDefend() && curDefender->NumShipsAvailable() > 0) {
 			PlanetWars::Instance().IssueOrder(*curDefender, *this, std::min(NumShipsInTurns(optimalDefenseTime + 1), curDefender->NumShipsAvailable()));
 		}
 	}
