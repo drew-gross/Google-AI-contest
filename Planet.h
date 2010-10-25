@@ -65,6 +65,10 @@ public:
 	// in the specified amount of turns
 	int NeutralROI(int turns);
 
+	// Adds up all the ships from fleets owned by the specified player and arriving
+	// In the specified number of turns
+	int ShipsArrivingInTurns(Player fromPlayer, int numTurns) const;
+
 	// The position of the planet in space.
 	double X() const;
 	double Y() const;

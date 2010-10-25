@@ -82,7 +82,7 @@ void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	for (unsigned int j = 0; j < defenders.size(); ++j) {
 		Planet * curDefender = defenders[j];
 		if (NeedToDefend() && curDefender->NumShipsAvailable() > 0) {
-			PlanetWars::Instance().IssueOrder(*curDefender, *this, std::min(NumShipsInTurns(optimalDefenseTime + 1), curDefender->NumShipsAvailable()));
+			PlanetWars::Instance().IssueOrder(*curDefender, *this, std::min(NumShipsInTurns(optimalDefenseTime + 1) + 1, curDefender->NumShipsAvailable()));
 		}
 	}
 }
@@ -123,6 +123,20 @@ void Planet::ClearFutureCache() const {
 	stateInFuture.clear();
 }
 
+int Planet::ShipsArrivingInTurns( Player fromPlayer, int numTurns ) const
+{
+	int shipsArriving = 0;
+	FleetList fleets = PlanetWars::Instance().Fleets(); 
+	for (unsigned int i = 0; i < fleets.size(); ++i)
+	{
+		Fleet * curFleet = fleets[i];
+		if (curFleet->ArrivesInTurns(numTurns) && curFleet->DestinationPlanet() == this && curFleet->Owner() == fromPlayer) {
+			shipsArriving += curFleet->NumShips();
+		}
+	}
+	return shipsArriving;
+}
+
 std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 	if (stateInFuture.size() > turns) {
 		return stateInFuture[turns];
@@ -139,20 +153,8 @@ std::pair<int, Player> Planet::StateInTurns(unsigned int turns) const {
 	for (unsigned int turnInFuture = maxCachedTurnIndex; turnInFuture <= turns; ++turnInFuture) {
 		stateInFuture[turnInFuture] = stateInTurn;
 
-		int totalEnemyShipsAttacking = 0;
-		int totalPlayerShipsAttacking = 0;
-		FleetList fleets = PlanetWars::Instance().Fleets();
-		for (unsigned int i = 0; i < fleets.size(); ++i) {
-			Fleet* curFleet = fleets[i];
-			if (curFleet->ArrivesInTurns(turnInFuture) && (curFleet->DestinationPlanet() == this)) {
-				if (curFleet->Owner() == Player::self()) {
-					totalPlayerShipsAttacking += curFleet->NumShips();
-				}
-				if (curFleet->Owner() == Player::enemy()) {
-					totalEnemyShipsAttacking += curFleet->NumShips();
-				}
-			}
-		}
+		int totalEnemyShipsAttacking = ShipsArrivingInTurns(Player::enemy(), turnInFuture);
+		int totalPlayerShipsAttacking = ShipsArrivingInTurns(Player::self(), turnInFuture);
 		NextState(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking);
 	}
 	return stateInFuture[turns];
