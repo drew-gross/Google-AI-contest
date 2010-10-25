@@ -69,7 +69,7 @@ public:
 	int MaxDistance();
 
 	// Returns the total number of turns in a game
-	static int MaxTurns();
+	int MaxTurns();
 
 	// Returns the number of turns that have gone by
 	int Turns();

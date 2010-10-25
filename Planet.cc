@@ -197,7 +197,7 @@ void Planet::NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShip
 
 int Planet::NeutralROI( int turns )
 {
-	return ((PlanetWars::MaxTurns() - turns) * GrowthRate()) - NumShipsInTurns(turns);
+	return ((PlanetWars::Instance().MaxTurns() - turns) * GrowthRate()) - NumShipsInTurns(turns);
 }
 
 int Planet::NumShipsAvailable()
