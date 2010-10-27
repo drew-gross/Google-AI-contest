@@ -23,10 +23,9 @@ int main() {
 		current_line += (char)c;
 		if (c == '\n') {
 			if (current_line.length() >= 2 && current_line.substr(0, 2) == "go") {
-				PlanetWars::Initialize(map_data);
+				PlanetWars::Instance().ParseGameState(map_data);
 				PlanetWars::Instance().DoTurn();
 				PlanetWars::Instance().FinishTurn();
-				PlanetWars::Uninitialize();
 				map_data = "";
 			} else {
 				map_data += current_line;

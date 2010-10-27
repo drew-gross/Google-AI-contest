@@ -63,7 +63,9 @@ public:
 
 	// Returns the return over the course of the game of taking a planet over
 	// in the specified amount of turns
+	int ReturnOnInvestment(int turns);
 	int NeutralROI(int turns);
+	int EnemyROI(int turns);
 
 	// Adds up all the ships from fleets owned by the specified player and arriving
 	// In the specified number of turns

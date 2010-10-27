@@ -15,3 +15,10 @@ void Logger::Enable() {
 void Logger::Disable() {
 	enabled = false;
 }
+
+void Logger::LogMapData( std::string mapData )
+{
+	if (enabled) {
+		out << mapData << "go" << std::endl << std::endl << std::endl;
+	}
+}

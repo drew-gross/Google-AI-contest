@@ -10,10 +10,13 @@ public:
 	Planet* WeakestFromPlanet(Planet const & p);
 	Planet* Strongest();
 
+	int NumShipsAvailable();
+
 	PlanetList& OwnedBy(Player player);
 	PlanetList& NotOwnedBy(Player player);
 
 	void DeleteAll();
+	Planet* HighestROIFromPlanet(Planet const * source) const;
 private:
 };
 

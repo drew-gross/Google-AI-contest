@@ -12,7 +12,7 @@
 #include "Player.h"
 
 Planet::Planet(int planet_id, Player ownerNum, int num_ships, int growth_rate, double x, double y):
-	planet_id_(planet_id),
+planet_id_(planet_id),
 	owner_(ownerNum), 
 	num_ships_(num_ships), 
 	growth_rate_(growth_rate), 
@@ -199,7 +199,15 @@ void Planet::NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShip
 
 int Planet::NeutralROI( int turns )
 {
-	return ((PlanetWars::Instance().MaxTurns() - turns) * GrowthRate()) - NumShipsInTurns(turns);
+	CreateStaticLogger(numturns);
+	numturns.LogVar(PlanetWars::Instance().TurnsRemaining());
+	numturns.LogVar(turns);
+	return ((PlanetWars::Instance().TurnsRemaining() - turns) * GrowthRate()) - NumShipsInTurns(turns);
+}
+
+int Planet::EnemyROI( int turns )
+{
+	return (PlanetWars::Instance().TurnsRemaining() - turns) * 2 * GrowthRate();
 }
 
 int Planet::NumShipsAvailable()
@@ -223,5 +231,18 @@ void Planet::AdvancementPhase( std::pair<int, Player> &stateInTurn, int growthRa
 {
 	if (stateInTurn.second != Player::neutral()) {
 		stateInTurn.first += growthRate;
+	}
+}
+
+int Planet::ReturnOnInvestment( int turns )
+{
+	if (OwnerInTurns(turns) == Player::neutral()) {
+		return NeutralROI(turns);
+	} else if (OwnerInTurns(turns) == Player::enemy())
+	{
+		return EnemyROI(turns);
+	} else
+	{
+		throw DontNeedToAttackException(this);
 	}
 }

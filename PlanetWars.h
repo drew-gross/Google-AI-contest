@@ -20,10 +20,7 @@
 class PlanetWars {
 public:
 	// Initializes the PlanetWars singleton.
-	static void Initialize(const std::string& game_state);
-
-	// Uninitializes the PlanetWars singleton.
-	static void Uninitialize();
+	static void Initialize();
 
 	// The PlanetWars singleton.
 	static PlanetWars& Instance();
@@ -99,9 +96,12 @@ public:
 	// Test all my functions to make sure they work.
 	static void UnitTest();
 
+	// Parses a game state from a string.
+	int ParseGameState(const std::string& s);
+
 protected:
 	// Initializes the game state given a string containing game state data.
-	PlanetWars(const std::string& game_state);
+	PlanetWars();
 
 private:
 	// The PlanetWars Singleton
@@ -109,10 +109,6 @@ private:
 
 	// The current game turn
 	int turn;
-
-	// Parses a game state from a string. On success, returns 1. On failure,
-	// returns 0.
-	int ParseGameState(const std::string& s);
 
 	// The phase in which planets I own are defended
 	void DefensePhase();

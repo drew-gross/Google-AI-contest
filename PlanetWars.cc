@@ -18,29 +18,20 @@ PlanetWars* PlanetWars::instance_ = nullptr;
 Logger PlanetWars::generalPurpose("orders.txt");
 Logger PlanetWars::uncaughtExceptions("exceptions.txt");
 
-void PlanetWars::Initialize(const std::string& game_state) {
-	if (instance_ != nullptr) return;
-	instance_ = new PlanetWars(game_state);
-	instance_->turn = 1;
-}
-
-void PlanetWars::Uninitialize() {
-	instance_->planets_.DeleteAll();
-	instance_->fleets_.DeleteAll();
-	delete instance_;
-	instance_ = nullptr;
+void PlanetWars::Initialize() {
+	if (instance_ != nullptr) {
+		return;
+	}
+	instance_ = new PlanetWars();
+	instance_->turn = 0;
 }
 
 PlanetWars& PlanetWars::Instance() {
-	if (instance_ != nullptr) {
-		return *instance_;
-	} else {
-		throw std::runtime_error("Trying to use an uninitialised PlanetWars singleton!");
-	}
+	Initialize();
+	return *instance_;
 }
 
-PlanetWars::PlanetWars(const std::string& gameState) {
-	ParseGameState(gameState);
+PlanetWars::PlanetWars() {
 }
 
 int PlanetWars::NumPlanets() const {
@@ -164,7 +155,7 @@ int PlanetWars::ParseGameState(const std::string& s) {
 		}
 		if (tokens[0] == "P") {
 			if (tokens.size() != 6) {
-				return 0;
+				throw std::runtime_error("error parsing gamestate");
 			}
 			Planet* p = new Planet(planet_id++,              // The ID of this planet
 				Player(atoi(tokens[3].c_str())),  // Owner
@@ -175,7 +166,7 @@ int PlanetWars::ParseGameState(const std::string& s) {
 			planets_.push_back(p);
 		} else if (tokens[0] == "F") {
 			if (tokens.size() != 7) {
-				return 0;
+				throw std::runtime_error("error parsing gamestate");
 			}
 			Fleet* f = new Fleet(atoi(tokens[1].c_str()),  // Owner
 				atoi(tokens[2].c_str()),  // Num ships
@@ -185,13 +176,15 @@ int PlanetWars::ParseGameState(const std::string& s) {
 				atoi(tokens[6].c_str())); // Turns remaining
 			fleets_.push_back(f);
 		} else {
-			return 0;
+			throw std::runtime_error("error parsing gamestate");
 		}
 	}
 	return 1;
 }
 
 void PlanetWars::FinishTurn() const {
+	instance_->planets_.DeleteAll();
+	instance_->fleets_.DeleteAll();
 	std::cout << "go" << std::endl;
 	std::cout.flush();
 }
@@ -208,6 +201,9 @@ int PlanetWars::Turns()
 
 int PlanetWars::TurnsRemaining()
 {
+	CreateStaticLogger(numturnsremaining);
+	numturnsremaining.LogVar(MaxTurns());
+	numturnsremaining.LogVar(Turns());
 	return MaxTurns() - Turns();
 }
 
@@ -247,8 +243,10 @@ void PlanetWars::DefensePhase()
 					}
 				}
 				needToDefend[i]->SeekDefenseFrom(defendersAtOptimalTime, optimalDefenseTime);
-				needToDefend[i]->SeekDefenseFrom(defendersBeforeOptimalTime, optimalDefenseTime);
-				needToDefend[i]->SeekDefenseFrom(defendersAfterOptimalTime, optimalDefenseTime);
+				if (defendersBeforeOptimalTime.NumShipsAvailable() > needToDefend[i]->NumShipsInTurns(optimalDefenseTime + 1)) {
+					needToDefend[i]->SeekDefenseFrom(defendersBeforeOptimalTime, optimalDefenseTime);
+					needToDefend[i]->SeekDefenseFrom(defendersAfterOptimalTime, optimalDefenseTime);
+				}
 			}
 		} catch (DontNeedToDefendException e) {
 			//simply ignore, the for loop will continue to the next planet that needs defense anyway.
@@ -266,7 +264,7 @@ void PlanetWars::AttackPhase()
 
 		PlanetList attackFromHere = needToAttack;
 		while (enoughShipsToAttack) {
-			Planet* dest = attackFromHere.WeakestFromPlanet(*source);
+			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
 			int sourceDestSeparation = Distance(*source, *dest);
 			shipsToSend = dest->NumShipsInTurns(sourceDestSeparation) + 1;
 

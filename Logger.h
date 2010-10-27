@@ -7,7 +7,9 @@
 
 #include "Utilities.h"
 
-#define LogVar(var) xLogVarHelper(toString(var), var)
+#define LogVar(var) MacroHelper1(toString(var), var)
+#define CreateLogger(filename) Logger filename(toString(filename)".txt")
+#define CreateStaticLogger(filename) static Logger filename(toString(filename)".txt")
 
 class Logger {
 public:
@@ -20,8 +22,10 @@ public:
 	template<typename T, typename U>
 	void Log(T str1, U str2);
 
+	void LogMapData(std::string mapData);
+
 	template<typename T, typename U>
-	void xLogVarHelper(T str1, U str2);
+	void MacroHelper1(T str1, U str2);
 	
 	void Enable();
 	void Disable();
@@ -46,7 +50,7 @@ void Logger::Log(T str1, U str2) {
 }
 
 template<typename T, typename U>
-void Logger::xLogVarHelper(T varName, U var) {
+void Logger::MacroHelper1(T varName, U var) {
 	if (enabled) {
 		out << "Value of " << varName << ": " << var << std::endl;
 	}

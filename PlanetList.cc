@@ -4,6 +4,7 @@
 #include "Utilities.h"
 
 #include <algorithm>
+#include "DontNeedToAttackException.h"
 
 Planet* PlanetList::Weakest() {
 	if (size() == 0) return nullptr;
@@ -79,4 +80,42 @@ private:
 PlanetList& PlanetList::NotOwnedBy(Player player) {
 	this->erase(remove_if(this->begin(), this->end(), isOwnedBy(player)), this->end());
 	return *this;
+}
+
+int PlanetList::NumShipsAvailable()
+{
+	int shipsAvailable = 0;
+	for (unsigned int i = 0; i < size(); ++i)
+	{
+		shipsAvailable += operator[](i)->NumShipsAvailable();
+	}
+	return shipsAvailable;
+}
+
+Planet* PlanetList::HighestROIFromPlanet( Planet const * source ) const
+{
+	CreateLogger(debug);
+	int ROI = std::numeric_limits<int>::max();
+	Planet * highestROIPlanet = operator[](0);
+	for (unsigned int i = 0; i < size(); ++i)
+	{
+		debug.Log("Beginning of HROI loop");
+		debug.LogVar(i);
+		Planet * curPlanet = operator[](i);
+		try
+		{
+			debug.Log("calling ROI");
+			int curPlanetROI = curPlanet->ReturnOnInvestment(PlanetWars::Distance(*source, *curPlanet));
+			if (curPlanetROI > ROI) {
+				ROI = curPlanetROI;
+				highestROIPlanet = curPlanet;
+			}
+		}
+		catch (DontNeedToAttackException e) 
+		{
+			debug.Log("exception caught");
+			//do nothing, for loop will go to next planet anyway.
+		}
+	}
+	return highestROIPlanet;
 }
