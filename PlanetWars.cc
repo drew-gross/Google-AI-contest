@@ -50,7 +50,7 @@ Fleet const * PlanetWars::GetFleet(int fleet_id) const {
 	return fleets_[fleet_id];
 }
 
-PlanetList PlanetWars::Planets() const {
+PlanetList const & PlanetWars::Planets() const {
 	return planets_;
 }
 
@@ -222,7 +222,7 @@ void PlanetWars::DoTurn() {
 
 void PlanetWars::DefensePhase()
 {
-	PlanetList needToDefend = Planets();
+	PlanetList needToDefend = Planets().NeedDefending();
 	for (unsigned int i = 0; i < needToDefend.size(); ++i) {
 		try {
 			if (needToDefend[i]->NeedToDefend()) {

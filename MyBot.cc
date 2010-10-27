@@ -8,10 +8,6 @@
 #include "DontNeedToAttackException.h"
 #include "DontNeedToDefendException.h"
 
-void DefensePhase() 
-{
-}
-
 // This is just the main game loop that takes care of communicating with the
 // game engine for you. You don't have to understand or change the code below.
 int main() {

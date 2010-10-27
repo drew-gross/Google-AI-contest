@@ -49,37 +49,26 @@ void PlanetList::DeleteAll() {
 	this->resize(0);
 }
 
-
-class isNotOwnedBy {
-public:
-	isNotOwnedBy(Player newPlayer) : player(newPlayer) {
+PlanetList PlanetList::OwnedBy( Player player ) const
+{
+	PlanetList p;
+	for(unsigned int i = 0; i < size(); ++i) {
+		if (operator[](i)->Owner() == player) {
+			p.push_back(operator[](i));
+		}
 	}
-	bool operator()(Planet * planet) {
-		return planet->Owner() != player;
-	}
-private:
-	Player player;
-};
-
-PlanetList& PlanetList::OwnedBy(Player player) {
-	this->erase(remove_if(this->begin(), this->end(), isNotOwnedBy(player)), this->end());
-	return *this;
+	return p;
 }
 
-class isOwnedBy {
-public:
-	isOwnedBy(Player newPlayer) : player(newPlayer) {
+PlanetList PlanetList::NotOwnedBy( Player player ) const
+{
+	PlanetList p;
+	for(unsigned int i = 0; i < size(); ++i) {
+		if (operator[](i)->Owner() != player) {
+			p.push_back(operator[](i));
+		}
 	}
-	bool operator()(Planet * planet) {
-		return planet->Owner() == player;
-	}
-private:
-	Player player;
-};
-
-PlanetList& PlanetList::NotOwnedBy(Player player) {
-	this->erase(remove_if(this->begin(), this->end(), isOwnedBy(player)), this->end());
-	return *this;
+	return p;
 }
 
 int PlanetList::NumShipsAvailable()
@@ -118,4 +107,15 @@ Planet* PlanetList::HighestROIFromPlanet( Planet const * source ) const
 		}
 	}
 	return highestROIPlanet;
+}
+
+PlanetList PlanetList::NeedDefending() const
+{
+	PlanetList p;
+	for(unsigned int i = 0; i < size(); ++i) {
+		if (operator[](i)->NeedToDefend()) {
+			p.push_back(operator[](i));
+		}
+	}
+	return p;
 }

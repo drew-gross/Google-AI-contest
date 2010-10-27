@@ -45,7 +45,7 @@ public:
 	Fleet const * GetFleet(int fleet_id) const;
 
 	// Returns a list of all the planets.
-	PlanetList Planets() const;
+	PlanetList const & Planets() const;
 
 	// Return a list of all the fleets.
 	FleetList Fleets() const;

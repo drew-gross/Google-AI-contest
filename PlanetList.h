@@ -12,8 +12,9 @@ public:
 
 	int NumShipsAvailable();
 
-	PlanetList& OwnedBy(Player player);
-	PlanetList& NotOwnedBy(Player player);
+	PlanetList OwnedBy(Player player) const;
+	PlanetList NotOwnedBy(Player player) const;
+	PlanetList NeedDefending() const;
 
 	void DeleteAll();
 	Planet* HighestROIFromPlanet(Planet const * source) const;
