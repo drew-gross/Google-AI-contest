@@ -201,9 +201,6 @@ int PlanetWars::Turns()
 
 int PlanetWars::TurnsRemaining()
 {
-	CreateStaticLogger(numturnsremaining);
-	numturnsremaining.LogVar(MaxTurns());
-	numturnsremaining.LogVar(Turns());
 	return MaxTurns() - Turns();
 }
 
