@@ -15,6 +15,7 @@ public:
 	PlanetList OwnedBy(Player player) const;
 	PlanetList NotOwnedBy(Player player) const;
 	PlanetList NeedDefending() const;
+	PlanetList NeedAttacking() const;
 
 	void DeleteAll();
 	Planet* HighestROIFromPlanet(Planet const * source) const;

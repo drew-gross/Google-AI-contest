@@ -77,6 +77,11 @@ bool Planet::NeedToDefend() const {
 	return (OwnerInTurns(PlanetWars::Instance().MaxDistance()) != Player::self());
 }
 
+bool Planet::NeedToAttack() const
+{
+	return (OwnerInTurns(PlanetWars::Instance().MaxDistance()) != Player::self());
+}
+
 
 void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	for (unsigned int j = 0; j < defenders.size(); ++j) {

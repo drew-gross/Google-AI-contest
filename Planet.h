@@ -49,9 +49,14 @@ public:
 	// Calculates the turn immediately before when the planet will get taken over by the enemy.
 	int OptimalDefenseTime() const;
 
-	// Determines whether the planet needs to be defended. Returns true if the 
+	// Determines whether the planet needs to be defended. Returns true if I own 
+	// the planet or will own it at some point in time and the
 	// enemy will eventually own the planet given the current game state
 	bool NeedToDefend() const;
+
+	// Determines whether the planet needs to be attacked. Returns true if
+	// I will not own the planet indefinately
+	bool NeedToAttack() const;
 
 	// Takes the list of planets specified and requests defense from them until the planet no longer needs defense
 	void SeekDefenseFrom(PlanetList &defendersAtOptimalTime, int optimalDefenseTime);
