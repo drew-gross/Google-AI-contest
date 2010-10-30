@@ -63,6 +63,8 @@ public:
 	int NeutralROI(int turns);
 	int EnemyROI(int turns);
 
+	Planet * ClosestPlanet();
+
 	// Adds up all the ships from fleets owned by the specified player and arriving
 	// In the specified number of turns
 	int ShipsArrivingInTurns(Player fromPlayer, int numTurns) const;

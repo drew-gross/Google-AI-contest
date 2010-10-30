@@ -234,10 +234,10 @@ int Planet::NumShipsAvailable()
 	for (unsigned int i = 0; i < fleets.size(); ++i)
 	{
 		if (fleets[i]->DestinationPlanet() == this) {
-			shipsAvailable = std::min(shipsAvailable, NumShipsInTurns(fleets[i]->TurnsRemaining()));
+			shipsAvailable = std::min(shipsAvailable, NumShipsInTurns(fleets[i]->TurnsRemaining() + 1));
 		}
 	}
-	return std::min(shipsAvailable, NumShips());
+	return shipsAvailable;
 }
 
 void Planet::AdvancementPhase( std::pair<int, Player> &stateInTurn, int growthRate )
@@ -258,4 +258,20 @@ int Planet::ReturnOnInvestment( int turns )
 	{
 		throw DontNeedToAttackException(this);
 	}
+}
+
+Planet * Planet::ClosestPlanet()
+{
+	PlanetList planets = PlanetWars::Instance().Planets();
+	planets.erase(std::remove(planets.begin(), planets.end(), this));
+	Planet * closestPlanet = planets[0];
+	int closestDistance = std::numeric_limits<int>::max();
+	for (unsigned int i = 0; i < planets.size(); ++i)
+	{
+		if (PlanetWars::Distance(this, planets[i]) < closestDistance && this->PlanetID() != closestPlanet->PlanetID()) {
+			closestDistance = PlanetWars::Distance(this, closestPlanet);
+			closestPlanet = planets[i];
+		}
+	}
+	return closestPlanet;
 }

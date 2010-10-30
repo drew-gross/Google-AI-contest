@@ -110,11 +110,9 @@ private:
 	// The current game turn
 	int turn;
 
-	// The phase in which planets I own are defended
 	void DefensePhase();
-
-	// The phase in which I attack planets
 	void AttackPhase();
+	void SupplyPhase();
 
 	// Store all the planets and fleets. OMG we wouldn't wanna lose all the
 	// planets and fleets, would we!?

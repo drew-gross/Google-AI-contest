@@ -211,6 +211,7 @@ void PlanetWars::DoTurn() {
 	{
 		DefensePhase();
 		AttackPhase();
+		SupplyPhase();
 	}
 	catch (std::exception e)
 	{
@@ -283,4 +284,16 @@ void PlanetWars::AttackPhase()
 void PlanetWars::UnitTest()
 {
 	//none yet
+}
+
+void PlanetWars::SupplyPhase()
+{
+	PlanetList myPlanets = Planets().OwnedBy(Player::self());
+	for (unsigned int i = 0; i < myPlanets.size(); ++i)
+	{
+		if (myPlanets[i]->ClosestPlanet()->Owner() == Player::self())
+		{
+			PlanetWars::Instance().IssueOrder(myPlanets[i], myPlanets[i]->ClosestPlanet(), myPlanets[i]->NumShipsAvailable());
+		}	
+	}
 }
