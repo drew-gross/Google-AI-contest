@@ -40,7 +40,7 @@ public:
 	int NumFleets() const;
 
 	// Returns the fleet with the given fleet_id. Fleets are numbered starting
-	// with 0. There are NumFleets() fleets. fleet_id's are not consistent from
+	// with 0. There are NumFleets() fleets. fleet_id's are not consistent fromB
 	// one turn to the next.
 	Fleet const * GetFleet(int fleet_id) const;
 
@@ -122,7 +122,7 @@ private:
 	FleetList fleets_;
 
 	// Output log for sending orders to the engine.
-	static Logger generalPurpose;
+	static Logger mapdata;
 
 	// Output log for sending orders to the engine.
 	static Logger uncaughtExceptions;

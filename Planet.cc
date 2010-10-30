@@ -74,7 +74,15 @@ int Planet::OptimalDefenseTime() const {
 }
 
 bool Planet::NeedToDefend() const {
-	return (OwnerInTurns(PlanetWars::Instance().MaxDistance()) != Player::self());
+	bool returnval = false;
+	for (int i = 0; i < PlanetWars::Instance().MaxDistance(); ++i)
+	{
+		if (OwnerInTurns(i) == Player::self())
+		{
+			returnval = true;
+		}
+	}
+	return ((OwnerInTurns(PlanetWars::Instance().MaxDistance()) != Player::self()) && returnval);
 }
 
 bool Planet::NeedToAttack() const

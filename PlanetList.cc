@@ -83,17 +83,13 @@ int PlanetList::NumShipsAvailable()
 
 Planet* PlanetList::HighestROIFromPlanet( Planet const * source ) const
 {
-	CreateLogger(debug);
-	int ROI = std::numeric_limits<int>::max();
+	int ROI = std::numeric_limits<int>::min();
 	Planet * highestROIPlanet = operator[](0);
 	for (unsigned int i = 0; i < size(); ++i)
 	{
-		debug.Log("Beginning of HROI loop");
-		debug.LogVar(i);
 		Planet * curPlanet = operator[](i);
 		try
 		{
-			debug.Log("calling ROI");
 			int curPlanetROI = curPlanet->ReturnOnInvestment(PlanetWars::Distance(*source, *curPlanet));
 			if (curPlanetROI > ROI) {
 				ROI = curPlanetROI;
@@ -102,7 +98,6 @@ Planet* PlanetList::HighestROIFromPlanet( Planet const * source ) const
 		}
 		catch (DontNeedToAttackException e) 
 		{
-			debug.Log("exception caught");
 			//do nothing, for loop will go to next planet anyway.
 		}
 	}
