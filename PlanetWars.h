@@ -60,7 +60,7 @@ public:
 	// Returns the distance between two planets, rounded up to the next highest
 	// integer. This is the number of discrete time steps it takes to get between
 	// the two planets.
-	static int Distance(Planet const & source_planet, Planet const & destination_planet);
+	static int Distance(Planet const * const source_planet, Planet const * const destination_planet);
 
 	// Returns the maximum separation between planets.
 	int MaxDistance();
@@ -79,7 +79,7 @@ public:
 	// else your bot will get kicked and lose the game. For example, you must own
 	// source_planet, and you can't send more ships than you actually have on
 	// that planet.
-	void IssueOrder(Planet & source_planet, Planet const & destination_planet, int num_ships);
+	void IssueOrder(Planet * const source_planet, Planet const * const destination_planet, int num_ships);
 
 	// Returns true if the named player owns at least one planet or fleet.
 	// Otherwise, the player is deemed to be dead and false is returned.

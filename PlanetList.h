@@ -7,7 +7,7 @@
 class PlanetList : public std::vector<Planet*> {
 public:
 	Planet* Weakest();
-	Planet* WeakestFromPlanet(Planet const & p);
+	Planet* WeakestFromPlanet(Planet const * const p);
 	Planet* Strongest();
 
 	int NumShipsAvailable();

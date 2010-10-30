@@ -78,9 +78,9 @@ std::string PlanetWars::ToString() const {
 	return s.str();
 }
 
-int PlanetWars::Distance(Planet const & source_planet, Planet const & destination_planet) {
-	double dx = source_planet.X() - destination_planet.X();
-	double dy = source_planet.Y() - destination_planet.Y();
+int PlanetWars::Distance(Planet const * const source_planet, Planet const * const destination_planet) {
+	double dx = source_planet->X() - destination_planet->X();
+	double dy = source_planet->Y() - destination_planet->Y();
 	return (int)ceil(sqrt(dx * dx + dy * dy));
 }
 
@@ -89,23 +89,23 @@ int PlanetWars::MaxDistance() {
 	if (max_planet_separation_ < 0) {
 		for (unsigned int i = 0; i < Planets().size(); ++i) {
 			for (unsigned int j = 0; j < Planets().size(); ++j) {
-				max_planet_separation_ = std::max(max_planet_separation_, Distance(*Planets()[i], *Planets()[j]));
+				max_planet_separation_ = std::max(max_planet_separation_, Distance(Planets()[i], Planets()[j]));
 			}
 		}
 	}
 	return max_planet_separation_;
 }
 
-void PlanetWars::IssueOrder(Planet & source_planet, Planet const & destination_planet, int num_ships) {
-	if (source_planet.PlanetID() == destination_planet.PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
-	if (num_ships >= source_planet.NumShips()) throw std::runtime_error("Not Enough Ships to send");
-	if (source_planet.Owner() != Player::self()) throw std::runtime_error("You don't own that planet");
+void PlanetWars::IssueOrder(Planet * const source_planet, Planet const * const destination_planet, int num_ships) {
+	if (source_planet->PlanetID() == destination_planet->PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
+	if (num_ships >= source_planet->NumShips()) throw std::runtime_error("Not Enough Ships to send");
+	if (source_planet->Owner() != Player::self()) throw std::runtime_error("You don't own that planet");
 
-	AddFleet(new Fleet(Player::self(), num_ships, source_planet.PlanetID(), destination_planet.PlanetID(), Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
-	destination_planet.ClearFutureCache();
-	source_planet.RemoveShips(num_ships);
+	AddFleet(new Fleet(Player::self(), num_ships, source_planet->PlanetID(), destination_planet->PlanetID(), Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
+	destination_planet->ClearFutureCache();
+	source_planet->RemoveShips(num_ships);
 
-	std::cout << source_planet.PlanetID() << " " << destination_planet.PlanetID() << " " << num_ships << std::endl;
+	std::cout << source_planet->PlanetID() << " " << destination_planet->PlanetID() << " " << num_ships << std::endl;
 	std::cout.flush();
 }
 
@@ -228,7 +228,7 @@ void PlanetWars::DefensePhase() {
 
 		PlanetList myPlanets = Planets().OwnedBy(Player::self());
 		for (unsigned int j = 0; j < myPlanets.size(); ++j) {
-			int defenderDefendeeDistance = Distance(*myPlanets[j], *needToDefend[i]);
+			int defenderDefendeeDistance = Distance(myPlanets[j], needToDefend[i]);
 			if (defenderDefendeeDistance == optimalDefenseTime) {
 				defendersAtOptimalTime.push_back(myPlanets[j]);
 			} else if (defenderDefendeeDistance < optimalDefenseTime) {
@@ -262,12 +262,12 @@ void PlanetWars::AttackPhase()
 		PlanetList attackFromHere = needToAttack;
 		while (attackFromHere.size() > 0) {
 			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
-			int sourceDestSeparation = Distance(*source, *dest);
+			int sourceDestSeparation = Distance(source, dest);
 			shipsToSend = dest->NumShipsInTurns(sourceDestSeparation) + 1;
 
 			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() >= shipsToSend)) {
 				if (dest->OptimalAttackTime() <= sourceDestSeparation) {
-					IssueOrder(*source, *dest, std::min(shipsToSend, source->NumShipsAvailable()));
+					IssueOrder(source, dest, std::min(shipsToSend, source->NumShipsAvailable()));
 					shipsSent = true;
 				} else {
 					attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest));
