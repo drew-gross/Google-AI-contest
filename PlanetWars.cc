@@ -54,7 +54,7 @@ PlanetList const & PlanetWars::Planets() const {
 	return planets_;
 }
 
-FleetList PlanetWars::Fleets() const {
+FleetList const & PlanetWars::Fleets() const {
 	return fleets_;
 }
 
@@ -98,8 +98,11 @@ int PlanetWars::MaxDistance() {
 
 void PlanetWars::IssueOrder(Planet * const source_planet, Planet const * const destination_planet, int num_ships) {
 	if (source_planet->PlanetID() == destination_planet->PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
-	if (num_ships >= source_planet->NumShips()) throw std::runtime_error("Not Enough Ships to send");
+	if (num_ships >= source_planet->NumShips()) {
+		throw std::runtime_error("Not Enough Ships to send");
+	}
 	if (source_planet->Owner() != Player::self()) throw std::runtime_error("You don't own that planet");
+	if (num_ships == 0) return;
 
 	AddFleet(new Fleet(Player::self(), num_ships, source_planet->PlanetID(), destination_planet->PlanetID(), Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
 	destination_planet->ClearFutureCache();
@@ -293,7 +296,7 @@ void PlanetWars::SupplyPhase()
 	{
 		if (myPlanets[i]->ClosestPlanet()->Owner() == Player::self())
 		{
-			PlanetWars::Instance().IssueOrder(myPlanets[i], myPlanets[i]->ClosestPlanet(), myPlanets[i]->NumShipsAvailable());
+			PlanetWars::Instance().IssueOrder(myPlanets[i], myPlanets[i]->ClosestPlanet(), std::min(myPlanets[i]->NumShipsAvailable(), myPlanets[i]->NumShips()));
 		}	
 	}
 }

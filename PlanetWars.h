@@ -48,7 +48,7 @@ public:
 	PlanetList const & Planets() const;
 
 	// Return a list of all the fleets.
-	FleetList Fleets() const;
+	FleetList const & Fleets() const;
 
 	// Add a fleet to the game state.
 	void AddFleet(Fleet* new_fleet);

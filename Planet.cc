@@ -212,9 +212,6 @@ void Planet::NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShip
 
 int Planet::NeutralROI( int turns )
 {
-	CreateStaticLogger(numturns);
-	numturns.LogVar(PlanetWars::Instance().TurnsRemaining());
-	numturns.LogVar(turns);
 	return ((PlanetWars::Instance().TurnsRemaining() - turns) * GrowthRate()) - NumShipsInTurns(turns);
 }
 
