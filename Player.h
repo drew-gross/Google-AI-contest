@@ -20,6 +20,15 @@ public:
 	static Player neutral();
 	static Player self();
 	static Player enemy();
+
+	// Returns true if the named player owns at least one planet or fleet.
+	// Otherwise, the player is deemed to be dead and false is returned.
+	bool IsAlive() const;
+
+	// Returns the number of ships that the given player has, either located
+	// on planets or in flight.
+	int NumShips() const;
+
 private:
 	int playerNum;
 };

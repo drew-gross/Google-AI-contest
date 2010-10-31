@@ -68,35 +68,6 @@ int GameState::MaxDistance() const {
 	return max_planet_separation_;
 }
 
-bool GameState::IsAlive(int player_id) const {
-	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		if (planets_[i]->Owner() == player_id) {
-			return true;
-		}
-	}
-	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		if (fleets_[i]->Owner() == player_id) {
-			return true;
-		}
-	}
-	return false;
-}
-
-int GameState::NumShips(int player_id) const {
-	int num_ships = 0;
-	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		if (planets_[i]->Owner() == player_id) {
-			num_ships += planets_[i]->NumShips();
-		}
-	}
-	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		if (fleets_[i]->Owner() == player_id) {
-			num_ships += fleets_[i]->NumShips();
-		}
-	}
-	return num_ships;
-}
-
 void GameState::DeleteData()
 {
 	planets_.DeleteAll();

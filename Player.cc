@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <stdexcept>
+#include "GameManager.h"
 
 Player Player::neutral()
 {
@@ -58,4 +59,23 @@ std::ostream& operator<<(std::ostream& out, const Player& player)
 {
 	out << player.GetPlayerNum();
 	return out;
+}
+
+bool Player::IsAlive() const {
+	return (NumShips() > 0);
+}
+
+int Player::NumShips() const {
+	int num_ships = 0;
+	for (unsigned int i = 0; i < GameManager::Instance().State().Planets().size(); ++i) {
+		if (GameManager::Instance().State().Planets()[i]->Owner() == playerNum) {
+			num_ships += GameManager::Instance().State().Planets()[i]->NumShips();
+		}
+	}
+	for (unsigned int i = 0; i < GameManager::Instance().State().Fleets().size(); ++i) {
+		if (GameManager::Instance().State().Fleets()[i]->Owner() == playerNum) {
+			num_ships += GameManager::Instance().State().Fleets()[i]->NumShips();
+		}
+	}
+	return num_ships;
 }

@@ -42,14 +42,6 @@ public:
 	// Returns the maximum separation between planets.
 	int MaxDistance() const;
 
-	// Returns true if the named player owns at least one planet or fleet.
-	// Otherwise, the player is deemed to be dead and false is returned.
-	bool IsAlive(int player_id) const;
-
-	// Returns the number of ships that the given player has, either located
-	// on planets or in flight.
-	int NumShips(int player_id) const;
-
 	// Writes a string which represents the current game state. This string
 	// conforms to the Point-in-Time format from the project Wiki.
 	std::string ToString() const;
