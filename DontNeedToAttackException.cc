@@ -1,6 +1,6 @@
 #include "DontNeedToAttackException.h"
 
-DontNeedToAttackException::DontNeedToAttackException(Planet const * newPlanet) : planet(newPlanet) {
+DontNeedToAttackException::DontNeedToAttackException(Planet const * newPlanet) :  runtime_error("DontNeedToAttackException"), planet(newPlanet) {
 }
 
 DontNeedToAttackException::~DontNeedToAttackException() throw() {

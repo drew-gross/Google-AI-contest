@@ -5,7 +5,7 @@
 
 #include "Planet.h"
 
-class DontNeedToDefendException : public std::exception {
+class DontNeedToDefendException : public std::runtime_error {
 public:
 	DontNeedToDefendException(Planet const * newPlanet);
 	~DontNeedToDefendException() throw();

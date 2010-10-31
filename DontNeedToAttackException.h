@@ -5,7 +5,7 @@
 
 #include "Planet.h"
 
-class DontNeedToAttackException : public std::exception {
+class DontNeedToAttackException : public std::runtime_error {
 public:
 	DontNeedToAttackException(Planet const * newPlanet);
 	~DontNeedToAttackException() throw();

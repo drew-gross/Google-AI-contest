@@ -6,9 +6,10 @@
 #include <algorithm>
 #include "DontNeedToAttackException.h"
 #include "GameManager.h"
+#include "NoPlanetsInListException.h"
 
 Planet* PlanetList::Weakest() {
-	if (size() == 0) return nullptr;
+	if (size() == 0) throw NoPlanetsInListException();
 	Planet* weakestPlanet = (*this)[0];
 	for (unsigned int i = 0; i < size(); ++i) {
 		Planet* curPlanet = (*this)[i];
@@ -21,7 +22,7 @@ Planet* PlanetList::Weakest() {
 
 Planet* PlanetList::WeakestFromPlanet( Planet const * const p )
 {
-	if (size() == 0) return nullptr;
+	if (size() == 0) throw NoPlanetsInListException();
 	Planet* weakestPlanet = (*this)[0];
 	for (unsigned int i = 0; i < size(); ++i) {
 		Planet* curPlanet = (*this)[i];
@@ -33,7 +34,7 @@ Planet* PlanetList::WeakestFromPlanet( Planet const * const p )
 }
 
 Planet* PlanetList::Strongest() {
-	if (size() == 0) return nullptr;
+	if (size() == 0) throw NoPlanetsInListException();
 	Planet* strongestPlanet = (*this)[0];
 	for (unsigned int i = 0; i < size(); ++i) {
 		Planet* curPlanet = (*this)[i];
