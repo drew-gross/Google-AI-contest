@@ -17,16 +17,10 @@
 #include <string>
 #include <vector>
 
-class PlanetWars {
+class GameState {
 public:
-	// Initializes the PlanetWars singleton.
 	static void Initialize();
-
-	// The PlanetWars singleton.
-	static PlanetWars& Instance();
-
-	// Runs the AI, completing a turn
-	void DoTurn();
+	static GameState& Instance();
 
 	// Returns the number of planets on the map. Planets are numbered starting
 	// with 0.
@@ -40,22 +34,15 @@ public:
 	int NumFleets() const;
 
 	// Returns the fleet with the given fleet_id. Fleets are numbered starting
-	// with 0. There are NumFleets() fleets. fleet_id's are not consistent fromB
+	// with 0. There are NumFleets() fleets. fleet_id's are not consistent from
 	// one turn to the next.
 	Fleet const * GetFleet(int fleet_id) const;
 
-	// Returns a list of all the planets.
 	PlanetList const & Planets() const;
-
-	// Return a list of all the fleets.
 	inline FleetList const & Fleets() const;
 
 	// Add a fleet to the game state.
 	void AddFleet(Fleet* new_fleet);
-
-	// Writes a string which represents the current game state. This string
-	// conforms to the Point-in-Time format from the project Wiki.
-	std::string ToString() const;
 
 	// Returns the distance between two planets, rounded up to the next highest
 	// integer. This is the number of discrete time steps it takes to get between
@@ -89,33 +76,35 @@ public:
 	// on planets or in flight.
 	int NumShips(int player_id) const;
 
-	// Sends a message to the game engine letting it know that you're done
-	// issuing orders for now.
-	void FinishTurn() const;
-
 	// Test all my functions to make sure they work.
 	static void UnitTest();
+
+	// Writes a string which represents the current game state. This string
+	// conforms to the Point-in-Time format from the project Wiki.
+	std::string ToString() const;
 
 	// Parses a game state from a string.
 	int ParseGameState(const std::string& s);
 
+
 protected:
 	// Initializes the game state given a string containing game state data.
-	PlanetWars();
+	GameState();
 
 private:
-	// The PlanetWars Singleton
-	static PlanetWars* instance_;
+	friend class AI;
+	// Deletes the Planets and Fleets
+	void DeleteData();
+
+	// Increments the turn
+	void NextTurn();
+
+	// The GameState Singleton
+	static GameState* instance_;
 
 	// The current game turn
 	int turn;
 
-	void DefensePhase();
-	void AttackPhase();
-	void SupplyPhase();
-
-	// Store all the planets and fleets. OMG we wouldn't wanna lose all the
-	// planets and fleets, would we!?
 	PlanetList planets_;
 	FleetList fleets_;
 
@@ -126,8 +115,7 @@ private:
 	static Logger uncaughtExceptions;
 };
 
-
-FleetList const & PlanetWars::Fleets() const {
+FleetList const & GameState::Fleets() const {
 	return fleets_;
 }
 

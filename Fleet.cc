@@ -1,5 +1,5 @@
 #include "Fleet.h"
-#include "PlanetWars.h"
+#include "GameState.h"
 
 
 Fleet::Fleet(Player owner,
@@ -24,11 +24,11 @@ int Fleet::NumShips() const {
 }
 
 Planet const * Fleet::SourcePlanet() const {
-	return PlanetWars::Instance().GetPlanet(source_planet_);
+	return GameState::Instance().GetPlanet(source_planet_);
 }
 
 Planet const * Fleet::DestinationPlanet() const {
-	return PlanetWars::Instance().GetPlanet(destination_planet_);
+	return GameState::Instance().GetPlanet(destination_planet_);
 }
 
 int Fleet::TotalTripLength() const {
@@ -37,8 +37,4 @@ int Fleet::TotalTripLength() const {
 
 unsigned int Fleet::TurnsRemaining() const {
 	return turns_remaining_;
-}
-
-bool Fleet::ArrivesInTurns(unsigned int turns) const {
-	return (TurnsRemaining() == turns);
 }
