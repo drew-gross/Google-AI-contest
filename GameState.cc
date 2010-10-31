@@ -105,3 +105,9 @@ void GameState::AddPlanet( Planet* p )
 {
 	planets_.push_back(p);
 }
+
+int GameState::Distance(Planet const * const source_planet, Planet const * const destination_planet) {
+	double dx = source_planet->X() - destination_planet->X();
+	double dy = source_planet->Y() - destination_planet->Y();
+	return (int)ceil(sqrt(dx * dx + dy * dy));
+}

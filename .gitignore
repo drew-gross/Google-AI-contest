@@ -20,3 +20,4 @@ MyBot.zip
 *.txt.bak
 *.ini
 *.vsp
+*.unsuccessfulbuild

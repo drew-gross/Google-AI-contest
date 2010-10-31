@@ -6,12 +6,6 @@
 GameManager* GameManager::instance_ = nullptr;
 Logger GameManager::mapdata("orders.txt");
 
-int GameManager::Distance(Planet const * const source_planet, Planet const * const destination_planet) {
-	double dx = source_planet->X() - destination_planet->X();
-	double dy = source_planet->Y() - destination_planet->Y();
-	return (int)ceil(sqrt(dx * dx + dy * dy));
-}
-
 int GameManager::MaxTurns()
 {
 	return 200;
