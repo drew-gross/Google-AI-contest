@@ -16,7 +16,6 @@
 
 GameState* GameState::instance_ = nullptr;
 Logger GameState::mapdata("orders.txt");
-Logger GameState::uncaughtExceptions("exceptions.txt");
 
 void GameState::Initialize() {
 	if (instance_ != nullptr) {

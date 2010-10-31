@@ -38,7 +38,7 @@ void AI::AttackPhase()
 		while (attackFromHere.size() > 0) {
 			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
 			int sourceDestSeparation = GameState::Distance(source, dest);
-			shipsToSend = dest->NumShipsInTurns(sourceDestSeparation) + 1;
+			shipsToSend = dest->NumShipsToTakeoverInTurns(sourceDestSeparation);
 
 			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() >= shipsToSend)) {
 				if (dest->OptimalAttackTime() <= sourceDestSeparation) {

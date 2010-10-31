@@ -279,3 +279,8 @@ Planet * Planet::ClosestPlanetInList( PlanetList list )
 	}
 	return closestPlanet;
 }
+
+int Planet::NumShipsToTakeoverInTurns( unsigned int turns ) const
+{
+	return NumShipsInTurns(turns) + 1;
+}

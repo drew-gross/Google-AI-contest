@@ -33,6 +33,9 @@ public:
 	// The number of ships on the planet in the specified amount of turns.
 	int NumShipsInTurns(unsigned int turns) const;
 
+	// The number of ships you need to arrive at the specified numeber of turns to take the planet over.
+	int NumShipsToTakeoverInTurns(unsigned int turns) const;
+
 	// Calculates the time when the planet will have the lowest amount of enemy ships on it.
 	// Throws an exception if I will own the planet at some point
 	int OptimalAttackTime() const;

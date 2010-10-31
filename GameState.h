@@ -110,9 +110,6 @@ private:
 
 	// Output log for sending orders to the engine.
 	static Logger mapdata;
-
-	// Output log for sending orders to the engine.
-	static Logger uncaughtExceptions;
 };
 
 FleetList const & GameState::Fleets() const {

@@ -13,7 +13,6 @@ void FleetList::DeleteAll() {
 	for (unsigned int i = 0; i < size(); i++) {
 		delete (*this)[i];
 	}
-	this->resize(0);
 }
 
 class isNotOwnedBy {
@@ -29,6 +28,6 @@ private:
 
 FleetList & FleetList::OwnedBy( Player player )
 {
-	this->erase(remove_if(this->begin(), this->end(), isNotOwnedBy(player)), this->end());
+	erase(remove_if(begin(), end(), isNotOwnedBy(player)), end());
 	return *this;
 }
