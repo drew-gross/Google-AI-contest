@@ -2,6 +2,7 @@
 #define FLEET_LIST_H_
 
 #include <vector>
+#include <list>
 #include "Fleet.h"
 #include "Planet.h"
 

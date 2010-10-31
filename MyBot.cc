@@ -26,6 +26,7 @@ int main() {
 			} else {
 				map_data += current_line;
 			}
+
 			current_line = "";
 		}
 	}

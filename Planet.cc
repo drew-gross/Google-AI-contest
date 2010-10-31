@@ -80,6 +80,7 @@ bool Planet::NeedToDefend() const {
 		if (OwnerInTurns(i) == Player::self())
 		{
 			returnval = true;
+			break;
 		}
 	}
 	return ((OwnerInTurns(PlanetWars::Instance().MaxDistance()) != Player::self()) && returnval);
@@ -92,8 +93,8 @@ bool Planet::NeedToAttack() const
 
 
 void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
-	for (unsigned int j = 0; j < defenders.size(); ++j) {
-		Planet * curDefender = defenders[j];
+	for (PlanetList::iterator j = defenders.begin(); j != defenders.end(); ++j) {
+		Planet * curDefender = *j;
 		if (NeedToDefend() && curDefender->NumShipsAvailable() > 0) {
 			PlanetWars::Instance().IssueOrder(curDefender, this, std::min(NumShipsInTurns(optimalDefenseTime + 1) + 1, curDefender->NumShipsAvailable()));
 		}
@@ -139,10 +140,9 @@ void Planet::ClearFutureCache() const {
 int Planet::ShipsArrivingInTurns( Player fromPlayer, int numTurns ) const
 {
 	int shipsArriving = 0;
-	FleetList fleets = PlanetWars::Instance().Fleets(); 
-	for (unsigned int i = 0; i < fleets.size(); ++i)
+	for (unsigned int i = 0; i < PlanetWars::Instance().Fleets().size(); ++i)
 	{
-		Fleet * curFleet = fleets[i];
+		Fleet * curFleet = PlanetWars::Instance().Fleets()[i];
 		if (curFleet->ArrivesInTurns(numTurns) && curFleet->DestinationPlanet() == this && curFleet->Owner() == fromPlayer) {
 			shipsArriving += curFleet->NumShips();
 		}
@@ -231,7 +231,7 @@ int Planet::NumShipsAvailable()
 	for (unsigned int i = 0; i < fleets.size(); ++i)
 	{
 		if (fleets[i]->DestinationPlanet() == this) {
-			shipsAvailable = std::min(shipsAvailable, NumShipsInTurns(fleets[i]->TurnsRemaining() + 1));
+			shipsAvailable = std::min(shipsAvailable, NumShipsInTurns(fleets[i]->TurnsRemaining()));
 		}
 	}
 	return shipsAvailable;
@@ -259,15 +259,22 @@ int Planet::ReturnOnInvestment( int turns )
 
 Planet * Planet::ClosestPlanet()
 {
-	PlanetList planets = PlanetWars::Instance().Planets();
-	planets.erase(std::remove(planets.begin(), planets.end(), this));
-	Planet * closestPlanet = planets[0];
+	return ClosestPlanetInList(PlanetWars::Instance().Planets());
+}
+
+Planet * Planet::ClosestPlanetInList( PlanetList list )
+{
+	list.erase(std::remove(list.begin(), list.end(), this), list.end());
+	if (list.size() == 0) {
+		return nullptr;
+	}
+	Planet * closestPlanet = list[0];
 	int closestDistance = std::numeric_limits<int>::max();
-	for (unsigned int i = 0; i < planets.size(); ++i)
+	for (unsigned int i = 0; i < list.size(); ++i)
 	{
-		if (PlanetWars::Distance(this, planets[i]) < closestDistance && this->PlanetID() != closestPlanet->PlanetID()) {
+		if (PlanetWars::Distance(this, list[i]) < closestDistance && PlanetID() != closestPlanet->PlanetID()) {
 			closestDistance = PlanetWars::Distance(this, closestPlanet);
-			closestPlanet = planets[i];
+			closestPlanet = list[i];
 		}
 	}
 	return closestPlanet;

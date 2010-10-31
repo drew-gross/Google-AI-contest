@@ -64,6 +64,7 @@ public:
 	int EnemyROI(int turns);
 
 	Planet * ClosestPlanet();
+	Planet * ClosestPlanetInList(PlanetList list);
 
 	// Adds up all the ships from fleets owned by the specified player and arriving
 	// In the specified number of turns

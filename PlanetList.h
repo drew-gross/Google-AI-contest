@@ -2,6 +2,7 @@
 #define PLANET_LIST_H_
 
 #include <vector>
+#include <list>
 #include "Planet.h"
 
 class PlanetList : public std::vector<Planet*> {
@@ -16,6 +17,7 @@ public:
 	PlanetList NotOwnedBy(Player player) const;
 	PlanetList NeedDefending() const;
 	PlanetList NeedAttacking() const;
+	PlanetList Fronts() const;
 
 	void DeleteAll();
 	Planet* HighestROIFromPlanet(Planet const * source) const;

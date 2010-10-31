@@ -54,10 +54,6 @@ PlanetList const & PlanetWars::Planets() const {
 	return planets_;
 }
 
-FleetList const & PlanetWars::Fleets() const {
-	return fleets_;
-}
-
 void PlanetWars::AddFleet(Fleet* new_fleet) {
 	fleets_.push_back(new_fleet);
 }
@@ -98,7 +94,7 @@ int PlanetWars::MaxDistance() {
 
 void PlanetWars::IssueOrder(Planet * const source_planet, Planet const * const destination_planet, int num_ships) {
 	if (source_planet->PlanetID() == destination_planet->PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
-	if (num_ships >= source_planet->NumShips()) {
+	if (num_ships > source_planet->NumShips()) {
 		throw std::runtime_error("Not Enough Ships to send");
 	}
 	if (source_planet->Owner() != Player::self()) throw std::runtime_error("You don't own that planet");
@@ -274,11 +270,11 @@ void PlanetWars::AttackPhase()
 					IssueOrder(source, dest, std::min(shipsToSend, source->NumShipsAvailable()));
 					shipsSent = true;
 				} else {
-					attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest));
+					attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest), attackFromHere.end());
 				}
 			} else {
-				attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest));
-				needToAttack.erase(std::remove(needToAttack.begin(), needToAttack.end(), dest));
+				attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest), attackFromHere.end());
+				needToAttack.erase(std::remove(needToAttack.begin(), needToAttack.end(), dest), needToAttack.end());
 			}
 		}
 	}
@@ -291,12 +287,13 @@ void PlanetWars::UnitTest()
 
 void PlanetWars::SupplyPhase()
 {
+	PlanetList fronts = Planets().Fronts();
 	PlanetList myPlanets = Planets().OwnedBy(Player::self());
 	for (unsigned int i = 0; i < myPlanets.size(); ++i)
 	{
-		if (myPlanets[i]->ClosestPlanet()->Owner() == Player::self())
+		if (myPlanets[i]->ClosestPlanetInList(fronts) != nullptr && myPlanets[i]->ClosestPlanetInList(fronts)->Owner() == Player::self())
 		{
-			PlanetWars::Instance().IssueOrder(myPlanets[i], myPlanets[i]->ClosestPlanet(), std::min(myPlanets[i]->NumShipsAvailable(), myPlanets[i]->NumShips()));
+			PlanetWars::Instance().IssueOrder(myPlanets[i], myPlanets[i]->ClosestPlanetInList(fronts), std::min(myPlanets[i]->NumShipsAvailable(), myPlanets[i]->NumShips()));
 		}	
 	}
 }

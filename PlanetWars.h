@@ -48,7 +48,7 @@ public:
 	PlanetList const & Planets() const;
 
 	// Return a list of all the fleets.
-	FleetList const & Fleets() const;
+	inline FleetList const & Fleets() const;
 
 	// Add a fleet to the game state.
 	void AddFleet(Fleet* new_fleet);
@@ -125,5 +125,10 @@ private:
 	// Output log for sending orders to the engine.
 	static Logger uncaughtExceptions;
 };
+
+
+FleetList const & PlanetWars::Fleets() const {
+	return fleets_;
+}
 
 #endif
