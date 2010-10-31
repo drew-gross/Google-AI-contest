@@ -30,11 +30,12 @@ int GameManager::TurnsRemaining()
 void GameManager::NextTurn()
 {
 	turn++;
+	ai.DoTurn();
+	ai.FinishTurn();
 }
 
 int GameManager::ParseGameState(const std::string& s) {
 	mapdata.LogMapData(s);
-	state.DeleteData();
 	std::vector<std::string> lines = StringUtil::Tokenize(s, "\n");
 	int planet_id = 0;
 	for (unsigned int i = 0; i < lines.size(); ++i) {

@@ -22,7 +22,6 @@ public:
 	// Returns the number of turns remaining in the game
 	int TurnsRemaining();
 
-	// Increments the turn counter
 	void NextTurn();
 
 	// Parses a game state from a string.

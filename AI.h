@@ -3,13 +3,13 @@
 
 class AI {
 public:
-	static void DoTurn();
-	static void FinishTurn();
+	void DoTurn();
+	void FinishTurn();
 
 private:
-	static void DefensePhase();
-	static void AttackPhase();
-	static void SupplyPhase();
+	void DefensePhase();
+	void AttackPhase();
+	void SupplyPhase();
 };
 
 #endif //AI_H_

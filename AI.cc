@@ -5,7 +5,6 @@
 #include "GameManager.h"
 
 void AI::DoTurn() {
-	GameManager::Instance().NextTurn();
 	try
 	{
 		DefensePhase();
@@ -81,7 +80,7 @@ void AI::DefensePhase() {
 				needToDefend[i]->SeekDefenseFrom(defendersBeforeOptimalTime, optimalDefenseTime);
 				needToDefend[i]->SeekDefenseFrom(defendersAfterOptimalTime, optimalDefenseTime);
 			}
-		} catch (DontNeedToDefendException) {
+		} catch (DontNeedToDefendException e) {
 			//do nothing - continue to next planet that needs defending
 		}
 	}

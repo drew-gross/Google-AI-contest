@@ -21,8 +21,7 @@ int main() {
 		if (c == '\n') {
 			if (current_line.length() >= 2 && current_line.substr(0, 2) == "go") {
 				GameManager::Instance().ParseGameState(map_data);
-				AI::DoTurn();
-				AI::FinishTurn();
+				GameManager::Instance().NextTurn();
 				map_data = "";
 			} else {
 				map_data += current_line;
