@@ -14,6 +14,8 @@
 #include <exception>
 #include <stdexcept>
 #include "GameManager.h"
+
+
 int GameState::NumPlanets() const {
 	return planets_.size();
 }
@@ -34,8 +36,8 @@ PlanetList const & GameState::Planets() const {
 	return planets_;
 }
 
-void GameState::AddFleet(Fleet* new_fleet) {
-	fleets_.push_back(new_fleet);
+void GameState::AddFleet(Fleet* f) {
+	fleets_.push_back(f);
 }
 
 std::string GameState::ToString() const {
@@ -59,7 +61,7 @@ int GameState::MaxDistance() const {
 	if (max_planet_separation_ < 0) {
 		for (unsigned int i = 0; i < Planets().size(); ++i) {
 			for (unsigned int j = 0; j < Planets().size(); ++j) {
-				max_planet_separation_ = std::max(max_planet_separation_, GameManager::Distance(Planets()[i], Planets()[j]));
+				max_planet_separation_ = std::max(max_planet_separation_, GameState::Distance(Planets()[i], Planets()[j]));
 			}
 		}
 	}

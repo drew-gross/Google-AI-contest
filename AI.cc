@@ -37,7 +37,7 @@ void AI::AttackPhase()
 		PlanetList attackFromHere = needToAttack;
 		while (attackFromHere.size() > 0) {
 			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
-			int sourceDestSeparation = GameManager::Distance(source, dest);
+			int sourceDestSeparation = GameState::Distance(source, dest);
 			shipsToSend = dest->NumShipsToTakeoverInTurns(sourceDestSeparation);
 
 			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() >= shipsToSend)) {
@@ -65,7 +65,7 @@ void AI::DefensePhase() {
 
 		PlanetList myPlanets = GameManager::Instance().State().Planets().OwnedBy(Player::self());
 		for (unsigned int j = 0; j < myPlanets.size(); ++j) {
-			int defenderDefendeeDistance = GameManager::Distance(myPlanets[j], needToDefend[i]);
+			int defenderDefendeeDistance = GameState::Distance(myPlanets[j], needToDefend[i]);
 			if (defenderDefendeeDistance == optimalDefenseTime) {
 				defendersAtOptimalTime.push_back(myPlanets[j]);
 			} else if (defenderDefendeeDistance < optimalDefenseTime) {

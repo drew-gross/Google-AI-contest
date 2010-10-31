@@ -28,7 +28,7 @@ public:
 	// else your bot will get kicked and lose the game. For example, you must own
 	// source_planet, and you can't send more ships than you actually have on
 	// that planet.
-	void IssueOrder(Planet * const source_planet, Planet const * const destination_planet, int num_ships);
+	void IssueOrder(Planet * const source, Planet const * const dest, int num_ships);
 
 	GameState& State();
 

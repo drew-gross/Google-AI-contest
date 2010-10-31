@@ -79,19 +79,19 @@ GameState& GameManager::State()
 GameManager::GameManager() {
 }
 
-void GameManager::IssueOrder(Planet * const source_planet, Planet const * const destination_planet, int num_ships) {
-	if (source_planet->PlanetID() == destination_planet->PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
-	if (num_ships > source_planet->NumShips()) {
+void GameManager::IssueOrder(Planet * const source, Planet const * const dest, int num_ships) {
+	if (source->PlanetID() == dest->PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
+	if (num_ships > source->NumShips()) {
 		throw std::runtime_error("Not Enough Ships to send");
 	}
-	if (source_planet->Owner() != Player::self()) throw std::runtime_error("You don't own that planet");
+	if (source->Owner() != Player::self()) throw std::runtime_error("You don't own that planet");
 	if (num_ships == 0) return;
 
-	state.AddFleet(new Fleet(Player::self(), num_ships, source_planet->PlanetID(), destination_planet->PlanetID(), Distance(source_planet, destination_planet), Distance(source_planet, destination_planet)));
-	destination_planet->ClearFutureCache();
-	source_planet->RemoveShips(num_ships);
+	state.AddFleet(new Fleet(Player::self(), num_ships, source->PlanetID(), dest->PlanetID(), GameState::Distance(source, dest), GameState::Distance(source, dest)));
+	dest->ClearFutureCache();
+	source->RemoveShips(num_ships);
 
-	std::cout << source_planet->PlanetID() << " " << destination_planet->PlanetID() << " " << num_ships << std::endl;
+	std::cout << source->PlanetID() << " " << dest->PlanetID() << " " << num_ships << std::endl;
 	std::cout.flush();
 }
 

@@ -19,27 +19,20 @@
 
 class GameState {
 public:
-	// Returns the number of planets on the map. Planets are numbered starting
-	// with 0.
 	int NumPlanets() const;
-
-	// Returns the planet with the given planet_id. There are NumPlanets()
-	// planets. They are numbered starting at 0.
-	Planet const * GetPlanet(int planet_id) const;
-
-	// Returns the number of fleets.
 	int NumFleets() const;
 
-	// Returns the fleet with the given fleet_id. Fleets are numbered starting
-	// with 0. There are NumFleets() fleets. fleet_id's are not consistent from
-	// one turn to the next.
+	// Returns the planet with the given planet_id. Planets are numbered starting at 0.
+	Planet const * GetPlanet(int planet_id) const;
+
+	// Returns the fleet with the given fleet_id. Fleets are numbered starting at 0. fleet_id's are not consistent from one turn to the next.
 	Fleet const * GetFleet(int fleet_id) const;
 
 	PlanetList const & Planets() const;
 	inline FleetList const & Fleets() const;
 
-	void AddFleet(Fleet* new_fleet);
-	void AddPlanet( Planet* p );
+	void AddFleet(Fleet* f);
+	void AddPlanet(Planet* p);
 
 	// Returns the distance between two planets, rounded up to the next highest
 	// integer. This is the number of discrete time steps it takes to get between

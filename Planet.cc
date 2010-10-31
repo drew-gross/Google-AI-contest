@@ -273,8 +273,8 @@ Planet * Planet::ClosestPlanetInList( PlanetList list )
 	int closestDistance = std::numeric_limits<int>::max();
 	for (unsigned int i = 0; i < list.size(); ++i)
 	{
-		if (GameManager::Distance(this, list[i]) < closestDistance && PlanetID() != closestPlanet->PlanetID()) {
-			closestDistance = GameManager::Distance(this, closestPlanet);
+		if (GameState::Distance(this, list[i]) < closestDistance && PlanetID() != closestPlanet->PlanetID()) {
+			closestDistance = GameState::Distance(this, closestPlanet);
 			closestPlanet = list[i];
 		}
 	}
