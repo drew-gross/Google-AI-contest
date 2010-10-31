@@ -10,6 +10,7 @@
 #include "DontNeedToAttackException.h"
 #include "DontNeedToDefendException.h"
 #include "Player.h"
+#include "GameManager.h"
 
 Planet::Planet(int planet_id, Player ownerNum, int num_ships, int growth_rate, double x, double y):
 planet_id_(planet_id),
@@ -44,7 +45,7 @@ int Planet::NumShipsInTurns(unsigned int turns) const {
 int Planet::OptimalAttackTime() const {
 	int optimalAttackTime = 0;
 	int leastShips = std::numeric_limits<int>::max();
-	for (int i = 0; i < GameState::Instance().MaxDistance(); ++i) {
+	for (int i = 0; i < GameManager::Instance().State().MaxDistance(); ++i) {
 		if (OwnerInTurns(i) == Player::self()) {
 			throw DontNeedToAttackException(this);
 		}
@@ -60,13 +61,13 @@ int Planet::OptimalDefenseTime() const {
 	int optimalDefenseTime = 0;
 	while (OwnerInTurns(optimalDefenseTime) != Player::self()) {
 		optimalDefenseTime++;
-		if (optimalDefenseTime > GameState::Instance().MaxDistance()) {
+		if (optimalDefenseTime > GameManager::Instance().State().MaxDistance()) {
 			throw DontNeedToDefendException(this);
 		}
 	}
 	while (OwnerInTurns(optimalDefenseTime) == Player::self()) {
 		optimalDefenseTime++;
-		if (optimalDefenseTime > GameState::Instance().MaxDistance()) {
+		if (optimalDefenseTime > GameManager::Instance().State().MaxDistance()) {
 			throw DontNeedToDefendException(this);
 		}
 	}
@@ -75,7 +76,7 @@ int Planet::OptimalDefenseTime() const {
 
 bool Planet::NeedToDefend() const {
 	bool returnval = false;
-	for (int i = 0; i < GameState::Instance().MaxDistance(); ++i)
+	for (int i = 0; i < GameManager::Instance().State().MaxDistance(); ++i)
 	{
 		if (OwnerInTurns(i) == Player::self())
 		{
@@ -83,12 +84,12 @@ bool Planet::NeedToDefend() const {
 			break;
 		}
 	}
-	return ((OwnerInTurns(GameState::Instance().MaxDistance()) != Player::self()) && returnval);
+	return ((OwnerInTurns(GameManager::Instance().State().MaxDistance()) != Player::self()) && returnval);
 }
 
 bool Planet::NeedToAttack() const
 {
-	return (OwnerInTurns(GameState::Instance().MaxDistance()) != Player::self());
+	return (OwnerInTurns(GameManager::Instance().State().MaxDistance()) != Player::self());
 }
 
 
@@ -96,7 +97,7 @@ void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	for (PlanetList::iterator j = defenders.begin(); j != defenders.end(); ++j) {
 		Planet * curDefender = *j;
 		if (NeedToDefend() && curDefender->NumShipsAvailable() > 0) {
-			GameState::Instance().IssueOrder(curDefender, this, std::min(NumShipsInTurns(optimalDefenseTime + 1) + 1, curDefender->NumShipsAvailable()));
+			GameManager::Instance().IssueOrder(curDefender, this, std::min(NumShipsInTurns(optimalDefenseTime + 1) + 1, curDefender->NumShipsAvailable()));
 		}
 	}
 }
@@ -140,9 +141,9 @@ void Planet::ClearFutureCache() const {
 int Planet::ShipsArrivingInTurns( Player fromPlayer, int numTurns ) const
 {
 	int shipsArriving = 0;
-	for (unsigned int i = 0; i < GameState::Instance().Fleets().size(); ++i)
+	for (unsigned int i = 0; i < GameManager::Instance().State().Fleets().size(); ++i)
 	{
-		Fleet * curFleet = GameState::Instance().Fleets()[i];
+		Fleet * curFleet = GameManager::Instance().State().Fleets()[i];
 		if (curFleet->ArrivesInTurns(numTurns) && curFleet->DestinationPlanet() == this && curFleet->Owner() == fromPlayer) {
 			shipsArriving += curFleet->NumShips();
 		}
@@ -212,12 +213,12 @@ void Planet::NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShip
 
 int Planet::NeutralROI( int turns )
 {
-	return ((GameState::Instance().TurnsRemaining() - turns) * GrowthRate()) - NumShipsInTurns(turns);
+	return ((GameManager::Instance().TurnsRemaining() - turns) * GrowthRate()) - NumShipsInTurns(turns);
 }
 
 int Planet::EnemyROI( int turns )
 {
-	return (GameState::Instance().TurnsRemaining() - turns) * 2 * GrowthRate();
+	return (GameManager::Instance().TurnsRemaining() - turns) * 2 * GrowthRate();
 }
 
 int Planet::NumShipsAvailable()
@@ -225,7 +226,7 @@ int Planet::NumShipsAvailable()
 	if (NeedToDefend() == true) {
 		return 0;
 	}
-	FleetList fleets = GameState::Instance().Fleets();
+	FleetList fleets = GameManager::Instance().State().Fleets();
 
 	int shipsAvailable = NumShips();
 	for (unsigned int i = 0; i < fleets.size(); ++i)
@@ -259,7 +260,7 @@ int Planet::ReturnOnInvestment( int turns )
 
 Planet * Planet::ClosestPlanet()
 {
-	return ClosestPlanetInList(GameState::Instance().Planets());
+	return ClosestPlanetInList(GameManager::Instance().State().Planets());
 }
 
 Planet * Planet::ClosestPlanetInList( PlanetList list )
@@ -272,8 +273,8 @@ Planet * Planet::ClosestPlanetInList( PlanetList list )
 	int closestDistance = std::numeric_limits<int>::max();
 	for (unsigned int i = 0; i < list.size(); ++i)
 	{
-		if (GameState::Distance(this, list[i]) < closestDistance && PlanetID() != closestPlanet->PlanetID()) {
-			closestDistance = GameState::Distance(this, closestPlanet);
+		if (GameManager::Distance(this, list[i]) < closestDistance && PlanetID() != closestPlanet->PlanetID()) {
+			closestDistance = GameManager::Distance(this, closestPlanet);
 			closestPlanet = list[i];
 		}
 	}

@@ -1,5 +1,6 @@
 #include "Fleet.h"
 #include "GameState.h"
+#include "GameManager.h"
 
 
 Fleet::Fleet(Player owner,
@@ -24,11 +25,11 @@ int Fleet::NumShips() const {
 }
 
 Planet const * Fleet::SourcePlanet() const {
-	return GameState::Instance().GetPlanet(source_planet_);
+	return GameManager::Instance().State().GetPlanet(source_planet_);
 }
 
 Planet const * Fleet::DestinationPlanet() const {
-	return GameState::Instance().GetPlanet(destination_planet_);
+	return GameManager::Instance().State().GetPlanet(destination_planet_);
 }
 
 int Fleet::TotalTripLength() const {

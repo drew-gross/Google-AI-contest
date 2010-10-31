@@ -13,6 +13,7 @@ void FleetList::DeleteAll() {
 	for (unsigned int i = 0; i < size(); i++) {
 		delete (*this)[i];
 	}
+	resize(0);
 }
 
 class isNotOwnedBy {

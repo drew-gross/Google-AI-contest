@@ -19,16 +19,13 @@
 
 class GameState {
 public:
-	static void Initialize();
-	static GameState& Instance();
-
 	// Returns the number of planets on the map. Planets are numbered starting
 	// with 0.
 	int NumPlanets() const;
 
 	// Returns the planet with the given planet_id. There are NumPlanets()
 	// planets. They are numbered starting at 0.
-	Planet const * GetPlanet(int planet_id);
+	Planet const * GetPlanet(int planet_id) const;
 
 	// Returns the number of fleets.
 	int NumFleets() const;
@@ -41,32 +38,11 @@ public:
 	PlanetList const & Planets() const;
 	inline FleetList const & Fleets() const;
 
-	// Add a fleet to the game state.
 	void AddFleet(Fleet* new_fleet);
-
-	// Returns the distance between two planets, rounded up to the next highest
-	// integer. This is the number of discrete time steps it takes to get between
-	// the two planets.
-	static int Distance(Planet const * const source_planet, Planet const * const destination_planet);
+	void AddPlanet( Planet* p );
 
 	// Returns the maximum separation between planets.
-	int MaxDistance();
-
-	// Returns the total number of turns in a game
-	int MaxTurns();
-
-	// Returns the number of turns that have gone by
-	int Turns();
-
-	// Returns the number of turns remaining in the game
-	int TurnsRemaining();
-
-	// Sends an order to the game engine. The order is to send num_ships ships
-	// from source_planet to destination_planet. The order must be valid, or
-	// else your bot will get kicked and lose the game. For example, you must own
-	// source_planet, and you can't send more ships than you actually have on
-	// that planet.
-	void IssueOrder(Planet * const source_planet, Planet const * const destination_planet, int num_ships);
+	int MaxDistance() const;
 
 	// Returns true if the named player owns at least one planet or fleet.
 	// Otherwise, the player is deemed to be dead and false is returned.
@@ -76,40 +52,18 @@ public:
 	// on planets or in flight.
 	int NumShips(int player_id) const;
 
-	// Test all my functions to make sure they work.
-	static void UnitTest();
-
 	// Writes a string which represents the current game state. This string
 	// conforms to the Point-in-Time format from the project Wiki.
 	std::string ToString() const;
 
-	// Parses a game state from a string.
-	int ParseGameState(const std::string& s);
-
-
-protected:
-	// Initializes the game state given a string containing game state data.
-	GameState();
-
 private:
+	friend class GameManager;
 	friend class AI;
 	// Deletes the Planets and Fleets
 	void DeleteData();
 
-	// Increments the turn
-	void NextTurn();
-
-	// The GameState Singleton
-	static GameState* instance_;
-
-	// The current game turn
-	int turn;
-
 	PlanetList planets_;
 	FleetList fleets_;
-
-	// Output log for sending orders to the engine.
-	static Logger mapdata;
 };
 
 FleetList const & GameState::Fleets() const {
