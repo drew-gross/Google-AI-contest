@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <list>
-#include "Planet.h"
+#include "Player.h"
+
+class Planet;
 
 class PlanetList : public std::vector<Planet*> {
 public:

@@ -4,6 +4,7 @@
 #include "DontNeedToDefendException.h"
 #include "GameManager.h"
 #include "DontNeedToAttackException.h"
+#include "NoPlanetsOwnedByPlayerException.h"
 
 void AI::DoTurn() {
 	try
@@ -37,7 +38,7 @@ void AI::AttackPhase()
 		PlanetList attackFromHere = GameManager::Instance().State().Planets().NeedAttacking();
 		while (attackFromHere.size() > 0) {
 			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
-			int sourceDestSeparation = GameState::Distance(source, dest);
+			int sourceDestSeparation = source->DistanceTo(dest);
 			shipsToSend = dest->NumShipsToTakeoverInTurns(sourceDestSeparation);
 
 			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() >= shipsToSend)) {
@@ -68,7 +69,7 @@ void AI::DefensePhase() {
 
 		PlanetList myPlanets = GameManager::Instance().State().Planets().OwnedBy(Player::self());
 		for (unsigned int j = 0; j < myPlanets.size(); ++j) {
-			int defenderDefendeeDistance = GameState::Distance(myPlanets[j], needToDefend[i]);
+			int defenderDefendeeDistance = myPlanets[j]->DistanceTo(needToDefend[i]);
 			if (defenderDefendeeDistance == optimalDefenseTime) {
 				defendersAtOptimalTime.push_back(myPlanets[j]);
 			} else if (defenderDefendeeDistance < optimalDefenseTime) {
@@ -84,20 +85,29 @@ void AI::DefensePhase() {
 				needToDefend[i]->SeekDefenseFrom(defendersAfterOptimalTime, optimalDefenseTime);
 			}
 		} catch (DontNeedToDefendException e) {
-			//do nothing - continue to next planet that needs defending
+			break;
 		}
 	}
 }
 
 void AI::SupplyPhase()
 {
-	PlanetList fronts = GameManager::Instance().State().Planets().Fronts();
 	PlanetList myPlanets = GameManager::Instance().State().Planets().OwnedBy(Player::self());
 	for (unsigned int i = 0; i < myPlanets.size(); ++i)
 	{
-		if (myPlanets[i]->ClosestPlanetInList(fronts) != nullptr && myPlanets[i]->ClosestPlanetInList(fronts)->Owner() == Player::self())
+		if (myPlanets[i]->IsSupplier())
 		{
-			GameManager::Instance().IssueOrder(myPlanets[i], myPlanets[i]->ClosestPlanetInList(fronts), std::min(myPlanets[i]->NumShipsAvailable(), myPlanets[i]->NumShips()));
+			try {
+				Planet * source = myPlanets[i];
+				Planet const * dest = source->ClosestPlanetOwnedBy(Player::self());
+				if (dest->NumShips() < 0)
+				{
+					dest = source->ClosestPlanetOwnedBy(Player::self());
+				}
+				GameManager::Instance().IssueOrder(source, dest, source->NumShipsAvailable());
+			} catch (NoPlanetsOwnedByPlayerException e) {
+				break;
+			}
 		}	
 	}
 }

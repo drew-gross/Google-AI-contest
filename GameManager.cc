@@ -47,8 +47,7 @@ int GameManager::ParseGameState(const std::string& s) {
 				throw std::runtime_error("error parsing gamestate");
 			}
 			Planet* p = new Planet(planet_id++,              // The ID of this planet
-				Player(atoi(tokens[3].c_str())),  // Owner
-				atoi(tokens[4].c_str()),  // Num ships
+				PlanetState(Player(atoi(tokens[3].c_str())), atoi(tokens[4].c_str())),  // Num ships
 				atoi(tokens[5].c_str()),  // Growth rate
 				atof(tokens[1].c_str()),  // X
 				atof(tokens[2].c_str())); // Y
@@ -87,8 +86,7 @@ void GameManager::IssueOrder(Planet * const source, Planet const * const dest, i
 	if (source->Owner() != Player::self()) throw std::runtime_error("You don't own that planet");
 	if (num_ships == 0) return;
 
-	state.AddFleet(new Fleet(Player::self(), num_ships, source->PlanetID(), dest->PlanetID(), GameState::Distance(source, dest), GameState::Distance(source, dest)));
-	dest->ClearFutureCache();
+	state.AddFleet(new Fleet(Player::self(), num_ships, source->PlanetID(), dest->PlanetID(), source->DistanceTo(dest), source->DistanceTo(dest)));
 	source->RemoveShips(num_ships);
 
 	std::cout << source->PlanetID() << " " << dest->PlanetID() << " " << num_ships << std::endl;

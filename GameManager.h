@@ -51,6 +51,7 @@ private:
 
 void GameManager::Initialize() {
 	if (instance_ != nullptr) {
+
 		return;
 	}
 	instance_ = new GameManager();

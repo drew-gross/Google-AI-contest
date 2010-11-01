@@ -38,6 +38,7 @@ PlanetList const & GameState::Planets() const {
 
 void GameState::AddFleet(Fleet* f) {
 	fleets_.push_back(f);
+	f->DestinationPlanet()->ClearFutureCache();
 }
 
 std::string GameState::ToString() const {
@@ -61,7 +62,7 @@ int GameState::MaxDistance() const {
 	if (max_planet_separation_ < 0) {
 		for (unsigned int i = 0; i < Planets().size(); ++i) {
 			for (unsigned int j = 0; j < Planets().size(); ++j) {
-				max_planet_separation_ = std::max(max_planet_separation_, GameState::Distance(Planets()[i], Planets()[j]));
+				max_planet_separation_ = std::max(max_planet_separation_, Planets()[i]->DistanceTo(Planets()[j]));
 			}
 		}
 	}
@@ -77,10 +78,4 @@ void GameState::DeleteData()
 void GameState::AddPlanet( Planet* p )
 {
 	planets_.push_back(p);
-}
-
-int GameState::Distance(Planet const * const source_planet, Planet const * const destination_planet) {
-	double dx = source_planet->X() - destination_planet->X();
-	double dy = source_planet->Y() - destination_planet->Y();
-	return (int)ceil(sqrt(dx * dx + dy * dy));
 }

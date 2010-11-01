@@ -24,10 +24,10 @@ public:
 	int NumShips() const;
 
 	// Returns the ID of the planet where this fleet originated.
-	Planet const * SourcePlanet() const;
+	Planet const* SourcePlanet() const;
 
 	// Returns the ID of the planet where this fleet is headed.
-	Planet const * DestinationPlanet() const;
+	Planet const* DestinationPlanet() const;
 
 	// Returns the total distance that is being traveled by this fleet. This
 	// is the distance between the source planet and the destination planet,

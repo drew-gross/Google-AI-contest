@@ -7,6 +7,7 @@
 #include "DontNeedToAttackException.h"
 #include "GameManager.h"
 #include "NoPlanetsInListException.h"
+#include "Planet.h"
 
 Planet* PlanetList::Weakest() {
 	if (size() == 0) throw NoPlanetsInListException();
@@ -26,7 +27,7 @@ Planet* PlanetList::WeakestFromPlanet( Planet const * const p )
 	Planet* weakestPlanet = (*this)[0];
 	for (unsigned int i = 0; i < size(); ++i) {
 		Planet* curPlanet = (*this)[i];
-		if (curPlanet->NumShipsInTurns(GameState::Distance(p, curPlanet)) < weakestPlanet->NumShipsInTurns(GameState::Distance(p, curPlanet))) {
+		if (curPlanet->NumShipsInTurns(p->DistanceTo(curPlanet)) < weakestPlanet->NumShipsInTurns(p->DistanceTo(curPlanet))) {
 			weakestPlanet = curPlanet;
 		}
 	}
@@ -93,7 +94,7 @@ Planet* PlanetList::HighestROIFromPlanet( Planet const * source ) const
 		Planet * curPlanet = operator[](i);
 		try
 		{
-			int curPlanetROI = curPlanet->ReturnOnInvestment(GameState::Distance(source, curPlanet));
+			int curPlanetROI = curPlanet->ReturnOnInvestment(source->DistanceTo(curPlanet));
 			if (curPlanetROI > ROI) {
 				ROI = curPlanetROI;
 				highestROIPlanet = curPlanet;
@@ -101,7 +102,7 @@ Planet* PlanetList::HighestROIFromPlanet( Planet const * source ) const
 		}
 		catch (DontNeedToAttackException e) 
 		{
-			//do nothing, for loop will go to next planet anyway.
+			break;
 		}
 	}
 	return highestROIPlanet;

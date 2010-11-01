@@ -34,11 +34,6 @@ public:
 	void AddFleet(Fleet* f);
 	void AddPlanet(Planet* p);
 
-	// Returns the distance between two planets, rounded up to the next highest
-	// integer. This is the number of discrete time steps it takes to get between
-	// the two planets.
-	static int Distance(Planet const * const source_planet, Planet const * const destination_planet);
-
 	// Returns the maximum separation between planets.
 	int MaxDistance() const;
 

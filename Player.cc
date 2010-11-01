@@ -24,7 +24,6 @@ Player::Player( int newPlayerNum ) : playerNum(newPlayerNum)
 
 Player::Player()
 {
-	playerNum = -1;
 }
 
 Player Player::Opponent()

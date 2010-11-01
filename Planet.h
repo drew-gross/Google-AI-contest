@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "Utilities.h"
-#include "Player.h"
+#include "PlanetState.h"
 
 class PlanetList;
 
@@ -15,8 +15,7 @@ class Planet {
 public:
 	// Initializes a planet.
 	Planet(int planet_id,
-		Player owner,
-		int num_ships,
+		PlanetState newState,
 		int growth_rate,
 		double x,
 		double y);
@@ -27,13 +26,18 @@ public:
 	Player OwnerInTurns(unsigned int turns) const;
 	int NumShips() const;
 
+	int DistanceTo( Planet const * p ) const;
+
 	// The number of ships that can be sent without causing loss of control of the planet.
 	int NumShipsAvailable();
+
+	// Returns true if the closest enemy planet is twice as far as the closest friendly planet
+	bool IsSupplier();
 
 	// The number of ships on the planet in the specified amount of turns.
 	int NumShipsInTurns(unsigned int turns) const;
 
-	// The number of ships you need to arrive at the specified numeber of turns to take the planet over.
+	// The number of ships you need to arrive at the specified number of turns to take the planet over.
 	int NumShipsToTakeoverInTurns(unsigned int turns) const;
 
 	// Calculates the time when the planet will have the lowest amount of enemy ships on it.
@@ -49,7 +53,7 @@ public:
 	bool NeedToDefend() const;
 
 	// Determines whether the planet needs to be attacked. Returns true if
-	// I will not own the planet indefinately
+	// I will not own the planet indefinitely
 	bool NeedToAttack() const;
 
 	// Takes the list of planets specified and requests defense from them until the planet no longer needs defense
@@ -68,6 +72,7 @@ public:
 
 	Planet * ClosestPlanet();
 	Planet * ClosestPlanetInList(PlanetList list);
+	Planet const * ClosestPlanetOwnedBy( Player player ) const;
 
 	// Adds up all the ships from fleets owned by the specified player and arriving
 	// In the specified number of turns
@@ -77,36 +82,31 @@ public:
 	double X() const;
 	double Y() const;
 
-	// Use the following functions to set the properties of this planet. Note
-	// that these functions only affect your program's copy of the game state.
-	// You can't steal your opponent's planets just by changing the owner to 1
-	// using the Owner(int) function! :-)
-	void Owner(Player new_owner);
-	void NumShips(int new_num_ships);
 	void AddShips(int amount);
 	void RemoveShips(int amount);
 
 	// Compares planets by their ID's.
-	bool operator==(Planet const & rhs);
+	bool operator==(Planet const & rhs) const;
+	bool operator!=(Planet const & rhs) const;
 
 	void ClearFutureCache() const;
 
 private:
-	std::pair<int, Player> StateInTurns(unsigned int turns) const;
+	PlanetState StateInTurns(unsigned int turns) const;
+	std::vector<PlanetState> const & FutureStates(unsigned int turns) const;
+	PlanetState CurrentState() const;
 
-	static void NextState( std::pair<int, Player> &stateInTurn, int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate );
-	static void AdvancementPhase( std::pair<int, Player> &stateInTurn, int growthRate );
-	static void ArrivalPhase(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers);
-	static void ResolveNeutralAttack( std::pair<int, Player> &curState, int playerAttackers, int enemyAttackers );
-	static void ResolveNonNeutralAttack(std::pair<int, Player> & curState, int playerAttackers, int enemyAttackers);
-
+	static PlanetState NextState(PlanetState const& stateInTurn, int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate );
+	static PlanetState AdvancementPhase(PlanetState const& curState, int growthRate );
+	static PlanetState ArrivalPhase(PlanetState const& curState, int playerAttackers, int enemyAttackers);
+	static PlanetState ResolveNeutralAttack(PlanetState const& curState, int playerAttackers, int enemyAttackers );
+	static PlanetState ResolveNonNeutralAttack(PlanetState const& curState, int playerAttackers, int enemyAttackers);
+	PlanetState state;
 	int planet_id_;
-	Player owner_;
-	int num_ships_;
 	int growth_rate_;
 	double x_, y_;
 
-	mutable std::vector<std::pair<int, Player> > stateInFuture;
+	mutable std::vector<PlanetState> stateInFuture;
 };
 
 #endif //PLANET_H_
