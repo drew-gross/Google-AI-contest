@@ -94,16 +94,3 @@ void GameManager::IssueOrder(Planet * const source, Planet const * const dest, i
 	std::cout << source->PlanetID() << " " << dest->PlanetID() << " " << num_ships << std::endl;
 	std::cout.flush();
 }
-
-void GameManager::Initialize() {
-	if (instance_ != nullptr) {
-		return;
-	}
-	instance_ = new GameManager();
-	instance_->turn = 0;
-}
-
-GameManager& GameManager::Instance() {
-	Initialize();
-	return *instance_;
-}

@@ -6,8 +6,8 @@
 
 class GameManager {
 public:
-	static void Initialize();
-	static GameManager& Instance();
+	static inline void Initialize();
+	static inline GameManager& Instance();
 
 	// Returns the total number of turns in a game
 	int MaxTurns();
@@ -48,4 +48,18 @@ private:
 	// The GameState Singleton
 	static GameManager* instance_;
 };
+
+void GameManager::Initialize() {
+	if (instance_ != nullptr) {
+		return;
+	}
+	instance_ = new GameManager();
+	instance_->turn = 0;
+}
+
+GameManager& GameManager::Instance() {
+	Initialize();
+	return *instance_;
+}
+
 #endif //GAMEMANAGER_H_

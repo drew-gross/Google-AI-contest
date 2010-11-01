@@ -3,6 +3,7 @@
 #include "GameState.h"
 #include "DontNeedToDefendException.h"
 #include "GameManager.h"
+#include "DontNeedToAttackException.h"
 
 void AI::DoTurn() {
 	try
@@ -28,28 +29,30 @@ void AI::AttackPhase()
 {
 	bool shipsSent = true;
 
-	PlanetList needToAttack = GameManager::Instance().State().Planets().NeedAttacking();
-	while (needToAttack.size() > 0 && shipsSent) {
+	while (GameManager::Instance().State().Planets().NeedAttacking().size() > 0 && shipsSent) {
 		shipsSent = false;
 		Planet* source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
 		int shipsToSend = 0;
 
-		PlanetList attackFromHere = needToAttack;
+		PlanetList attackFromHere = GameManager::Instance().State().Planets().NeedAttacking();
 		while (attackFromHere.size() > 0) {
 			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
 			int sourceDestSeparation = GameState::Distance(source, dest);
 			shipsToSend = dest->NumShipsToTakeoverInTurns(sourceDestSeparation);
 
 			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() >= shipsToSend)) {
-				if (dest->OptimalAttackTime() <= sourceDestSeparation) {
-					GameManager::Instance().IssueOrder(source, dest, std::min(shipsToSend, source->NumShipsAvailable()));
-					shipsSent = true;
-				} else {
+				try {
+					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
+						GameManager::Instance().IssueOrder(source, dest, std::min(shipsToSend, source->NumShipsAvailable()));
+						shipsSent = true;
+					} else {
+						attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest), attackFromHere.end());
+					}
+				} catch (DontNeedToAttackException e) {
 					attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest), attackFromHere.end());
 				}
 			} else {
 				attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest), attackFromHere.end());
-				needToAttack.erase(std::remove(needToAttack.begin(), needToAttack.end(), dest), needToAttack.end());
 			}
 		}
 	}

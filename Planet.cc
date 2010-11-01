@@ -141,9 +141,10 @@ void Planet::ClearFutureCache() const {
 int Planet::ShipsArrivingInTurns( Player fromPlayer, int numTurns ) const
 {
 	int shipsArriving = 0;
-	for (unsigned int i = 0; i < GameManager::Instance().State().Fleets().size(); ++i)
+	GameManager& gm = GameManager::Instance();
+	for (unsigned int i = 0; i < gm.State().Fleets().size(); ++i)
 	{
-		Fleet * curFleet = GameManager::Instance().State().Fleets()[i];
+		Fleet * curFleet = gm.State().Fleets()[i];
 		if (curFleet->ArrivesInTurns(numTurns) && curFleet->DestinationPlanet() == this && curFleet->Owner() == fromPlayer) {
 			shipsArriving += curFleet->NumShips();
 		}

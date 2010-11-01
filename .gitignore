@@ -21,3 +21,4 @@ MyBot.zip
 *.ini
 *.vsp
 *.unsuccessfulbuild
+*.psess
