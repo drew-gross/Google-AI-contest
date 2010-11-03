@@ -99,11 +99,7 @@ void AI::SupplyPhase()
 		{
 			try {
 				Planet * source = myPlanets[i];
-				Planet const * dest = source->ClosestPlanetOwnedBy(Player::self());
-				if (dest->NumShips() < 0)
-				{
-					dest = source->ClosestPlanetOwnedBy(Player::self());
-				}
+				Planet const * dest = source->ClosestPlanetOwnedBy(Player::self()); //source->ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::self()).Fronts());
 				GameManager::Instance().IssueOrder(source, dest, source->NumShipsAvailable());
 			} catch (NoPlanetsOwnedByPlayerException e) {
 				break;

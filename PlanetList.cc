@@ -134,7 +134,7 @@ PlanetList PlanetList::Fronts() const
 {
 	PlanetList p;
 	for(unsigned int i = 0; i < size(); ++i) {
-		if (operator[](i)->ClosestPlanet()->Owner() != Player::self()) {
+		if (!operator[](i)->IsSupplier()) {
 			p.push_back(operator[](i));
 		}
 	}

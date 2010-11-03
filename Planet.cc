@@ -310,7 +310,7 @@ bool Planet::IsSupplier()
 		closestAlly = ClosestPlanetOwnedBy(Player::self());
 		distanceToAlly = DistanceTo(closestAlly);
 	} catch (NoPlanetsOwnedByPlayerException e) {
-		return false;
+		distanceToAlly = std::numeric_limits<int>::max();
 	}
 
 	try {
@@ -319,6 +319,7 @@ bool Planet::IsSupplier()
 	} catch (NoPlanetsOwnedByPlayerException e) {
 		distanceToEnemy = std::numeric_limits<int>::max();
 	}
+
 	try {
 		closestNeutral = ClosestPlanetOwnedBy(Player::neutral());
 		distanceToNeutral = DistanceTo(closestNeutral);
@@ -326,8 +327,7 @@ bool Planet::IsSupplier()
 		distanceToNeutral = std::numeric_limits<int>::max();
 	}
 
-
-	return ((distanceToAlly < (2*distanceToEnemy)) && (distanceToAlly < distanceToNeutral));
+	return (2*distanceToAlly < distanceToEnemy && distanceToAlly < distanceToNeutral);
 }
 
 int Planet::DistanceTo( Planet const * p ) const
@@ -352,6 +352,14 @@ Planet const * Planet::ClosestPlanetOwnedBy( Player player ) const
 		}
 	}
 	Planet const * closestPlanet = playerPlanets[0];
+	if (*this == *closestPlanet)
+	{
+		if (playerPlanets.size() == 2) {
+			closestPlanet = playerPlanets[1];
+		} else {
+			throw NoPlanetsOwnedByPlayerException(player);
+		}
+	}
 	for (unsigned int i = 1; i < playerPlanets.size(); ++i) {
 		if (DistanceTo(closestPlanet) > DistanceTo(playerPlanets[i]) && (*this) != (*playerPlanets[i])) {
 			closestPlanet = playerPlanets[i];
