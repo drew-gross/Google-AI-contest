@@ -78,11 +78,13 @@ int Planet::OptimalDefenseTime() const {
 }
 
 bool Planet::NeedToDefend() const {
-	bool returnval = false;
 	std::vector<PlanetState> futureStates = FutureStates(GameManager::Instance().State().MaxDistance());
+	if (futureStates[0].GetPlayer() != Player::self()) {
+		return false;
+	}
 	for (unsigned int i = 0; i < futureStates.size(); ++i)
 	{
-		if (futureStates[i].GetPlayer() == Player::self())
+		if (futureStates[i].GetPlayer() != Player::self())
 		{
 			return true;
 			break;
