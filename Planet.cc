@@ -84,12 +84,11 @@ bool Planet::NeedToDefend() const {
 	{
 		if (futureStates[i].GetPlayer() == Player::self())
 		{
-			returnval = true;
+			return true;
 			break;
 		}
-
 	}
-	return ((OwnerInTurns(GameManager::Instance().State().MaxDistance()) != Player::self()) && returnval);
+	return false;
 }
 
 bool Planet::NeedToAttack() const
