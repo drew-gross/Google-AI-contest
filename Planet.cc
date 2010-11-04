@@ -171,7 +171,7 @@ PlanetState Planet::StateInTurns(unsigned int turnsInFuture) const {
 
 		int totalEnemyShipsAttacking = ShipsArrivingInTurns(Player::enemy(), turnInFuture);
 		int totalPlayerShipsAttacking = ShipsArrivingInTurns(Player::self(), turnInFuture);
-		stateInTurn = stateInTurn.NextState(totalPlayerShipsAttacking, totalEnemyShipsAttacking, GrowthRate());
+		stateInTurn.NextState(totalPlayerShipsAttacking, totalEnemyShipsAttacking, GrowthRate());
 	}
 	return stateInFuture[turnsInFuture];
 }

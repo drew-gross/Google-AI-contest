@@ -15,12 +15,11 @@ public:
 
 	void RemoveShips(int shipsSent);
 
-	PlanetState NextState(int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate );
-	PlanetState AdvancementPhase(int growthRate );
-	PlanetState ArrivalPhase(int playerAttackers, int enemyAttackers);
-	PlanetState ResolveNeutralAttack(int playerAttackers, int enemyAttackers );
-	PlanetState ResolveNonNeutralAttack(int playerAttackers, int enemyAttackers);
-
+	void NextState(int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate ) ;
+	PlanetState AdvancementPhase(int growthRate )const;
+	PlanetState ArrivalPhase(int playerAttackers, int enemyAttackers)const;
+	PlanetState ResolveNeutralAttack(int playerAttackers, int enemyAttackers )const;
+	PlanetState ResolveNonNeutralAttack(int playerAttackers, int enemyAttackers)const;
 private:
 	Player player;
 	int ships;

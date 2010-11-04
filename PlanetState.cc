@@ -40,7 +40,7 @@ void PlanetState::SetShips( int newShips )
 	}
 }
 
-PlanetState PlanetState::ArrivalPhase(int playerAttackers, int enemyAttackers )
+PlanetState PlanetState::ArrivalPhase(int playerAttackers, int enemyAttackers )const
 {
 	if (GetPlayer() == Player::neutral()) {
 		return ResolveNeutralAttack(playerAttackers, enemyAttackers);
@@ -49,7 +49,7 @@ PlanetState PlanetState::ArrivalPhase(int playerAttackers, int enemyAttackers )
 	}
 }
 
-PlanetState PlanetState::ResolveNeutralAttack(int playerAttackers,  int enemyAttackers )
+PlanetState PlanetState::ResolveNeutralAttack(int playerAttackers,  int enemyAttackers )const
 {
 	PlanetState nextState;
 	if (playerAttackers > GetShips() && playerAttackers > enemyAttackers) {
@@ -65,19 +65,19 @@ PlanetState PlanetState::ResolveNeutralAttack(int playerAttackers,  int enemyAtt
 	return nextState;
 }
 
-PlanetState PlanetState::ResolveNonNeutralAttack(int defenderShips, int attackerShips) {
+PlanetState PlanetState::ResolveNonNeutralAttack(int defenderShips, int attackerShips) const{
 	PlanetState nextState;
 	nextState.SetPlayer(GetPlayer());
 	nextState.SetShips(GetShips() + defenderShips - attackerShips);
 	return nextState;
 }
 
-PlanetState PlanetState::NextState(int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate )
+void PlanetState::NextState( int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate ) 
 {
-	return AdvancementPhase(growthRate).ArrivalPhase(totalPlayerShipsAttacking, totalEnemyShipsAttacking);
+	*this = AdvancementPhase(growthRate).ArrivalPhase(totalPlayerShipsAttacking, totalEnemyShipsAttacking);
 }
 
-PlanetState PlanetState::AdvancementPhase(int growthRate )
+PlanetState PlanetState::AdvancementPhase(int growthRate )const
 {
 	PlanetState nextState(*this);
 	if (nextState.GetPlayer() != Player::neutral()) {
