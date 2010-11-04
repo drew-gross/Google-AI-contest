@@ -21,7 +21,7 @@ int GameState::NumPlanets() const {
 }
 
 Planet const * GameState::GetPlanet(int planet_id) const {
-	return planets_[planet_id];
+	return planets_.at(planet_id);
 }
 
 int GameState::NumFleets() const {
@@ -29,7 +29,7 @@ int GameState::NumFleets() const {
 }
 
 Fleet const * GameState::GetFleet(int fleet_id) const {
-	return fleets_[fleet_id];
+	return fleets_.at(fleet_id);
 }
 
 PlanetList const & GameState::Planets() const {

@@ -5,8 +5,8 @@
 
 Fleet::Fleet(Player owner,
 	int num_ships,
-	int source_planet,
-	int destination_planet,
+	Planet const * source_planet,
+	Planet const * destination_planet,
 	int total_trip_length,
 	unsigned int turns_remaining) : owner_(owner),
 									num_ships_(num_ships), 
@@ -25,11 +25,11 @@ int Fleet::Ships() const {
 }
 
 Planet const * Fleet::SourcePlanet() const {
-	return GameManager::Instance().State().GetPlanet(source_planet_);
+	return source_planet_;
 }
 
 Planet const * Fleet::DestinationPlanet() const {
-	return GameManager::Instance().State().GetPlanet(destination_planet_);
+	return destination_planet_;
 }
 
 int Fleet::TotalTripLength() const {

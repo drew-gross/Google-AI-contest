@@ -10,8 +10,8 @@ public:
 	// Initializes a fleet.
 	Fleet(Player owner,
 		int num_ships,
-		int source_planet,
-		int destination_planet,
+		Planet const * source_planet,
+		Planet const * destination_planet,
 		int total_trip_length,
 		unsigned int turns_remaining);
 
@@ -44,8 +44,8 @@ public:
 private:
 	Player owner_;
 	int num_ships_;
-	int source_planet_;
-	int destination_planet_;
+	Planet const * source_planet_;
+	Planet const * destination_planet_;
 	int total_trip_length_;
 	int turns_remaining_;
 };

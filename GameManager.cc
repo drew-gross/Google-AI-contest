@@ -59,8 +59,8 @@ int GameManager::ParseGameState(const std::string& s) {
 			}
 			Fleet* f = new Fleet(atoi(tokens[1].c_str()),  // Owner
 				atoi(tokens[2].c_str()),  // Num ships
-				atoi(tokens[3].c_str()),  // Source
-				atoi(tokens[4].c_str()),  // Destination
+				GameManager::Instance().State().GetPlanet(atoi(tokens[3].c_str())),  // Source
+				GameManager::Instance().State().GetPlanet(atoi(tokens[4].c_str())),  // Destination
 				atoi(tokens[5].c_str()),  // Total trip length
 				atoi(tokens[6].c_str())); // Turns remaining
 			state.AddFleet(f);
@@ -87,7 +87,7 @@ void GameManager::IssueOrder(Planet * const source, Planet const * const dest, i
 	if (source->Owner() != Player::self()) throw std::runtime_error("You don't own that planet");
 	if (num_ships == 0) return;
 
-	state.AddFleet(new Fleet(Player::self(), num_ships, source->PlanetID(), dest->PlanetID(), source->DistanceTo(dest), source->DistanceTo(dest)));
+	state.AddFleet(new Fleet(Player::self(), num_ships, source, dest, source->DistanceTo(dest), source->DistanceTo(dest)));
 	source->RemoveShips(num_ships);
 
 	std::cout << source->PlanetID() << " " << dest->PlanetID() << " " << num_ships << std::endl;
