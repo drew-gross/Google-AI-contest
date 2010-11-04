@@ -24,21 +24,21 @@ public:
 	int PlanetID() const;
 	Player Owner() const;
 	Player OwnerInTurns(unsigned int turnsInFuture) const;
-	int NumShips() const;
+	int Ships() const;
 
 	int DistanceTo( Planet const * p ) const;
 
 	// The number of ships that can be sent without causing loss of control of the planet.
-	int NumShipsAvailable();
+	int ShipsAvailable();
 
 	// Returns true if the closest enemy planet is twice as far as the closest friendly planet
 	bool IsSupplier();
 
 	// The number of ships on the planet in the specified amount of turns.
-	int NumShipsInTurns(unsigned int turnsInFuture) const;
+	int ShipsInTurns(unsigned int turnsInFuture) const;
 
 	// The number of ships you need to arrive at the specified number of turns to take the planet over.
-	int NumShipsToTakeoverInTurns(unsigned int turnsInFuture) const;
+	int ShipsToTakeoverInTurns(unsigned int turnsInFuture) const;
 
 	// Calculates the time when the planet will have the lowest amount of enemy ships on it.
 	// Throws an exception if I will own the planet at some point

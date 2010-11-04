@@ -21,7 +21,7 @@ public:
 	Player Owner() const;
 
 	// Returns the number of ships that comprise this fleet.
-	int NumShips() const;
+	int Ships() const;
 
 	// Returns the ID of the planet where this fleet originated.
 	Planet const* SourcePlanet() const;

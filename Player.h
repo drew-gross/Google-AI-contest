@@ -10,7 +10,7 @@ public:
 	Player();
 	Player (int newPlayerNum);
 
-	int GetPlayerNum() const;
+	int PlayerNum() const;
 
 	Player Opponent();
 
@@ -27,7 +27,7 @@ public:
 
 	// Returns the number of ships that the given player has, either located
 	// on planets or in flight.
-	int NumShips() const;
+	int Ships() const;
 
 private:
 	int playerNum;

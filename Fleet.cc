@@ -20,7 +20,7 @@ Player Fleet::Owner() const {
 	return owner_;
 }
 
-int Fleet::NumShips() const {
+int Fleet::Ships() const {
 	return num_ships_;
 }
 

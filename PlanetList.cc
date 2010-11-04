@@ -14,7 +14,7 @@ Planet* PlanetList::Weakest() {
 	Planet* weakestPlanet = (*this)[0];
 	for (unsigned int i = 0; i < size(); ++i) {
 		Planet* curPlanet = (*this)[i];
-		if (curPlanet->NumShips() < weakestPlanet->NumShips()) {
+		if (curPlanet->Ships() < weakestPlanet->Ships()) {
 			weakestPlanet = curPlanet;
 		}
 	}
@@ -27,7 +27,7 @@ Planet* PlanetList::WeakestFromPlanet( Planet const * const p )
 	Planet* weakestPlanet = (*this)[0];
 	for (unsigned int i = 0; i < size(); ++i) {
 		Planet* curPlanet = (*this)[i];
-		if (curPlanet->NumShipsInTurns(p->DistanceTo(curPlanet)) < weakestPlanet->NumShipsInTurns(p->DistanceTo(curPlanet))) {
+		if (curPlanet->ShipsInTurns(p->DistanceTo(curPlanet)) < weakestPlanet->ShipsInTurns(p->DistanceTo(curPlanet))) {
 			weakestPlanet = curPlanet;
 		}
 	}
@@ -39,7 +39,7 @@ Planet* PlanetList::Strongest() {
 	Planet* strongestPlanet = (*this)[0];
 	for (unsigned int i = 0; i < size(); ++i) {
 		Planet* curPlanet = (*this)[i];
-		if (curPlanet->NumShips() > strongestPlanet->NumShips()) {
+		if (curPlanet->Ships() > strongestPlanet->Ships()) {
 			strongestPlanet = curPlanet;
 		}
 	}
@@ -75,12 +75,12 @@ PlanetList PlanetList::NotOwnedBy( Player player ) const
 	return p;
 }
 
-int PlanetList::NumShipsAvailable()
+int PlanetList::ShipsAvailable()
 {
 	int shipsAvailable = 0;
 	for (unsigned int i = 0; i < size(); ++i)
 	{
-		shipsAvailable += operator[](i)->NumShipsAvailable();
+		shipsAvailable += operator[](i)->ShipsAvailable();
 	}
 	return shipsAvailable;
 }

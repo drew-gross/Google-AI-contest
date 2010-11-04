@@ -37,11 +37,11 @@ Player Planet::OwnerInTurns(unsigned int turnsInFuture) const {
 	return StateInTurns(turnsInFuture).GetPlayer();
 }
 
-int Planet::NumShips() const {
+int Planet::Ships() const {
 	return CurrentState().GetShips();
 }
 
-int Planet::NumShipsInTurns(unsigned int turnsInFuture) const {
+int Planet::ShipsInTurns(unsigned int turnsInFuture) const {
 	return StateInTurns(turnsInFuture).GetShips();
 }
 
@@ -105,8 +105,8 @@ void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	for (PlanetList::iterator j = defenders.begin(); j != defenders.end(); ++j) {
 		Planet * curDefender = *j;
 		int defenseTime = std::max(DistanceTo(*j), optimalDefenseTime+1);
-		if (curDefender->NumShipsAvailable() > 0) {
-			GameManager::Instance().IssueOrder(curDefender, this, std::min(NumShipsToTakeoverInTurns(defenseTime), curDefender->NumShipsAvailable()));
+		if (curDefender->ShipsAvailable() > 0) {
+			GameManager::Instance().IssueOrder(curDefender, this, std::min(ShipsToTakeoverInTurns(defenseTime), curDefender->ShipsAvailable()));
 		}
 	}
 }
@@ -149,7 +149,7 @@ int Planet::ShipsArrivingInTurns( Player fromPlayer, int turnsInFuture ) const
 	{
 		Fleet * curFleet = gm.State().Fleets()[i];
 		if (curFleet->ArrivesInTurns(turnsInFuture) && curFleet->DestinationPlanet() == this && curFleet->Owner() == fromPlayer) {
-			shipsArriving += curFleet->NumShips();
+			shipsArriving += curFleet->Ships();
 		}
 	}
 	return shipsArriving;
@@ -215,7 +215,7 @@ PlanetState Planet::NextState( PlanetState const& stateInTurn, int totalPlayerSh
 
 int Planet::NeutralROI( int turns )
 {
-	return ((GameManager::Instance().TurnsRemaining() - turns) * GrowthRate()) - NumShipsInTurns(turns);
+	return ((GameManager::Instance().TurnsRemaining() - turns) * GrowthRate()) - ShipsInTurns(turns);
 }
 
 int Planet::EnemyROI( int turns )
@@ -223,15 +223,15 @@ int Planet::EnemyROI( int turns )
 	return (GameManager::Instance().TurnsRemaining() - turns) * 2 * GrowthRate();
 }
 
-int Planet::NumShipsAvailable()
+int Planet::ShipsAvailable()
 {
-	int shipsAvailable = NumShips();
+	int shipsAvailable = Ships();
 	for (int i = 0; i <= GameManager::Instance().State().MaxDistance(); ++i)
 	{
 		if (OwnerInTurns(i) != Player::self()) {
 			return 0;
 		}
-		shipsAvailable = std::min(shipsAvailable, NumShipsInTurns(i));
+		shipsAvailable = std::min(shipsAvailable, ShipsInTurns(i));
 	}
 	return shipsAvailable;
 }
@@ -281,9 +281,9 @@ Planet * Planet::ClosestPlanetInList( PlanetList list )
 	return closestPlanet;
 }
 
-int Planet::NumShipsToTakeoverInTurns( unsigned int turns ) const
+int Planet::ShipsToTakeoverInTurns( unsigned int turns ) const
 {
-	return NumShipsInTurns(turns) + 1;
+	return ShipsInTurns(turns) + 1;
 }
 
 PlanetState Planet::CurrentState() const
@@ -375,10 +375,10 @@ Planet const * Planet::ClosestPlanetOwnedBy( Player player ) const
 
 void Planet::Reinforce( Planet const * p )
 {
-	GameManager::Instance().IssueOrder(this, p, NumShipsAvailable());
+	GameManager::Instance().IssueOrder(this, p, ShipsAvailable());
 }
 
 void Planet::AttemptToTakeover( Planet const * p )
 {
-	GameManager::Instance().IssueOrder(this, p, std::min(NumShipsAvailable(), p->NumShipsToTakeoverInTurns(DistanceTo(p))));
+	GameManager::Instance().IssueOrder(this, p, std::min(ShipsAvailable(), p->ShipsToTakeoverInTurns(DistanceTo(p))));
 }

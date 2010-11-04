@@ -39,9 +39,9 @@ void AI::AttackPhase()
 		while (attackFromHere.size() > 0) {
 			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
 			int sourceDestSeparation = source->DistanceTo(dest);
-			shipsToSend = dest->NumShipsToTakeoverInTurns(sourceDestSeparation);
+			shipsToSend = dest->ShipsToTakeoverInTurns(sourceDestSeparation);
 
-			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() >= shipsToSend)) {
+			if ((source != nullptr) && (dest != nullptr) && (source->ShipsAvailable() >= shipsToSend)) {
 				try {
 					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
 						source->AttemptToTakeover(dest);
@@ -80,7 +80,7 @@ void AI::DefensePhase() {
 		}
 		try {
 			needToDefend[i]->SeekDefenseFrom(defendersAtOptimalTime, optimalDefenseTime);
-			if (defendersBeforeOptimalTime.NumShipsAvailable() > needToDefend[i]->NumShipsInTurns(optimalDefenseTime)) {
+			if (defendersBeforeOptimalTime.ShipsAvailable() > needToDefend[i]->ShipsInTurns(optimalDefenseTime)) {
 				needToDefend[i]->SeekDefenseFrom(defendersBeforeOptimalTime, optimalDefenseTime);
 				needToDefend[i]->SeekDefenseFrom(defendersAfterOptimalTime, optimalDefenseTime);
 			}

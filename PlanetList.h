@@ -13,7 +13,7 @@ public:
 	Planet* WeakestFromPlanet(Planet const * const p);
 	Planet* Strongest();
 
-	int NumShipsAvailable();
+	int ShipsAvailable();
 
 	PlanetList OwnedBy(Player player) const;
 	PlanetList NotOwnedBy(Player player) const;

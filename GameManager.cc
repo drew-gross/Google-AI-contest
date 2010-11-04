@@ -81,7 +81,7 @@ GameManager::GameManager() {
 
 void GameManager::IssueOrder(Planet * const source, Planet const * const dest, int num_ships) {
 	if (source->PlanetID() == dest->PlanetID()) throw std::runtime_error("Attempted to send ships from a planet to itself");
-	if (num_ships > source->NumShips()) {
+	if (num_ships > source->Ships()) {
 		throw std::runtime_error("Not Enough Ships to send");
 	}
 	if (source->Owner() != Player::self()) throw std::runtime_error("You don't own that planet");

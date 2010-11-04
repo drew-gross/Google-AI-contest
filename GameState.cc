@@ -46,11 +46,11 @@ std::string GameState::ToString() const {
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
 		Planet* p = planets_[i];
 		s << "P " << p->X() << " " << p->Y() << " " << p->Owner()
-			<< " " << p->NumShips() << " " << p->GrowthRate() << std::endl;
+			<< " " << p->Ships() << " " << p->GrowthRate() << std::endl;
 	}
 	for (unsigned int i = 0; i < fleets_.size(); ++i) {
 		Fleet* f = fleets_[i];
-		s << "F " << f->Owner() << " " << f->NumShips() << " "
+		s << "F " << f->Owner() << " " << f->Ships() << " "
 			<< f->SourcePlanet() << " " << f->DestinationPlanet() << " "
 			<< f->TotalTripLength() << " " << f->TurnsRemaining() << std::endl;
 	}
