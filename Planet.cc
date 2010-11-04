@@ -13,6 +13,7 @@
 #include "GameManager.h"
 #include "NoPlanetsOwnedByPlayerException.h"
 #include <math.h>
+#include <cmath>
 
 Planet::Planet(int planet_id, PlanetState newstate, int growth_rate, double x, double y):
 planet_id_(planet_id),
