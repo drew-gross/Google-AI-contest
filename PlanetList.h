@@ -9,6 +9,8 @@ class Planet;
 
 class PlanetList : public std::vector<Planet*> {
 public:
+	void RemoveMatches(Planet* p);
+
 	Planet* Weakest();
 	Planet* WeakestFromPlanet(Planet const * const p);
 	Planet* Strongest();

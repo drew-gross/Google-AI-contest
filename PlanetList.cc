@@ -140,3 +140,8 @@ PlanetList PlanetList::Fronts() const
 	}
 	return p;
 }
+
+void PlanetList::RemoveMatches( Planet* p )
+{
+	erase(std::remove(begin(), end(), p), end());
+}

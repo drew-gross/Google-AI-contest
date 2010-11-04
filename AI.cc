@@ -47,13 +47,13 @@ void AI::AttackPhase()
 						source->AttemptToTakeover(dest);
 						shipsSent = true;
 					} else {
-						attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest), attackFromHere.end());
+						attackFromHere.RemoveMatches(dest);
 					}
 				} catch (DontNeedToAttackException e) {
-					attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest), attackFromHere.end());
+					attackFromHere.RemoveMatches(dest);
 				}
 			} else {
-				attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest), attackFromHere.end());
+				attackFromHere.RemoveMatches(dest);
 			}
 		}
 	}

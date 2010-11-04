@@ -60,10 +60,6 @@ std::ostream& operator<<(std::ostream& out, const Player& player)
 	return out;
 }
 
-bool Player::IsAlive() const {
-	return (Ships() > 0);
-}
-
 int Player::Ships() const {
 	int num_ships = 0;
 	for (unsigned int i = 0; i < GameManager::Instance().State().Planets().size(); ++i) {
