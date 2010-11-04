@@ -15,6 +15,12 @@ public:
 
 	void RemoveShips(int shipsSent);
 
+	PlanetState NextState(int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate );
+	PlanetState AdvancementPhase(int growthRate );
+	PlanetState ArrivalPhase(int playerAttackers, int enemyAttackers);
+	PlanetState ResolveNeutralAttack(int playerAttackers, int enemyAttackers );
+	PlanetState ResolveNonNeutralAttack(int playerAttackers, int enemyAttackers);
+
 private:
 	Player player;
 	int ships;

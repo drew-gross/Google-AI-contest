@@ -102,11 +102,6 @@ private:
 	std::vector<PlanetState> const & FutureStates(unsigned int turns) const;
 	PlanetState CurrentState() const;
 
-	static PlanetState NextState(PlanetState const& stateInTurn, int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate );
-	static PlanetState AdvancementPhase(PlanetState const& curState, int growthRate );
-	static PlanetState ArrivalPhase(PlanetState const& curState, int playerAttackers, int enemyAttackers);
-	static PlanetState ResolveNeutralAttack(PlanetState const& curState, int playerAttackers, int enemyAttackers );
-	static PlanetState ResolveNonNeutralAttack(PlanetState const& curState, int playerAttackers, int enemyAttackers);
 	PlanetState state;
 	int planet_id_;
 	int growth_rate_;

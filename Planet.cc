@@ -171,46 +171,9 @@ PlanetState Planet::StateInTurns(unsigned int turnsInFuture) const {
 
 		int totalEnemyShipsAttacking = ShipsArrivingInTurns(Player::enemy(), turnInFuture);
 		int totalPlayerShipsAttacking = ShipsArrivingInTurns(Player::self(), turnInFuture);
-		stateInTurn = NextState(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking, GrowthRate());
+		stateInTurn = stateInTurn.NextState(totalPlayerShipsAttacking, totalEnemyShipsAttacking, GrowthRate());
 	}
 	return stateInFuture[turnsInFuture];
-}
-
-PlanetState Planet::ArrivalPhase( PlanetState const& curState, int playerAttackers, int enemyAttackers )
-{
-	if (curState.GetPlayer() == Player::neutral()) {
-		return ResolveNeutralAttack(curState, playerAttackers, enemyAttackers);
-	} else {
-		return ResolveNonNeutralAttack(curState, playerAttackers, enemyAttackers);
-	}
-}
-
-PlanetState Planet::ResolveNeutralAttack(PlanetState const&curState, int playerAttackers,  int enemyAttackers )
-{
-	PlanetState nextState;
-	if (playerAttackers > curState.GetShips() && playerAttackers > enemyAttackers) {
-		nextState.SetPlayer(Player::self());
-	}
-	if (enemyAttackers > curState.GetShips() && enemyAttackers > playerAttackers) {
-		nextState.SetPlayer(Player::enemy());
-	}
-	if (curState.GetShips() > playerAttackers && curState.GetShips() > enemyAttackers) {
-		nextState.SetPlayer(Player::neutral());
-	}
-	nextState.SetShips(std::max(curState.GetShips(), playerAttackers, enemyAttackers) - std::median(curState.GetShips(), playerAttackers, enemyAttackers));
-	return nextState;
-}
-
-PlanetState Planet::ResolveNonNeutralAttack(PlanetState const& curState, int defenderShips, int attackerShips) {
-	PlanetState nextState;
-	nextState.SetPlayer(curState.GetPlayer());
-	nextState.SetShips(curState.GetShips() + defenderShips - attackerShips);
-	return nextState;
-}
-
-PlanetState Planet::NextState( PlanetState const& stateInTurn, int totalPlayerShipsAttacking, int totalEnemyShipsAttacking, int growthRate )
-{
-	return ArrivalPhase(AdvancementPhase(stateInTurn, growthRate), totalPlayerShipsAttacking, totalEnemyShipsAttacking);
 }
 
 int Planet::NeutralROI( int turns )
@@ -234,15 +197,6 @@ int Planet::ShipsAvailable()
 		shipsAvailable = std::min(shipsAvailable, ShipsInTurns(i));
 	}
 	return shipsAvailable;
-}
-
-PlanetState Planet::AdvancementPhase( PlanetState const& curState, int growthRate )
-{
-	PlanetState nextState(curState);
-	if (nextState.GetPlayer() != Player::neutral()) {
-		nextState.SetShips(nextState.GetShips() + growthRate);
-	}
-	return nextState;
 }
 
 int Planet::ReturnOnInvestment( int turns )
