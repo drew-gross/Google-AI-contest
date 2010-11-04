@@ -104,7 +104,7 @@ void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	for (PlanetList::iterator j = defenders.begin(); j != defenders.end(); ++j) {
 		Planet * curDefender = *j;
 		if (NeedToDefend() && curDefender->NumShipsAvailable() > 0) {
-			GameManager::Instance().IssueOrder(curDefender, this, std::min(NumShipsInTurns(optimalDefenseTime + 1) + 1, curDefender->NumShipsAvailable()));
+			GameManager::Instance().IssueOrder(curDefender, this, std::min(NumShipsInTurns(optimalDefenseTime+1), curDefender->NumShipsAvailable()));
 		}
 	}
 }

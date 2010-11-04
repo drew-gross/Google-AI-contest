@@ -80,12 +80,12 @@ void AI::DefensePhase() {
 		}
 		try {
 			needToDefend[i]->SeekDefenseFrom(defendersAtOptimalTime, optimalDefenseTime);
-			if (defendersBeforeOptimalTime.NumShipsAvailable() > needToDefend[i]->NumShipsInTurns(optimalDefenseTime + 1)) {
+			if (defendersBeforeOptimalTime.NumShipsAvailable() > needToDefend[i]->NumShipsInTurns(optimalDefenseTime)) {
 				needToDefend[i]->SeekDefenseFrom(defendersBeforeOptimalTime, optimalDefenseTime);
 				needToDefend[i]->SeekDefenseFrom(defendersAfterOptimalTime, optimalDefenseTime);
 			}
 		} catch (DontNeedToDefendException e) {
-			break;
+			continue;
 		}
 	}
 }
