@@ -12,6 +12,7 @@
 #include "Player.h"
 #include "GameManager.h"
 #include "NoPlanetsOwnedByPlayerException.h"
+#include <math.h>
 
 Planet::Planet(int planet_id, PlanetState newstate, int growth_rate, double x, double y):
 planet_id_(planet_id),
@@ -67,14 +68,14 @@ int Planet::OptimalDefenseTime() const {
 	{
 		if (futureStates[i].GetPlayer() != Player::enemy())
 		{
-			break;
+			continue;
 		}
 		if (futureStates[i].GetShips() < leastEnemyShips) {
 			leastEnemyShips = futureStates[i].GetShips();
 			leastEnemyShipsTime = i;
 		}
 	}
-	return leastEnemyShipsTime - 1;
+	return leastEnemyShipsTime;
 }
 
 bool Planet::NeedToDefend() const {
@@ -335,7 +336,7 @@ int Planet::DistanceTo( Planet const * p ) const
 {
 	double dx = X() - p->X();
 	double dy = Y() - p->Y();
-	return (int)ceil(sqrt(dx * dx + dy * dy));
+	return (int)std::ceil(std::sqrt(dx * dx + dy * dy));
 }
 
 Planet const * Planet::ClosestPlanetOwnedBy( Player player ) const

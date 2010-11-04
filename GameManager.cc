@@ -2,6 +2,7 @@
 #include "Logger.h"
 #include "Planet.h"
 #include "StringUtil.h"
+#include <stdexcept>
 
 GameManager* GameManager::instance_ = nullptr;
 Logger GameManager::mapdata("orders.txt");
