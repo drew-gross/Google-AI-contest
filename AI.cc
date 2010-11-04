@@ -44,7 +44,7 @@ void AI::AttackPhase()
 			if ((source != nullptr) && (dest != nullptr) && (source->NumShipsAvailable() >= shipsToSend)) {
 				try {
 					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
-						GameManager::Instance().IssueOrder(source, dest, std::min(shipsToSend, source->NumShipsAvailable()));
+						source->AttemptToTakeover(dest);
 						shipsSent = true;
 					} else {
 						attackFromHere.erase(std::remove(attackFromHere.begin(), attackFromHere.end(), dest), attackFromHere.end());
@@ -100,7 +100,7 @@ void AI::SupplyPhase()
 			try {
 				Planet * source = myPlanets[i];
 				Planet const * dest = source->ClosestPlanetOwnedBy(Player::self()); //source->ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::self()).Fronts());
-				GameManager::Instance().IssueOrder(source, dest, source->NumShipsAvailable());
+				source->Reinforce(dest);
 			} catch (NoPlanetsOwnedByPlayerException e) {
 				break;
 			}

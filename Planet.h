@@ -23,7 +23,7 @@ public:
 	// Returns the ID of this planets. Planets are numbered starting at zero.
 	int PlanetID() const;
 	Player Owner() const;
-	Player OwnerInTurns(unsigned int turns) const;
+	Player OwnerInTurns(unsigned int turnsInFuture) const;
 	int NumShips() const;
 
 	int DistanceTo( Planet const * p ) const;
@@ -35,10 +35,10 @@ public:
 	bool IsSupplier();
 
 	// The number of ships on the planet in the specified amount of turns.
-	int NumShipsInTurns(unsigned int turns) const;
+	int NumShipsInTurns(unsigned int turnsInFuture) const;
 
 	// The number of ships you need to arrive at the specified number of turns to take the planet over.
-	int NumShipsToTakeoverInTurns(unsigned int turns) const;
+	int NumShipsToTakeoverInTurns(unsigned int turnsInFuture) const;
 
 	// Calculates the time when the planet will have the lowest amount of enemy ships on it.
 	// Throws an exception if I will own the planet at some point
@@ -58,6 +58,12 @@ public:
 
 	// Takes the list of planets specified and requests defense from them until the planet no longer needs defense
 	void SeekDefenseFrom(PlanetList &defendersAtOptimalTime, int optimalDefenseTime);
+
+	// Sends all available ships to the target planet
+	void Reinforce(Planet const * p);
+
+	// Sends enough ships to takeover the planet, or the maximum available
+	void AttemptToTakeover(Planet const * p);
 
 	// Returns the growth rate of the planet. Unless the planet is neutral, the
 	// population of the planet grows by this amount each turn. The higher this

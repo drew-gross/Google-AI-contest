@@ -14,6 +14,7 @@
 #include "NoPlanetsOwnedByPlayerException.h"
 #include <math.h>
 #include <cmath>
+#include "Utilities.h"
 
 Planet::Planet(int planet_id, PlanetState newstate, int growth_rate, double x, double y):
 planet_id_(planet_id),
@@ -32,16 +33,16 @@ Player Planet::Owner() const {
 	return CurrentState().GetPlayer();
 }
 
-Player Planet::OwnerInTurns(unsigned int turns) const {
-	return StateInTurns(turns).GetPlayer();
+Player Planet::OwnerInTurns(unsigned int turnsInFuture) const {
+	return StateInTurns(turnsInFuture).GetPlayer();
 }
 
 int Planet::NumShips() const {
 	return CurrentState().GetShips();
 }
 
-int Planet::NumShipsInTurns(unsigned int turns) const {
-	return StateInTurns(turns).GetShips();
+int Planet::NumShipsInTurns(unsigned int turnsInFuture) const {
+	return StateInTurns(turnsInFuture).GetShips();
 }
 
 int Planet::OptimalAttackTime() const {
@@ -103,8 +104,9 @@ bool Planet::NeedToAttack() const
 void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	for (PlanetList::iterator j = defenders.begin(); j != defenders.end(); ++j) {
 		Planet * curDefender = *j;
-		if (NeedToDefend() && curDefender->NumShipsAvailable() > 0) {
-			GameManager::Instance().IssueOrder(curDefender, this, std::min(NumShipsInTurns(optimalDefenseTime+1), curDefender->NumShipsAvailable()));
+		int defenseTime = std::max(DistanceTo(*j), optimalDefenseTime+1);
+		if (curDefender->NumShipsAvailable() > 0) {
+			GameManager::Instance().IssueOrder(curDefender, this, std::min(NumShipsToTakeoverInTurns(defenseTime), curDefender->NumShipsAvailable()));
 		}
 	}
 }
@@ -139,39 +141,39 @@ void Planet::ClearFutureCache() const {
 	stateInFuture.clear();
 }
 
-int Planet::ShipsArrivingInTurns( Player fromPlayer, int numTurns ) const
+int Planet::ShipsArrivingInTurns( Player fromPlayer, int turnsInFuture ) const
 {
 	int shipsArriving = 0;
 	GameManager& gm = GameManager::Instance();
 	for (unsigned int i = 0; i < gm.State().Fleets().size(); ++i)
 	{
 		Fleet * curFleet = gm.State().Fleets()[i];
-		if (curFleet->ArrivesInTurns(numTurns) && curFleet->DestinationPlanet() == this && curFleet->Owner() == fromPlayer) {
+		if (curFleet->ArrivesInTurns(turnsInFuture) && curFleet->DestinationPlanet() == this && curFleet->Owner() == fromPlayer) {
 			shipsArriving += curFleet->NumShips();
 		}
 	}
 	return shipsArriving;
 }
 
-PlanetState Planet::StateInTurns(unsigned int turns) const {
-	if (stateInFuture.size() > turns) {
-		return stateInFuture[turns];
+PlanetState Planet::StateInTurns(unsigned int turnsInFuture) const {
+	if (stateInFuture.size() > turnsInFuture) {
+		return stateInFuture[turnsInFuture];
 	}
 	if (stateInFuture.size() == 0) {
 		stateInFuture.push_back(CurrentState());
 	}
 	unsigned int maxCachedTurnIndex = stateInFuture.size() - 1;
 	PlanetState stateInTurn = stateInFuture.back();
-	stateInFuture.resize(turns + 1);
+	stateInFuture.resize(turnsInFuture + 2);
 
-	for (unsigned int turnInFuture = maxCachedTurnIndex; turnInFuture <= turns; ++turnInFuture) {
+	for (unsigned int turnInFuture = maxCachedTurnIndex; turnInFuture <= turnsInFuture + 1; ++turnInFuture) {
 		stateInFuture[turnInFuture] = stateInTurn;
 
 		int totalEnemyShipsAttacking = ShipsArrivingInTurns(Player::enemy(), turnInFuture);
 		int totalPlayerShipsAttacking = ShipsArrivingInTurns(Player::self(), turnInFuture);
 		stateInTurn = NextState(stateInTurn, totalPlayerShipsAttacking, totalEnemyShipsAttacking, GrowthRate());
 	}
-	return stateInFuture[turns];
+	return stateInFuture[turnsInFuture];
 }
 
 PlanetState Planet::ArrivalPhase( PlanetState const& curState, int playerAttackers, int enemyAttackers )
@@ -369,4 +371,14 @@ Planet const * Planet::ClosestPlanetOwnedBy( Player player ) const
 		}
 	}
 	return closestPlanet;
+}
+
+void Planet::Reinforce( Planet const * p )
+{
+	GameManager::Instance().IssueOrder(this, p, NumShipsAvailable());
+}
+
+void Planet::AttemptToTakeover( Planet const * p )
+{
+	GameManager::Instance().IssueOrder(this, p, std::min(NumShipsAvailable(), p->NumShipsToTakeoverInTurns(DistanceTo(p))));
 }
