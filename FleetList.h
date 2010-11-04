@@ -12,7 +12,7 @@ public:
 	void DeleteAll();
 
 	FleetList & OwnedBy(Player player);
-
+	FleetList & AttackingPlanet( Planet const * p );
 private:
 };
 

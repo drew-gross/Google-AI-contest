@@ -33,13 +33,11 @@ void AI::AttackPhase()
 	while (GameManager::Instance().State().Planets().NeedAttacking().size() > 0 && shipsSent) {
 		shipsSent = false;
 		Planet* source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
-		int shipsToSend = 0;
 
 		PlanetList attackFromHere = GameManager::Instance().State().Planets().NeedAttacking();
 		while (attackFromHere.size() > 0) {
 			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
 			int sourceDestSeparation = source->DistanceTo(dest);
-			shipsToSend = dest->ShipsToTakeoverInTurns(sourceDestSeparation);
 
 			if ((source != nullptr) && (dest != nullptr) && (source->CanTakeover(dest))) {
 				try {

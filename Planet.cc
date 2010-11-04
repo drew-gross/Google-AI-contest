@@ -15,6 +15,7 @@
 #include <math.h>
 #include <cmath>
 #include "Utilities.h"
+#include <xutility>
 
 Planet::Planet(int planet_id, PlanetState newstate, int growth_rate, double x, double y):
 planet_id_(planet_id),
@@ -188,13 +189,14 @@ int Planet::EnemyROI( int turns )
 
 int Planet::ShipsAvailable()
 {
+	std::vector<PlanetState> futureStates = FutureStates(GameManager::Instance().State().MaxDistance());
 	int shipsAvailable = Ships();
-	for (int i = 0; i <= GameManager::Instance().State().MaxDistance(); ++i)
+	for (unsigned int i = 0; i < futureStates.size(); ++i)
 	{
-		if (OwnerInTurns(i) != Player::self()) {
+		shipsAvailable = std::min(shipsAvailable, futureStates[i].GetShips());
+		if (futureStates[i].GetPlayer() != Player::self()) {
 			return 0;
 		}
-		shipsAvailable = std::min(shipsAvailable, ShipsInTurns(i));
 	}
 	return shipsAvailable;
 }
@@ -245,7 +247,7 @@ PlanetState Planet::CurrentState() const
 	return state;
 }
 
-std::vector<PlanetState> const & Planet::FutureStates( unsigned int turns ) const
+std::vector<PlanetState> const & Planet::FutureStates( unsigned int turns) const
 {
 	if (stateInFuture.size() > turns)
 	{

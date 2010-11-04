@@ -29,7 +29,7 @@ public:
 	Fleet const * GetFleet(int fleet_id) const;
 
 	PlanetList const & Planets() const;
-	inline FleetList const & Fleets() const;
+	inline FleetList & Fleets();
 
 	void AddFleet(Fleet* f);
 	void AddPlanet(Planet* p);
@@ -51,7 +51,7 @@ private:
 	FleetList fleets_;
 };
 
-FleetList const & GameState::Fleets() const {
+FleetList & GameState::Fleets() {
 	return fleets_;
 }
 

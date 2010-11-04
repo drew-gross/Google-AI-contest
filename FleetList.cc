@@ -32,3 +32,19 @@ FleetList & FleetList::OwnedBy( Player player )
 	erase(remove_if(begin(), end(), isNotOwnedBy(player)), end());
 	return *this;
 }
+class isNotAttackingPlanet {
+public:
+	isNotAttackingPlanet(Planet const * p) : planet(p) {
+	}
+	bool operator()(Fleet * fleet) {
+		return *(fleet->DestinationPlanet()) != *planet;
+	}
+private:
+	Planet const * planet;
+};
+
+FleetList & FleetList::AttackingPlanet( Planet const * p )
+{
+	erase(remove_if(begin(), end(), isNotAttackingPlanet(p)), end());
+	return *this;
+}

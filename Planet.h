@@ -10,6 +10,7 @@
 #include "PlanetState.h"
 
 class PlanetList;
+class GameManager;
 
 class Planet {
 public:
@@ -102,7 +103,7 @@ public:
 
 private:
 	PlanetState StateInTurns(unsigned int turns) const;
-	std::vector<PlanetState> const & FutureStates(unsigned int turns) const;
+	std::vector<PlanetState> const & FutureStates( unsigned int turns) const;
 	PlanetState CurrentState() const;
 	PlanetState state;
 	int planet_id_;
