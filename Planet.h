@@ -65,6 +65,9 @@ public:
 	// Sends enough ships to takeover the planet, or the maximum available
 	void AttemptToTakeover(Planet const * p);
 
+	// Returns true if this planet has enough ships to takeover p
+	bool CanTakeover( Planet const* p );
+
 	// Returns the growth rate of the planet. Unless the planet is neutral, the
 	// population of the planet grows by this amount each turn. The higher this
 	// number is, the faster this planet produces ships.
@@ -101,7 +104,6 @@ private:
 	PlanetState StateInTurns(unsigned int turns) const;
 	std::vector<PlanetState> const & FutureStates(unsigned int turns) const;
 	PlanetState CurrentState() const;
-
 	PlanetState state;
 	int planet_id_;
 	int growth_rate_;

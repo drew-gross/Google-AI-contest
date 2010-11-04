@@ -336,3 +336,8 @@ void Planet::AttemptToTakeover( Planet const * p )
 {
 	GameManager::Instance().IssueOrder(this, p, std::min(ShipsAvailable(), p->ShipsToTakeoverInTurns(DistanceTo(p))));
 }
+
+bool Planet::CanTakeover( Planet const* p )
+{
+	return ShipsAvailable() >= p->ShipsToTakeoverInTurns(DistanceTo(p));
+}

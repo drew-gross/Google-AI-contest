@@ -41,7 +41,7 @@ void AI::AttackPhase()
 			int sourceDestSeparation = source->DistanceTo(dest);
 			shipsToSend = dest->ShipsToTakeoverInTurns(sourceDestSeparation);
 
-			if ((source != nullptr) && (dest != nullptr) && (source->ShipsAvailable() >= shipsToSend)) {
+			if ((source != nullptr) && (dest != nullptr) && (source->CanTakeover(dest))) {
 				try {
 					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
 						source->AttemptToTakeover(dest);
