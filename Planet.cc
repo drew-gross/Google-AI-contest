@@ -193,12 +193,13 @@ int Planet::ShipsAvailable()
 	int shipsAvailable = Ships();
 	for (unsigned int i = 0; i < futureStates.size(); ++i)
 	{
-		shipsAvailable = std::min(shipsAvailable, futureStates[i].GetShips());
-		if (futureStates[i].GetPlayer() != Player::self()) {
+		if (futureStates[i].GetPlayer() != Player::self())
+		{
 			return 0;
 		}
+		shipsAvailable = std::min(shipsAvailable, futureStates[i].GetShips() - GrowthRate());
 	}
-	return shipsAvailable;
+	return std::max(shipsAvailable, 0);
 }
 
 int Planet::ReturnOnInvestment( int turns )
