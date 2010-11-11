@@ -15,7 +15,6 @@
 #include <math.h>
 #include <cmath>
 #include "Utilities.h"
-#include <xutility>
 
 Planet::Planet(int planet_id, PlanetState newstate, int growth_rate, double x, double y):
 planet_id_(planet_id),
@@ -106,7 +105,7 @@ void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	for (PlanetList::iterator j = defenders.begin(); j != defenders.end(); ++j) {
 		Planet * curDefender = *j;
 		int defenseTime = std::max(DistanceTo(*j), optimalDefenseTime+1);
-		if (curDefender->ShipsAvailable() > 0) {
+		if (curDefender->ShipsAvailable() > 0 && (*curDefender != *this)) {
 			GameManager::Instance().IssueOrder(curDefender, this, std::min(ShipsToTakeoverInTurns(defenseTime), curDefender->ShipsAvailable()));
 		}
 	}

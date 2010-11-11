@@ -38,8 +38,19 @@ void AI::AttackPhase()
 		while (attackFromHere.size() > 0) {
 			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
 			int sourceDestSeparation = source->DistanceTo(dest);
+			int destEnemySeparation;
+			if (dest->Owner() != Player::enemy())
+			{
+				try {
+					destEnemySeparation = dest->DistanceTo(dest->ClosestPlanetOwnedBy(Player::enemy()));
+				} catch (NoPlanetsOwnedByPlayerException) {
+					destEnemySeparation = std::numeric_limits<int>::max();
+				}
+			} else {
+				destEnemySeparation = std::numeric_limits<int>::max();
+			}
 
-			if ((source != nullptr) && (dest != nullptr) && (source->CanTakeover(dest))) {
+			if ((source != nullptr) && (dest != nullptr) && (source->CanTakeover(dest)) && (sourceDestSeparation <= destEnemySeparation)) {
 				try {
 					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
 						source->AttemptToTakeover(dest);
@@ -97,7 +108,7 @@ void AI::SupplyPhase()
 		{
 			try {
 				Planet * source = myPlanets[i];
-				Planet const * dest = source->ClosestPlanetOwnedBy(Player::self()); //source->ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::self()).Fronts());
+				Planet const * dest = source->ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::self()).Fronts());
 				source->Reinforce(dest);
 			} catch (NoPlanetsOwnedByPlayerException e) {
 				break;
