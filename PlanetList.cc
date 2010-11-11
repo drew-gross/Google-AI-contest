@@ -134,8 +134,15 @@ PlanetList PlanetList::Fronts() const
 {
 	PlanetList p;
 	for(unsigned int i = 0; i < size(); ++i) {
-		if (operator[](i)->ClosestPlanetInList(GameManager::Instance().State().Planets())->Owner() == Player::enemy()) {
-			p.push_back(operator[](i));
+		Planet *curPlanet = operator[](i);
+		try {
+			int distToClosestAlly = curPlanet->DistanceTo(curPlanet->ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::self())));
+			int distToClosestEnemy = curPlanet->DistanceTo(curPlanet->ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::enemy())));
+			if (distToClosestEnemy < distToClosestAlly) {
+				p.push_back(curPlanet);
+			}
+		} catch (NoPlanetsInListException e) {
+			continue;
 		}
 	}
 	return p;

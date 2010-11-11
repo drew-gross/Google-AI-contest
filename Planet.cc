@@ -90,7 +90,6 @@ bool Planet::NeedToDefend() const {
 		if (futureStates[i].GetPlayer() != Player::self())
 		{
 			return true;
-			break;
 		}
 	}
 	return false;
@@ -104,7 +103,7 @@ bool Planet::NeedToAttack() const
 void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	for (PlanetList::iterator j = defenders.begin(); j != defenders.end(); ++j) {
 		Planet * curDefender = *j;
-		int defenseTime = std::max(DistanceTo(*j), optimalDefenseTime+1);
+		int defenseTime = std::max(DistanceTo(*j), optimalDefenseTime);
 		if (curDefender->ShipsAvailable() > 0 && (*curDefender != *this)) {
 			GameManager::Instance().IssueOrder(curDefender, this, std::min(ShipsToTakeoverInTurns(defenseTime), curDefender->ShipsAvailable()));
 		}
@@ -188,17 +187,21 @@ int Planet::EnemyROI( int turns )
 
 int Planet::ShipsAvailable()
 {
-	std::vector<PlanetState> futureStates = FutureStates(GameManager::Instance().State().MaxDistance());
 	int shipsAvailable = Ships();
-	for (unsigned int i = 0; i < futureStates.size(); ++i)
+	for (int i = 0; i < GameManager::Instance().State().MaxDistance(); ++i)
 	{
-		if (futureStates[i].GetPlayer() != Player::self())
-		{
-			return 0;
-		}
-		shipsAvailable = std::min(shipsAvailable, futureStates[i].GetShips() - GrowthRate());
+		shipsAvailable = std::min(shipsAvailable, MyShipsInTurns(i));
 	}
-	return std::max(shipsAvailable, 0);
+	return shipsAvailable;
+}
+
+int Planet::MyShipsInTurns( int turns )
+{
+	if (OwnerInTurns(turns) != Player::self()) {
+		return 0;
+	} else {
+		return ShipsInTurns(turns);
+	}
 }
 
 int Planet::ReturnOnInvestment( int turns )

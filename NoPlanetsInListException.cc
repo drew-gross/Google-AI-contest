@@ -1,5 +1,6 @@
 #include "NoPlanetsInListException.h"
 
-NoPlanetsInListException::NoPlanetsInListException() :  runtime_error("NoPlanetsInListException")
+NoPlanetsInListException::NoPlanetsInListException() : runtime_error("NoPlanetsInListException")
 {
+
 }

@@ -51,7 +51,7 @@ private:
 };
 
 bool Fleet::ArrivesInTurns(unsigned int turns) const {
-	return (TurnsRemaining() == turns);
+	return (TurnsRemaining() - 1 == turns);
 }
 
 #endif //FLEET_H

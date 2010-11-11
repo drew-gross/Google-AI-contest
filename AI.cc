@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "DontNeedToAttackException.h"
 #include "NoPlanetsOwnedByPlayerException.h"
+#include "NoPlanetsInListException.h"
 
 void AI::DoTurn() {
 	try
@@ -32,7 +33,12 @@ void AI::AttackPhase()
 
 	while (GameManager::Instance().State().Planets().NeedAttacking().size() > 0 && shipsSent) {
 		shipsSent = false;
-		Planet* source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
+		Planet* source;
+		try {
+			source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
+		} catch (NoPlanetsInListException e) {
+			break;
+		}
 
 		PlanetList attackFromHere = GameManager::Instance().State().Planets().NeedAttacking();
 		while (attackFromHere.size() > 0) {

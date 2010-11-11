@@ -29,7 +29,8 @@ void GameManager::NextTurn()
 	ai.FinishTurn();
 }
 
-int GameManager::ParseGameState(const std::string& s) {
+void GameManager::ParseGameState( const std::string& s )
+{
 	mapdata.LogMapData(s);
 	std::vector<std::string> lines = StringUtil::Tokenize(s, "\n");
 	int planet_id = 0;
@@ -68,7 +69,6 @@ int GameManager::ParseGameState(const std::string& s) {
 			throw std::runtime_error("error parsing gamestate");
 		}
 	}
-	return 1;
 }
 
 GameState& GameManager::State()

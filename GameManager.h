@@ -21,7 +21,7 @@ public:
 	void NextTurn();
 
 	// Parses a game state from a string.
-	int ParseGameState(const std::string& s);
+	void ParseGameState(const std::string& s);
 
 	// Sends an order to the game engine. The order is to send num_ships ships
 	// from source_planet to destination_planet. The order must be valid, or
