@@ -346,3 +346,9 @@ bool Planet::CanTakeover( Planet const* p )
 {
 	return ShipsAvailable() >= p->ShipsToTakeoverInTurns(DistanceTo(p));
 }
+
+bool Planet::IsFront()
+{
+	Planet const * closestEnemy = ClosestPlanetOwnedBy(Player::enemy());
+	return *(closestEnemy->ClosestPlanetOwnedBy(Player::self())) == *this;
+}

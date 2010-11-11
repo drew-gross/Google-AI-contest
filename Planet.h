@@ -32,8 +32,12 @@ public:
 	// The number of ships that can be sent without causing loss of control of the planet.
 	int ShipsAvailable();
 	int MyShipsInTurns(int turns);
+
 	// Returns true if the closest enemy planet is twice as far as the closest friendly planet
 	bool IsSupplier();
+
+	// Returns true is the closest enemy planets closest self planet if this planet
+	bool IsFront();
 
 	// The number of ships on the planet in the specified amount of turns.
 	int ShipsInTurns(unsigned int turnsInFuture) const;
