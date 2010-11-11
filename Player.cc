@@ -62,16 +62,8 @@ std::ostream& operator<<(std::ostream& out, const Player& player)
 
 int Player::Ships() const {
 	int num_ships = 0;
-	for (unsigned int i = 0; i < GameManager::Instance().State().Planets().size(); ++i) {
-		if (GameManager::Instance().State().Planets()[i]->Owner() == playerNum) {
-			num_ships += GameManager::Instance().State().Planets()[i]->Ships();
-		}
-	}
-	for (unsigned int i = 0; i < GameManager::Instance().State().Fleets().size(); ++i) {
-		if (GameManager::Instance().State().Fleets()[i]->Owner() == playerNum) {
-			num_ships += GameManager::Instance().State().Fleets()[i]->Ships();
-		}
-	}
+	num_ships += GameManager::Instance().State().Planets().OwnedBy(*this).Ships();
+	num_ships += GameManager::Instance().State().Fleets().OwnedBy(*this).Ships();
 	return num_ships;
 }
 
@@ -84,7 +76,16 @@ int Player::Growth() const
 	return growth;
 }
 
+int Player::GrowthInTurns( int turns ) const
+{
+	int growth = 0;
+	for (unsigned int i = 0; i < GameManager::Instance().State().Planets().OwnedInTurnsBy(*this, turns).size(); ++i) {
+		growth += GameManager::Instance().State().Planets().OwnedInTurnsBy(*this, turns)[i]->GrowthRate();
+	}
+	return growth;
+}
+
 bool Player::IsWinning() const
 {
-	return Growth() > Opponent().Growth() && Ships() > Opponent().Ships();
+	return GrowthInTurns(GameManager::Instance().State().MaxDistance()) > Opponent().GrowthInTurns(GameManager::Instance().State().MaxDistance()) && Ships() > Opponent().Ships();
 }

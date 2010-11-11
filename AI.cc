@@ -33,46 +33,15 @@ void AI::FinishTurn() {
 
 void AI::AgressiveAttackPhase()
 {
-	bool shipsSent = true;
-	while (GameManager::Instance().State().Planets().NeedAttacking().size() > 0 && shipsSent) {
-		shipsSent = false;
+	while (GameManager::Instance().State().Planets().NeedAttacking().size() > 0) {
 		Planet* source;
 		try {
 			source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
 		} catch (NoPlanetsInListException e) {
-			break;
+			return;
 		}
-
-		PlanetList attackFromHere = GameManager::Instance().State().Planets().NeedAttacking();
-		while (attackFromHere.size() > 0) {
-			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
-			int sourceDestSeparation = source->DistanceTo(dest);
-			int destEnemySeparation;
-			if (dest->Owner() == Player::neutral())
-			{
-				try {
-					destEnemySeparation = dest->DistanceTo(dest->ClosestPlanetOwnedBy(Player::enemy()));
-				} catch (NoPlanetsOwnedByPlayerException) {
-					destEnemySeparation = std::numeric_limits<int>::max();
-				}
-			} else {
-				destEnemySeparation = std::numeric_limits<int>::max();
-			}
-
-			if ((source != nullptr) && (dest != nullptr) && (source->CanTakeover(dest)) && (sourceDestSeparation <= destEnemySeparation)) {
-				try {
-					if (dest->OptimalAttackTime() <= sourceDestSeparation) {
-						source->AttemptToTakeover(dest);
-						shipsSent = true;
-					} else {
-						attackFromHere.RemoveMatches(dest);
-					}
-				} catch (DontNeedToAttackException e) {
-					attackFromHere.RemoveMatches(dest);
-				}
-			} else {
-				attackFromHere.RemoveMatches(dest);
-			}
+		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttacking()))) {
+			return;
 		}
 	}
 }
@@ -128,5 +97,15 @@ void AI::SupplyPhase()
 
 void AI::CautiousAttackPhase()
 {
-	AgressiveAttackPhase();
+	while (GameManager::Instance().State().Planets().OwnedBy(Player::enemy()).NeedAttacking().size() > 0) {
+		Planet* source;
+		try {
+			source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
+		} catch (NoPlanetsInListException e) {
+			return;
+		}
+		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().OwnedBy(Player::enemy()).NeedAttacking()))) {
+			return;
+		}
+	}
 }

@@ -352,3 +352,39 @@ bool Planet::IsFront()
 	Planet const * closestEnemy = ClosestPlanetOwnedBy(Player::enemy());
 	return *(closestEnemy->ClosestPlanetOwnedBy(Player::self())) == *this;
 }
+
+bool Planet::AttackPlanets( PlanetList targets )
+{
+	bool attackSucceded = false;
+	while (targets.size() > 0) {
+		Planet * dest = targets.HighestROIFromPlanet(this);
+		int sourceDestSeparation = DistanceTo(dest);
+		int destEnemySeparation;
+		if (dest->Owner() == Player::neutral())
+		{
+			try {
+				destEnemySeparation = dest->DistanceTo(dest->ClosestPlanetOwnedBy(Player::enemy()));
+			} catch (NoPlanetsOwnedByPlayerException) {
+				destEnemySeparation = std::numeric_limits<int>::max();
+			}
+		} else {
+			destEnemySeparation = std::numeric_limits<int>::max();
+		}
+
+		if (dest != nullptr && (CanTakeover(dest)) && (sourceDestSeparation <= destEnemySeparation)) {
+			try {
+				if (dest->OptimalAttackTime() <= sourceDestSeparation) {
+					AttemptToTakeover(dest);
+					attackSucceded = true;
+				} else {
+					targets.Remove(dest);
+				}
+			} catch (DontNeedToAttackException e) {
+				targets.Remove(dest);
+			}
+		} else {
+			targets.Remove(dest);
+		}
+	}
+	return attackSucceded;
+}

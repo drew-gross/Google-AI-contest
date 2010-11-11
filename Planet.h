@@ -70,6 +70,9 @@ public:
 	// Sends enough ships to takeover the planet, or the maximum available
 	void AttemptToTakeover(Planet const * p);
 
+	// Attacks as many planets in the list as possible. Returns true if any planets were attacked and false if no planets could be attacked
+	bool AttackPlanets( PlanetList targets );
+
 	// Returns true if this planet has enough ships to takeover p
 	bool CanTakeover( Planet const* p );
 

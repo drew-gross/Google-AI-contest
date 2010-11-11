@@ -64,6 +64,17 @@ PlanetList PlanetList::OwnedBy( Player player ) const
 	return p;
 }
 
+PlanetList PlanetList::OwnedInTurnsBy( Player player, int turns ) const
+{
+	PlanetList p;
+	for(unsigned int i = 0; i < size(); ++i) {
+		if (operator[](i)->OwnerInTurns(turns) == player) {
+			p.push_back(operator[](i));
+		}
+	}
+	return p;
+}
+
 PlanetList PlanetList::NotOwnedBy( Player player ) const
 {
 	PlanetList p;
@@ -73,6 +84,16 @@ PlanetList PlanetList::NotOwnedBy( Player player ) const
 		}
 	}
 	return p;
+}
+
+int PlanetList::Ships() const
+{
+	int shipsAvailable = 0;
+	for (unsigned int i = 0; i < size(); ++i)
+	{
+		shipsAvailable += operator[](i)->Ships();
+	}
+	return shipsAvailable;
 }
 
 int PlanetList::ShipsAvailable()
@@ -142,7 +163,7 @@ PlanetList PlanetList::Fronts() const
 	return p;
 }
 
-void PlanetList::RemoveMatches( Planet* p )
+void PlanetList::Remove( Planet* p )
 {
 	erase(std::remove(begin(), end(), p), end());
 }

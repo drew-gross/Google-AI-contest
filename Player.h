@@ -22,7 +22,9 @@ public:
 	static Player enemy();
 
 	int Ships() const;
+
 	int Growth() const;
+	int GrowthInTurns(int turns) const;
 
 	bool IsWinning() const;
 private:

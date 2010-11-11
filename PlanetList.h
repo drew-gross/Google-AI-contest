@@ -9,12 +9,13 @@ class Planet;
 
 class PlanetList : public std::vector<Planet*> {
 public:
-	void RemoveMatches(Planet* p);
+	void Remove(Planet* p);
 
 	Planet* Weakest();
 	Planet* WeakestFromPlanet(Planet const * const p);
 	Planet* Strongest();
 
+	int Ships() const;
 	int ShipsAvailable();
 
 	PlanetList OwnedBy(Player player) const;
@@ -25,6 +26,7 @@ public:
 
 	void DeleteAll();
 	Planet* HighestROIFromPlanet(Planet const * source) const;
+	PlanetList OwnedInTurnsBy( Player player, int turns ) const;
 private:
 };
 
