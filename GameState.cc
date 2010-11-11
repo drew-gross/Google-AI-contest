@@ -46,7 +46,7 @@ std::string GameState::ToString() const {
 	for (unsigned int i = 0; i < planets_.size(); ++i) {
 		Planet* p = planets_[i];
 		s << "P " << p->X() << " " << p->Y() << " " << p->Owner()
-			<< " " << p->Ships() << " " << p->GrowthRate() << std::endl;
+			<< " " << p->Ships() << " " << p->Growth() << std::endl;
 	}
 	for (unsigned int i = 0; i < fleets_.size(); ++i) {
 		Fleet* f = fleets_[i];

@@ -97,14 +97,14 @@ void AI::SupplyPhase()
 
 void AI::CautiousAttackPhase()
 {
-	while (GameManager::Instance().State().Planets().OwnedBy(Player::enemy()).NeedAttacking().size() > 0) {
+	while (GameManager::Instance().State().Planets().NeedAttacking().size() > 0) {
 		Planet* source;
 		try {
 			source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
 		} catch (NoPlanetsInListException e) {
 			return;
 		}
-		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().OwnedBy(Player::enemy()).NeedAttacking()))) {
+		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttacking()))) {
 			return;
 		}
 	}

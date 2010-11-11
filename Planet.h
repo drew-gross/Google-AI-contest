@@ -79,7 +79,7 @@ public:
 	// Returns the growth rate of the planet. Unless the planet is neutral, the
 	// population of the planet grows by this amount each turn. The higher this
 	// number is, the faster this planet produces ships.
-	int GrowthRate() const;
+	int Growth() const;
 
 	// Returns the return over the course of the game of taking a planet over
 	// in the specified amount of turns

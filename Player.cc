@@ -71,7 +71,7 @@ int Player::Growth() const
 {
 	int growth = 0;
 	for (unsigned int i = 0; i < GameManager::Instance().State().Planets().OwnedBy(*this).size(); ++i) {
-		growth += GameManager::Instance().State().Planets().OwnedBy(*this)[i]->GrowthRate();
+		growth += GameManager::Instance().State().Planets().OwnedBy(*this)[i]->Growth();
 	}
 	return growth;
 }
@@ -80,7 +80,7 @@ int Player::GrowthInTurns( int turns ) const
 {
 	int growth = 0;
 	for (unsigned int i = 0; i < GameManager::Instance().State().Planets().OwnedInTurnsBy(*this, turns).size(); ++i) {
-		growth += GameManager::Instance().State().Planets().OwnedInTurnsBy(*this, turns)[i]->GrowthRate();
+		growth += GameManager::Instance().State().Planets().OwnedInTurnsBy(*this, turns)[i]->Growth();
 	}
 	return growth;
 }

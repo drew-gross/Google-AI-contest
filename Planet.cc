@@ -110,7 +110,7 @@ void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	}
 }
 
-int Planet::GrowthRate() const {
+int Planet::Growth() const {
 	return growth_rate_;
 }
 
@@ -170,19 +170,19 @@ PlanetState Planet::StateInTurns(unsigned int turnsInFuture) const {
 
 		int totalEnemyShipsAttacking = ShipsArrivingInTurns(Player::enemy(), turnInFuture);
 		int totalPlayerShipsAttacking = ShipsArrivingInTurns(Player::self(), turnInFuture);
-		stateInTurn.NextState(totalPlayerShipsAttacking, totalEnemyShipsAttacking, GrowthRate());
+		stateInTurn.NextState(totalPlayerShipsAttacking, totalEnemyShipsAttacking, Growth());
 	}
 	return stateInFuture[turnsInFuture];
 }
 
 int Planet::NeutralROI( int turns )
 {
-	return ((GameManager::Instance().TurnsRemaining() - turns) * GrowthRate()) - ShipsInTurns(turns);
+	return ((GameManager::Instance().TurnsRemaining() - turns) * Growth()) - ShipsInTurns(turns);
 }
 
 int Planet::EnemyROI( int turns )
 {
-	return (GameManager::Instance().TurnsRemaining() - turns) * 2 * GrowthRate();
+	return (GameManager::Instance().TurnsRemaining() - turns) * 2 * Growth();
 }
 
 int Planet::ShipsAvailable()
