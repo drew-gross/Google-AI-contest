@@ -8,7 +8,8 @@ public:
 
 private:
 	void DefensePhase();
-	void AttackPhase();
+	void AgressiveAttackPhase();
+	void CautiousAttackPhase();
 	void SupplyPhase();
 };
 

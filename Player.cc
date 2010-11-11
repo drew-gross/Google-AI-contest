@@ -26,7 +26,7 @@ Player::Player()
 {
 }
 
-Player Player::Opponent()
+Player Player::Opponent() const
 {
 	if (*this == self())
 	{
@@ -39,12 +39,12 @@ Player Player::Opponent()
 	throw std::logic_error("Attempted to find the opponent of neutral!");
 }
 
-bool Player::operator==( Player const & rhs )
+bool Player::operator==( Player const & rhs ) const
 {
 	return playerNum == rhs.playerNum;
 }
 
-bool Player::operator!=( Player const & rhs )
+bool Player::operator!=( Player const & rhs ) const
 {
 	return playerNum != rhs.playerNum;
 }
@@ -73,4 +73,18 @@ int Player::Ships() const {
 		}
 	}
 	return num_ships;
+}
+
+int Player::Growth() const
+{
+	int growth = 0;
+	for (unsigned int i = 0; i < GameManager::Instance().State().Planets().OwnedBy(*this).size(); ++i) {
+		growth += GameManager::Instance().State().Planets().OwnedBy(*this)[i]->GrowthRate();
+	}
+	return growth;
+}
+
+bool Player::IsWinning() const
+{
+	return Growth() > Opponent().Growth() && Ships() > Opponent().Ships();
 }

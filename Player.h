@@ -12,19 +12,19 @@ public:
 
 	int PlayerNum() const;
 
-	Player Opponent();
+	Player Opponent() const;
 
-	bool operator==(Player const & rhs);
-	bool operator!=(Player const & rhs);
+	bool operator==(Player const & rhs) const;
+	bool operator!=(Player const & rhs) const;
 
 	static Player neutral();
 	static Player self();
 	static Player enemy();
 
-	// Returns the number of ships that the given player has, either located
-	// on planets or in flight.
 	int Ships() const;
+	int Growth() const;
 
+	bool IsWinning() const;
 private:
 	int playerNum;
 };

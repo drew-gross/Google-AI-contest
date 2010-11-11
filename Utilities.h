@@ -12,7 +12,7 @@
 
 #define toString(x) #x
 
-namespace std {
+namespace std { 
 	template<typename T>
 	T max(T first, T second, T third) {
 		return max(max(first, second), third);
@@ -23,6 +23,7 @@ namespace std {
 		if ((first <= second && second <= third) || (first >= second && second >= third)) return second;
 		if ((second <= first && first <= third) || (second >= first && first >= third)) return first;
 		if ((first <= third && third <= second) || (first >= third && third >= second)) return third;
+		throw std::logic_error("median: first >= second >= third >= first");
 	}
 }
 

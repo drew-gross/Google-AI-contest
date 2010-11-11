@@ -11,7 +11,11 @@ void AI::DoTurn() {
 	try
 	{
 		DefensePhase();
-		AttackPhase();
+		if (Player::self().IsWinning()){ 
+			CautiousAttackPhase();
+		} else {
+			AgressiveAttackPhase();
+		}
 		SupplyPhase();
 	}
 	catch (std::exception e)
@@ -27,10 +31,9 @@ void AI::FinishTurn() {
 	std::cout.flush();
 }
 
-void AI::AttackPhase()
+void AI::AgressiveAttackPhase()
 {
 	bool shipsSent = true;
-
 	while (GameManager::Instance().State().Planets().NeedAttacking().size() > 0 && shipsSent) {
 		shipsSent = false;
 		Planet* source;
@@ -45,7 +48,7 @@ void AI::AttackPhase()
 			Planet * dest = attackFromHere.HighestROIFromPlanet(source);
 			int sourceDestSeparation = source->DistanceTo(dest);
 			int destEnemySeparation;
-			if (dest->Owner() != Player::enemy())
+			if (dest->Owner() == Player::neutral())
 			{
 				try {
 					destEnemySeparation = dest->DistanceTo(dest->ClosestPlanetOwnedBy(Player::enemy()));
@@ -121,4 +124,9 @@ void AI::SupplyPhase()
 			}
 		}	
 	}
+}
+
+void AI::CautiousAttackPhase()
+{
+	AgressiveAttackPhase();
 }
