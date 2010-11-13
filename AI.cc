@@ -46,6 +46,21 @@ void AI::AgressiveAttackPhase()
 	}
 }
 
+void AI::CautiousAttackPhase()
+{
+	while (GameManager::Instance().State().Planets().NeedAttackingCautiously().size() > 0) {
+		Planet* source;
+		try {
+			source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
+		} catch (NoPlanetsInListException e) {
+			return;
+		}
+		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttackingCautiously()))) {
+			return;
+		}
+	}
+}
+
 void AI::DefensePhase() {
 	PlanetList needToDefend = GameManager::Instance().State().Planets().NeedDefending();
 	for (unsigned int i = 0; i < needToDefend.size(); ++i) {
@@ -92,20 +107,5 @@ void AI::SupplyPhase()
 				break;
 			}
 		}	
-	}
-}
-
-void AI::CautiousAttackPhase()
-{
-	while (GameManager::Instance().State().Planets().NeedAttacking().size() > 0) {
-		Planet* source;
-		try {
-			source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
-		} catch (NoPlanetsInListException e) {
-			return;
-		}
-		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttacking()))) {
-			return;
-		}
 	}
 }

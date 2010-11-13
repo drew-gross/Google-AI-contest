@@ -60,6 +60,7 @@ public:
 	// Determines whether the planet needs to be attacked. Returns true if
 	// I will not own the planet indefinitely
 	bool NeedToAttack() const;
+	bool NeedToAttackCautiously() const;
 
 	// Takes the list of planets specified and requests defense from them until the planet no longer needs defense
 	void SeekDefenseFrom(PlanetList &defendersAtOptimalTime, int optimalDefenseTime);

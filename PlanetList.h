@@ -22,6 +22,7 @@ public:
 	PlanetList NotOwnedBy(Player player) const;
 	PlanetList NeedDefending() const;
 	PlanetList NeedAttacking() const;
+	PlanetList NeedAttackingCautiously() const;
 	PlanetList Fronts() const;
 
 	void DeleteAll();

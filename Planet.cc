@@ -100,11 +100,22 @@ bool Planet::NeedToAttack() const
 	return (OwnerInTurns(GameManager::Instance().State().MaxDistance()) != Player::self());
 }
 
+bool Planet::NeedToAttackCautiously() const
+{
+	if (OwnerInTurns(GameManager::Instance().State().MaxDistance()) == Player::enemy()) {
+		return true;
+	}
+	if (OwnerInTurns(GameManager::Instance().State().MaxDistance()) == Player::neutral() && Ships() <= Player::self().Ships() - Player::enemy().Ships()) {
+		return true;
+	}
+	return false;
+}
+
 void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 	for (PlanetList::iterator j = defenders.begin(); j != defenders.end(); ++j) {
 		Planet * curDefender = *j;
 		int defenseTime = std::max(DistanceTo(*j), optimalDefenseTime);
-		if (curDefender->ShipsAvailable() > 0 && (*curDefender != *this)) {
+		if (*curDefender != *this) {
 			GameManager::Instance().IssueOrder(curDefender, this, std::min(ShipsToTakeoverInTurns(defenseTime), curDefender->ShipsAvailable()));
 		}
 	}
