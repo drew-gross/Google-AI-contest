@@ -384,7 +384,7 @@ bool Planet::AttackPlanets( PlanetList targets )
 
 		if (dest != nullptr && (CanTakeover(dest)) && (sourceDestSeparation <= destEnemySeparation)) {
 			try {
-				if (dest->OptimalAttackTime() <= sourceDestSeparation) {
+				if (dest->OptimalAttackTime() < sourceDestSeparation) {
 					AttemptToTakeover(dest);
 					attackSucceded = true;
 				} else {

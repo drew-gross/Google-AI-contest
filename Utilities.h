@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 #ifndef nullptr
 #define nullptr 0
