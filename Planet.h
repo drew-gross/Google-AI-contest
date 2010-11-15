@@ -8,8 +8,8 @@
 
 #include "Utilities.h"
 #include "PlanetState.h"
+#include "PlanetList.h"
 
-class PlanetList;
 class GameManager;
 
 class Planet {
@@ -74,7 +74,7 @@ public:
 	void AttemptToTakeover(Planet const * p);
 
 	// Attacks as many planets in the list as possible. Returns true if any planets were attacked and false if no planets could be attacked
-	bool AttackPlanets( PlanetList targets );
+	bool AttackPlanets( PlanetList targets, PlanetList::Prioritiser attackFirst);
 
 	// Returns true if this planet has enough ships to takeover p
 	bool CanTakeover( Planet const* p );

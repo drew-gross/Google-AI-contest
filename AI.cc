@@ -40,7 +40,7 @@ void AI::AgressiveAttackPhase()
 		} catch (NoPlanetsInListException) {
 			return;
 		}
-		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttacking()))) {
+		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttacking(), &PlanetList::HighestROIFromPlanet))) {
 			return;
 		}
 	}
@@ -55,7 +55,7 @@ void AI::CautiousAttackPhase()
 		} catch (NoPlanetsInListException) {
 			return;
 		}
-		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttackingCautiously()))) {
+		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttackingCautiously(), &PlanetList::HighestGrowthEnemy))) {
 			return;
 		}
 	}

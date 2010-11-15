@@ -23,7 +23,7 @@ Planet* PlanetList::Weakest() {
 	return weakestPlanet;
 }
 
-Planet* PlanetList::WeakestFromPlanet( Planet const * const p )
+Planet* PlanetList::WeakestFromPlanet( Planet const * const p ) const
 {
 	if (size() == 0) {
 		throw NoPlanetsInListException();
@@ -112,7 +112,7 @@ int PlanetList::ShipsAvailable()
 	return shipsAvailable;
 }
 
-Planet* PlanetList::HighestROIFromPlanet( Planet const * source ) const
+Planet* PlanetList::HighestROIFromPlanet( Planet const * const source ) const
 {
 	int ROI = std::numeric_limits<int>::min();
 	Planet * highestROIPlanet = operator[](0);
@@ -133,6 +133,25 @@ Planet* PlanetList::HighestROIFromPlanet( Planet const * source ) const
 		}
 	}
 	return highestROIPlanet;
+}
+
+Planet* PlanetList::HighestGrowthEnemy( Planet const * const source ) const
+{
+	int highestGrowth = std::numeric_limits<int>::min();
+	Planet * highestGrowthEnemy = operator[](0);
+	for (unsigned int i = 0; i < size(); ++i)
+	{
+		Planet * curPlanet = operator[](i);
+		if (curPlanet->Owner() != Player::enemy()) {
+			continue;
+		}
+		int curPlanetGrowth = curPlanet->Growth();
+		if (curPlanetGrowth > highestGrowth) {
+			highestGrowth = curPlanetGrowth;
+			highestGrowthEnemy = curPlanet;
+		}
+	}
+	return highestGrowthEnemy;
 }
 
 PlanetList PlanetList::NeedDefending() const

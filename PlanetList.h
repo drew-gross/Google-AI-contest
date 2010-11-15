@@ -9,10 +9,10 @@ class Planet;
 
 class PlanetList : public std::vector<Planet*> {
 public:
+
 	void Remove(Planet const * const p);
 
 	Planet* Weakest();
-	Planet* WeakestFromPlanet(Planet const * const p);
 	Planet* Strongest();
 
 	int Ships() const;
@@ -30,7 +30,14 @@ public:
 	void SortByHighestGrowth();
 
 	void DeleteAll();
-	Planet* HighestROIFromPlanet(Planet const * source) const;
+
+	typedef Planet* (PlanetList::*Prioritiser)(Planet const * const) const;
+
+	Planet* HighestROIFromPlanet(Planet const * const source) const;
+	Planet* HighestGrowthEnemy(Planet const * const source) const;
+	Planet* WeakestFromPlanet(Planet const * const p) const;
+
+
 private:
 };
 

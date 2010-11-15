@@ -379,11 +379,11 @@ bool Planet::IsFront()
 	return *(closestEnemy->ClosestPlanetOwnedBy(Player::self())) == *this;
 }
 
-bool Planet::AttackPlanets( PlanetList targets )
+bool Planet::AttackPlanets( PlanetList targets, PlanetList::Prioritiser attackFirst)
 {
 	bool attackSucceded = false;
 	while (targets.size() > 0) {
-		Planet * dest = targets.HighestROIFromPlanet(this);
+		Planet * dest = (targets.*attackFirst)(this);
 		int sourceDestSeparation = DistanceTo(dest);
 		int destEnemySeparation;
 		if (dest->Owner() == Player::neutral())
