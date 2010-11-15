@@ -86,8 +86,13 @@ void GameManager::IssueOrder(Planet * const source, Planet const * const dest, i
 	if (num_ships > source->Ships()) {
 		throw std::runtime_error("Not Enough Ships to send");
 	}
+	if (num_ships < 0) {
+		throw std::runtime_error("Attempting to send negative ships");
+	}
 	if (source->Owner() != Player::self()) throw std::runtime_error("You don't own that planet");
-	if (num_ships == 0) return;
+	if (num_ships == 0) {
+		return;
+	}
 
 	state.AddFleet(new Fleet(Player::self(), num_ships, source, dest, source->DistanceTo(dest), source->DistanceTo(dest)));
 	source->RemoveShips(num_ships);

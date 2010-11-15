@@ -37,7 +37,7 @@ void AI::AgressiveAttackPhase()
 		Planet* source;
 		try {
 			source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
-		} catch (NoPlanetsInListException e) {
+		} catch (NoPlanetsInListException) {
 			return;
 		}
 		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttacking()))) {
@@ -52,7 +52,7 @@ void AI::CautiousAttackPhase()
 		Planet* source;
 		try {
 			source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
-		} catch (NoPlanetsInListException e) {
+		} catch (NoPlanetsInListException) {
 			return;
 		}
 		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttackingCautiously()))) {
@@ -63,6 +63,7 @@ void AI::CautiousAttackPhase()
 
 void AI::DefensePhase() {
 	PlanetList needToDefend = GameManager::Instance().State().Planets().NeedDefending();
+	needToDefend.SortByHighestGrowth();
 	for (unsigned int i = 0; i < needToDefend.size(); ++i) {
 		int optimalDefenseTime = needToDefend[i]->OptimalDefenseTime();
 		PlanetList defendersAtOptimalTime;
@@ -82,7 +83,7 @@ void AI::DefensePhase() {
 		}
 		try {
 			needToDefend[i]->SeekDefenseFrom(defendersAtOptimalTime, optimalDefenseTime);
-			if (defendersBeforeOptimalTime.ShipsAvailable() > needToDefend[i]->ShipsInTurns(optimalDefenseTime)) {
+			if (defendersBeforeOptimalTime.ShipsAvailable() < needToDefend[i]->ShipsInTurns(optimalDefenseTime)) {
 				needToDefend[i]->SeekDefenseFrom(defendersBeforeOptimalTime, optimalDefenseTime);
 				needToDefend[i]->SeekDefenseFrom(defendersAfterOptimalTime, optimalDefenseTime);
 			}

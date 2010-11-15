@@ -10,7 +10,9 @@
 #include "Planet.h"
 
 Planet* PlanetList::Weakest() {
-	if (size() == 0) throw NoPlanetsInListException();
+	if (size() == 0) {
+		throw NoPlanetsInListException();
+	}
 	Planet* weakestPlanet = (*this)[0];
 	for (unsigned int i = 0; i < size(); ++i) {
 		Planet* curPlanet = (*this)[i];
@@ -23,7 +25,9 @@ Planet* PlanetList::Weakest() {
 
 Planet* PlanetList::WeakestFromPlanet( Planet const * const p )
 {
-	if (size() == 0) throw NoPlanetsInListException();
+	if (size() == 0) {
+		throw NoPlanetsInListException();
+	}
 	Planet* weakestPlanet = (*this)[0];
 	for (unsigned int i = 0; i < size(); ++i) {
 		Planet* curPlanet = (*this)[i];
@@ -35,7 +39,9 @@ Planet* PlanetList::WeakestFromPlanet( Planet const * const p )
 }
 
 Planet* PlanetList::Strongest() {
-	if (size() == 0) throw NoPlanetsInListException();
+	if (size() == 0) {
+		throw NoPlanetsInListException();
+	}
 	Planet* strongestPlanet = (*this)[0];
 	for (unsigned int i = 0; i < size(); ++i) {
 		Planet* curPlanet = (*this)[i];
@@ -174,7 +180,20 @@ PlanetList PlanetList::Fronts() const
 	return p;
 }
 
-void PlanetList::Remove( Planet* p )
+void PlanetList::Remove( Planet const * const p )
 {
 	erase(std::remove(begin(), end(), p), end());
+}
+
+bool LowestGrowth(Planet const * const first, Planet const * const second) {
+	if (first->Growth() < second->Growth()) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void PlanetList::SortByHighestGrowth()
+{
+	std::sort(begin(), end(), &LowestGrowth);
 }

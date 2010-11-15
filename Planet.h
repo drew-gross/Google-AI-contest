@@ -65,6 +65,8 @@ public:
 	// Takes the list of planets specified and requests defense from them until the planet no longer needs defense
 	void SeekDefenseFrom(PlanetList &defendersAtOptimalTime, int optimalDefenseTime);
 
+	int PotentialAttackers() const;
+
 	// Sends all available ships to the target planet
 	void Reinforce(Planet const * p);
 
@@ -89,7 +91,7 @@ public:
 	int EnemyROI(int turns);
 
 	Planet * ClosestPlanet();
-	Planet * ClosestPlanetInList(PlanetList list);
+	Planet * ClosestPlanetInList(PlanetList list) const;
 	Planet const * ClosestPlanetOwnedBy( Player player ) const;
 
 	// Adds up all the ships from fleets owned by the specified player and arriving

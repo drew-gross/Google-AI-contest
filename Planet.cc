@@ -15,6 +15,7 @@
 #include <math.h>
 #include <cmath>
 #include "Utilities.h"
+#include "NoPlanetsInListException.h"
 
 Planet::Planet(int planet_id, PlanetState newstate, int growth_rate, double x, double y):
 planet_id_(planet_id),
@@ -206,6 +207,20 @@ int Planet::ShipsAvailable()
 	return shipsAvailable;
 }
 
+int Planet::PotentialAttackers() const
+{
+	try {
+		Planet const * closestEnemy = ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::enemy()));
+		if (DistanceTo(closestEnemy) < DistanceTo(ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::self())))) {
+			return std::max(closestEnemy->Ships() - DistanceTo(closestEnemy) * Growth(), 0);
+		} else {
+			return 0;
+		}
+	} catch (NoPlanetsInListException) {
+		return 0;
+	}
+}
+
 int Planet::MyShipsInTurns( int turns )
 {
 	if (OwnerInTurns(turns) != Player::self()) {
@@ -233,9 +248,9 @@ Planet * Planet::ClosestPlanet()
 	return ClosestPlanetInList(GameManager::Instance().State().Planets());
 }
 
-Planet * Planet::ClosestPlanetInList( PlanetList list )
+Planet * Planet::ClosestPlanetInList( PlanetList list ) const
 {
-	list.erase(std::remove(list.begin(), list.end(), this), list.end());
+	list.Remove(this);
 	if (list.size() == 0) {
 		throw NoPlanetsOwnedByPlayerException(Player::enemy());
 	}
@@ -382,9 +397,9 @@ bool Planet::AttackPlanets( PlanetList targets )
 			destEnemySeparation = std::numeric_limits<int>::max();
 		}
 
-		if (dest != nullptr && (CanTakeover(dest)) && (sourceDestSeparation <= destEnemySeparation)) {
+		if (dest != nullptr && (CanTakeover(dest)) && (sourceDestSeparation < destEnemySeparation)) {
 			try {
-				if (dest->OptimalAttackTime() < sourceDestSeparation) {
+				if (dest->OptimalAttackTime() <= sourceDestSeparation) {
 					AttemptToTakeover(dest);
 					attackSucceded = true;
 				} else {
