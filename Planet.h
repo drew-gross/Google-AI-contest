@@ -115,6 +115,7 @@ private:
 	PlanetState StateInTurns(unsigned int turns) const;
 	std::vector<PlanetState> const & FutureStates( unsigned int turns) const;
 	PlanetState CurrentState() const;
+	Player OwnerInEndGame();
 	PlanetState state;
 	int planet_id_;
 	int growth_rate_;

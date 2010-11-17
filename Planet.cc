@@ -237,9 +237,9 @@ int Planet::ReturnOnInvestment( int turns )
 	} else if (OwnerInTurns(turns) == Player::enemy())
 	{
 		return EnemyROI(turns);
-	} else
+	} else 
 	{
-		throw DontNeedToAttackException(this);
+		return 0;
 	}
 }
 
@@ -313,6 +313,10 @@ bool Planet::IsSupplier()
 	try {
 		closestNeutral = ClosestPlanetOwnedBy(Player::neutral());
 		distanceToNeutral = DistanceTo(closestNeutral);
+		if (ReturnOnInvestment(DistanceTo(closestNeutral)) < 0)
+		{
+			distanceToNeutral = std::numeric_limits<int>::max();
+		}
 	} catch (NoPlanetsOwnedByPlayerException e) {
 		distanceToNeutral = std::numeric_limits<int>::max();
 	}
@@ -375,6 +379,9 @@ bool Planet::CanTakeover( Planet const* p )
 
 bool Planet::IsFront()
 {
+	if (OwnerInEndGame() != Player::self()) {
+		return false;
+	}
 	Planet const * closestEnemy = ClosestPlanetOwnedBy(Player::enemy());
 	return *(closestEnemy->ClosestPlanetOwnedBy(Player::self())) == *this;
 }
@@ -413,4 +420,9 @@ bool Planet::AttackPlanets( PlanetList targets, PlanetList::Prioritiser attackFi
 		}
 	}
 	return attackSucceded;
+}
+
+Player Planet::OwnerInEndGame()
+{
+	return OwnerInTurns(GameManager::Instance().TurnsRemaining());
 }
