@@ -24,37 +24,13 @@ Planet const * GameState::GetPlanet(int planet_id) const {
 	return planets_.at(planet_id);
 }
 
-int GameState::NumFleets() const {
-	return fleets_.size();
-}
-
-Fleet const * GameState::GetFleet(int fleet_id) const {
-	return fleets_.at(fleet_id);
-}
-
 PlanetList const & GameState::Planets() const {
 	return planets_;
 }
 
-void GameState::AddFleet(Fleet* f) {
+void GameState::AddForce(Force* f) {
 	fleets_.push_back(f);
 	f->DestinationPlanet()->ClearFutureCache();
-}
-
-std::string GameState::ToString() const {
-	std::stringstream s;
-	for (unsigned int i = 0; i < planets_.size(); ++i) {
-		Planet* p = planets_[i];
-		s << "P " << p->X() << " " << p->Y() << " " << p->Owner()
-			<< " " << p->Ships() << " " << p->Growth() << std::endl;
-	}
-	for (unsigned int i = 0; i < fleets_.size(); ++i) {
-		Fleet* f = fleets_[i];
-		s << "F " << f->Owner() << " " << f->Ships() << " "
-			<< f->SourcePlanet() << " " << f->DestinationPlanet() << " "
-			<< f->TotalTripLength() << " " << f->TurnsRemaining() << std::endl;
-	}
-	return s.str();
 }
 
 int GameState::MaxDistance() const {

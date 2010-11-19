@@ -37,8 +37,10 @@ public:
 	bool IsSupplier();
 
 	// Returns true is the closest enemy planets closest self planet if this planet
-	bool IsFront();
+	bool IsFront() const;
 
+	bool OwnedBy(Player player) const;
+	bool OwnedInEndgameBy(Player player) const;
 	// The number of ships on the planet in the specified amount of turns.
 	int ShipsInTurns(unsigned int turnsInFuture) const;
 
@@ -55,7 +57,7 @@ public:
 	// Determines whether the planet needs to be defended. Returns true if I own 
 	// the planet or will own it at some point in time and the
 	// enemy will eventually own the planet given the current game state
-	bool NeedToDefend() const;
+	bool NeedToDefend(void) const;
 
 	// Determines whether the planet needs to be attacked. Returns true if
 	// I will not own the planet indefinitely
@@ -69,6 +71,7 @@ public:
 
 	// Sends all available ships to the target planet
 	void Reinforce(Planet const * p);
+	void ReinforceOnSafePath( Planet const * p );
 
 	// Sends enough ships to takeover the planet, or the maximum available
 	void AttemptToTakeover(Planet const * p);
@@ -76,6 +79,11 @@ public:
 	// Attacks as many planets in the list as possible. Returns true if any planets were attacked and false if no planets could be attacked
 	bool AttackPlanets( PlanetList targets, PlanetList::Prioritiser attackFirst);
 
+	void SendShips(Planet const * const target, int ships);
+	void SendShipsOnSafePath(Planet const * const target, int ships);
+	int SafePathDistanceTo(Planet const * const target);
+
+	Planet const * const SafePathPlanet( Planet const * const target ) const;
 	// Returns true if this planet has enough ships to takeover p
 	bool CanTakeover( Planet const* p );
 
@@ -115,13 +123,13 @@ private:
 	PlanetState StateInTurns(unsigned int turns) const;
 	std::vector<PlanetState> const & FutureStates( unsigned int turns) const;
 	PlanetState CurrentState() const;
-	Player OwnerInEndGame();
+	Player OwnerInEndGame()const;
 	PlanetState state;
 	int planet_id_;
 	int growth_rate_;
 	double x_, y_;
 
-	mutable std::vector<PlanetState> stateInFuture;
+	mutable std::vector<PlanetState> futureStates;
 };
 
 #endif //PLANET_H_

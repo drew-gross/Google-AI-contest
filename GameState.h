@@ -9,8 +9,8 @@
 
 #include "Planet.h"
 #include "PlanetList.h"
-#include "Fleet.h"
-#include "FleetList.h"
+#include "Force.h"
+#include "ForceList.h"
 
 #include "Logger.h"
 
@@ -20,26 +20,18 @@
 class GameState {
 public:
 	int NumPlanets() const;
-	int NumFleets() const;
 
 	// Returns the planet with the given planet_id. Planets are numbered starting at 0.
 	Planet const * GetPlanet(int planet_id) const;
 
-	// Returns the fleet with the given fleet_id. Fleets are numbered starting at 0. fleet_id's are not consistent from one turn to the next.
-	Fleet const * GetFleet(int fleet_id) const;
-
 	PlanetList const & Planets() const;
-	inline FleetList & Fleets();
+	inline FleetList & Forces();
 
-	void AddFleet(Fleet* f);
+	void AddForce(Force* f);
 	void AddPlanet(Planet* p);
 
 	// Returns the maximum separation between planets.
 	int MaxDistance() const;
-
-	// Writes a string which represents the current game state. This string
-	// conforms to the Point-in-Time format from the project Wiki.
-	std::string ToString() const;
 
 private:
 	friend class GameManager;
@@ -51,8 +43,8 @@ private:
 	FleetList fleets_;
 };
 
-FleetList & GameState::Fleets() {
+FleetList & GameState::Forces() {
 	return fleets_;
 }
 
-#endif
+#endif//PLANET_WARS_H_

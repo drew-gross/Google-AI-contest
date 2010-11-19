@@ -33,14 +33,14 @@ void AI::FinishTurn() {
 
 void AI::AgressiveAttackPhase()
 {
-	while (GameManager::Instance().State().Planets().NeedAttacking().size() > 0) {
+	while (GameManager::Instance().State().Planets().Subset(&Planet::NeedToAttack).size() > 0) {
 		Planet* source;
 		try {
-			source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
+			source = GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy,Player::self()).Strongest();
 		} catch (NoPlanetsInListException) {
 			return;
 		}
-		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttacking(), &PlanetList::HighestROIFromPlanet))) {
+		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().Subset(&Planet::NeedToAttack), &PlanetList::HighestROIFromPlanet))) {
 			return;
 		}
 	}
@@ -48,21 +48,21 @@ void AI::AgressiveAttackPhase()
 
 void AI::CautiousAttackPhase()
 {
-	while (GameManager::Instance().State().Planets().NeedAttackingCautiously().size() > 0) {
+	while (GameManager::Instance().State().Planets().Subset(&Planet::NeedToAttackCautiously).size() > 0) {
 		Planet* source;
 		try {
-			source = GameManager::Instance().State().Planets().OwnedBy(Player::self()).Strongest();
+			source = GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::self()).Strongest();
 		} catch (NoPlanetsInListException) {
 			return;
 		}
-		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().NeedAttackingCautiously(), &PlanetList::HighestGrowthEnemy))) {
+		if (!(source->AttackPlanets(GameManager::Instance().State().Planets().Subset(&Planet::NeedToAttackCautiously), &PlanetList::HighestGrowthEnemy))) {
 			return;
 		}
 	}
 }
 
 void AI::DefensePhase() {
-	PlanetList needToDefend = GameManager::Instance().State().Planets().NeedDefending();
+	PlanetList needToDefend = GameManager::Instance().State().Planets().Subset(&Planet::NeedToDefend);
 	needToDefend.SortByHighestGrowth();
 	for (unsigned int i = 0; i < needToDefend.size(); ++i) {
 		int optimalDefenseTime = needToDefend[i]->OptimalDefenseTime();
@@ -70,14 +70,14 @@ void AI::DefensePhase() {
 		PlanetList defendersAfterOptimalTime;
 		PlanetList defendersBeforeOptimalTime;
 
-		PlanetList myPlanets = GameManager::Instance().State().Planets().OwnedBy(Player::self());
+		PlanetList myPlanets = GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy,Player::self());
 		for (unsigned int j = 0; j < myPlanets.size(); ++j) {
-			int defenderDefendeeDistance = myPlanets[j]->DistanceTo(needToDefend[i]);
-			if (defenderDefendeeDistance == optimalDefenseTime) {
+			int distance = myPlanets[j]->DistanceTo(needToDefend[i]);
+			if (distance == optimalDefenseTime) {
 				defendersAtOptimalTime.push_back(myPlanets[j]);
-			} else if (defenderDefendeeDistance < optimalDefenseTime) {
+			} else if (distance < optimalDefenseTime) {
 				defendersBeforeOptimalTime.push_back(myPlanets[j]);
-			} else if (defenderDefendeeDistance > optimalDefenseTime) {
+			} else if (distance > optimalDefenseTime) {
 				defendersAfterOptimalTime.push_back(myPlanets[j]);
 			}
 		}
@@ -95,18 +95,29 @@ void AI::DefensePhase() {
 
 void AI::SupplyPhase()
 {
-	PlanetList myPlanets = GameManager::Instance().State().Planets().OwnedBy(Player::self());
+	PlanetList myPlanets = GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::self());
+	PlanetList fronts = GameManager::Instance().State().Planets().Subset(&Planet::IsFront);
 	for (unsigned int i = 0; i < myPlanets.size(); ++i)
 	{
-		if (myPlanets[i]->IsSupplier())
-		{
-			try {
-				Planet * source = myPlanets[i];
-				Planet const * dest = source->ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::self()).Fronts());
-				source->Reinforce(dest);
-			} catch (NoPlanetsOwnedByPlayerException e) {
-				break;
+		try {
+			Planet * source = myPlanets[i];
+			Planet const * closestFront = source->ClosestPlanetInList(fronts);
+			if (source->IsSupplier())
+			{
+				source->ReinforceOnSafePath(closestFront);
+			} else {
+				Planet const * closestNeutral = source->ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::neutral()));
+				Planet const * closestEnemy = source->ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::enemy()));
+				Planet const * dest = closestNeutral->ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::self()));
+				if (dest->DistanceTo(closestFront) < source->DistanceTo(closestFront) && dest->DistanceTo(source) < source->DistanceTo(closestEnemy))
+				{
+					source->ReinforceOnSafePath(dest);
+				}
 			}
-		}	
+		} catch (NoPlanetsOwnedByPlayerException e) {
+			break;
+		} catch (NoPlanetsInListException e) {
+			break;
+		}
 	}
 }

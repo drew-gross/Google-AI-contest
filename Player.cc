@@ -62,16 +62,17 @@ std::ostream& operator<<(std::ostream& out, const Player& player)
 
 int Player::Ships() const {
 	int num_ships = 0;
-	num_ships += GameManager::Instance().State().Planets().OwnedBy(*this).Ships();
-	num_ships += GameManager::Instance().State().Fleets().OwnedBy(*this).Ships();
+	num_ships += GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, *this).Ships();
+	num_ships += GameManager::Instance().State().Forces().ShipsFromPlayer(*this);
 	return num_ships;
 }
 
 int Player::Growth() const
 {
 	int growth = 0;
-	for (unsigned int i = 0; i < GameManager::Instance().State().Planets().OwnedBy(*this).size(); ++i) {
-		growth += GameManager::Instance().State().Planets().OwnedBy(*this)[i]->Growth();
+	PlanetList myPlanets = GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, *this);
+	for (unsigned int i = 0; i < myPlanets.size(); ++i) {
+		growth += myPlanets[i]->Growth();
 	}
 	return growth;
 }
@@ -79,8 +80,9 @@ int Player::Growth() const
 int Player::GrowthInTurns( int turns ) const
 {
 	int growth = 0;
-	for (unsigned int i = 0; i < GameManager::Instance().State().Planets().OwnedInTurnsBy(*this, turns).size(); ++i) {
-		growth += GameManager::Instance().State().Planets().OwnedInTurnsBy(*this, turns)[i]->Growth();
+	PlanetList myPlanets = GameManager::Instance().State().Planets().OwnedInTurnsBy(*this, turns);
+	for (unsigned int i = 0; i < myPlanets.size(); ++i) {
+		growth += myPlanets[i]->Growth();
 	}
 	return growth;
 }

@@ -3,13 +3,14 @@
 
 #include <vector>
 #include <list>
-#include "Fleet.h"
+#include "Force.h"
 #include "Planet.h"
 
-class FleetList : public std::vector<Fleet*> {
+class FleetList : public std::vector<Force*> {
 public:
-	int Ships();
+	int ShipsFromPlayer(Player player) const;
 	void DeleteAll();
+	void AddForce(Force * f);
 
 	FleetList & OwnedBy(Player player);
 	FleetList & AttackingPlanet( Planet const * p );

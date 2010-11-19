@@ -18,25 +18,22 @@ public:
 	int Ships() const;
 	int ShipsAvailable();
 
-	PlanetList OwnedBy(Player player) const;
-	PlanetList NotOwnedBy(Player player) const;
-	PlanetList OwnedInTurnsBy( Player player, int turns ) const;
+	typedef bool (Planet::*Set)(void) const;
+	PlanetList Subset(PlanetList::Set matcher) const;
 
-	PlanetList NeedDefending() const;
-	PlanetList NeedAttacking() const;
-	PlanetList NeedAttackingCautiously() const;
-	PlanetList Fronts() const;
+	typedef bool (Planet::*PlayerSet)(Player) const;
+	PlanetList PlayerSubset(PlanetList::PlayerSet matcher, Player player) const;
+
+	PlanetList OwnedInTurnsBy( Player player, int turns ) const;
 
 	void SortByHighestGrowth();
 
 	void DeleteAll();
 
 	typedef Planet* (PlanetList::*Prioritiser)(Planet const * const) const;
-
 	Planet* HighestROIFromPlanet(Planet const * const source) const;
 	Planet* HighestGrowthEnemy(Planet const * const source) const;
-	Planet* WeakestFromPlanet(Planet const * const p) const;
-
+	Planet* WeakestFromPlanet(Planet const * const source) const;
 
 private:
 };

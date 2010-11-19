@@ -59,17 +59,6 @@ void PlanetList::DeleteAll() {
 	this->resize(0);
 }
 
-PlanetList PlanetList::OwnedBy( Player player ) const
-{
-	PlanetList p;
-	for(unsigned int i = 0; i < size(); ++i) {
-		if (operator[](i)->Owner() == player) {
-			p.push_back(operator[](i));
-		}
-	}
-	return p;
-}
-
 PlanetList PlanetList::OwnedInTurnsBy( Player player, int turns ) const
 {
 	PlanetList p;
@@ -81,11 +70,11 @@ PlanetList PlanetList::OwnedInTurnsBy( Player player, int turns ) const
 	return p;
 }
 
-PlanetList PlanetList::NotOwnedBy( Player player ) const
+PlanetList PlanetList::PlayerSubset( PlanetList::PlayerSet matcher, Player player ) const
 {
 	PlanetList p;
 	for(unsigned int i = 0; i < size(); ++i) {
-		if (operator[](i)->Owner() != player) {
+		if ((operator[](i)->*matcher)(player)) {
 			p.push_back(operator[](i));
 		}
 	}
@@ -154,49 +143,16 @@ Planet* PlanetList::HighestGrowthEnemy( Planet const * const source ) const
 	return highestGrowthEnemy;
 }
 
-PlanetList PlanetList::NeedDefending() const
+PlanetList PlanetList::Subset( PlanetList::Set matcher ) const
 {
 	PlanetList p;
 	for(unsigned int i = 0; i < size(); ++i) {
-		if (operator[](i)->NeedToDefend()) {
+		if ((operator[](i)->*matcher)()) {
 			p.push_back(operator[](i));
 		}
 	}
 	return p;
-}
 
-PlanetList PlanetList::NeedAttacking() const
-{
-	PlanetList p;
-	for(unsigned int i = 0; i < size(); ++i) {
-		if (operator[](i)->NeedToAttack()) {
-			p.push_back(operator[](i));
-		}
-	}
-	return p;
-}
-
-PlanetList PlanetList::NeedAttackingCautiously() const
-{
-	PlanetList p;
-	for(unsigned int i = 0; i < size(); ++i) {
-		if (operator[](i)->NeedToAttackCautiously()) {
-			p.push_back(operator[](i));
-		}
-	}
-	return p;
-}
-
-PlanetList PlanetList::Fronts() const
-{
-	PlanetList p;
-	for(unsigned int i = 0; i < size(); ++i) {
-		Planet *curPlanet = operator[](i);
-		if (curPlanet->IsFront()) {
-			p.push_back(curPlanet);
-		}
-	}
-	return p;
 }
 
 void PlanetList::Remove( Planet const * const p )

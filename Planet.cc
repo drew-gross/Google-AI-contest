@@ -81,9 +81,10 @@ int Planet::OptimalDefenseTime() const {
 	return leastEnemyShipsTime;
 }
 
-bool Planet::NeedToDefend() const {
+bool Planet::NeedToDefend( void ) const
+{
 	std::vector<PlanetState> futureStates = FutureStates(GameManager::Instance().State().MaxDistance());
-	if (futureStates[0].GetPlayer() != Player::self()) {
+	if (Owner() != Player::self()) {
 		return false;
 	}
 	for (unsigned int i = 0; i < futureStates.size(); ++i)
@@ -117,7 +118,7 @@ void Planet::SeekDefenseFrom( PlanetList &defenders, int optimalDefenseTime) {
 		Planet * curDefender = *j;
 		int defenseTime = std::max(DistanceTo(*j), optimalDefenseTime);
 		if (*curDefender != *this) {
-			GameManager::Instance().IssueOrder(curDefender, this, std::min(ShipsToTakeoverInTurns(defenseTime), curDefender->ShipsAvailable()));
+			curDefender->SendShips(this, std::min(ShipsToTakeoverInTurns(defenseTime), curDefender->ShipsAvailable()));
 		}
 	}
 }
@@ -149,42 +150,40 @@ bool Planet::operator!=( Planet const & rhs ) const
 }
 
 void Planet::ClearFutureCache() const {
-	stateInFuture.clear();
+	futureStates.clear();
 }
 
 int Planet::ShipsArrivingInTurns( Player fromPlayer, int turnsInFuture ) const
 {
 	int shipsArriving = 0;
-	GameManager& gm = GameManager::Instance();
-	for (unsigned int i = 0; i < gm.State().Fleets().size(); ++i)
+	FleetList const & fleets = GameManager::Instance().State().Forces();
+	for (unsigned int i = 0; i < fleets.size(); ++i)
 	{
-		Fleet * curFleet = gm.State().Fleets()[i];
-		if (curFleet->ArrivesInTurns(turnsInFuture) && curFleet->DestinationPlanet() == this && curFleet->Owner() == fromPlayer) {
-			shipsArriving += curFleet->Ships();
+		Force * curFleet = fleets[i];
+		if (curFleet->ArrivesInTurns(turnsInFuture) && curFleet->DestinationPlanet() == this) {
+			shipsArriving += curFleet->ShipsFromPlayer(fromPlayer);
 		}
 	}
 	return shipsArriving;
 }
 
 PlanetState Planet::StateInTurns(unsigned int turnsInFuture) const {
-	if (stateInFuture.size() > turnsInFuture) {
-		return stateInFuture[turnsInFuture];
+	if (turnsInFuture < futureStates.size())
+	{
+		return futureStates[turnsInFuture];
 	}
-	if (stateInFuture.size() == 0) {
-		stateInFuture.push_back(CurrentState());
-	}
-	unsigned int maxCachedTurnIndex = stateInFuture.size() - 1;
-	PlanetState stateInTurn = stateInFuture.back();
-	stateInFuture.resize(turnsInFuture + 2);
-
-	for (unsigned int turnInFuture = maxCachedTurnIndex; turnInFuture <= turnsInFuture + 1; ++turnInFuture) {
-		stateInFuture[turnInFuture] = stateInTurn;
+	futureStates.clear();
+	futureStates.push_back(CurrentState());
+	futureStates.resize(turnsInFuture + 1);
+	PlanetState stateInTurn = CurrentState();
+	for (unsigned int turnInFuture = 0; turnInFuture < futureStates.size(); ++turnInFuture) {
+		futureStates[turnInFuture] = stateInTurn;
 
 		int totalEnemyShipsAttacking = ShipsArrivingInTurns(Player::enemy(), turnInFuture);
 		int totalPlayerShipsAttacking = ShipsArrivingInTurns(Player::self(), turnInFuture);
 		stateInTurn.NextState(totalPlayerShipsAttacking, totalEnemyShipsAttacking, Growth());
 	}
-	return stateInFuture[turnsInFuture];
+	return futureStates[turnsInFuture];
 }
 
 int Planet::NeutralROI( int turns )
@@ -210,8 +209,8 @@ int Planet::ShipsAvailable()
 int Planet::PotentialAttackers() const
 {
 	try {
-		Planet const * closestEnemy = ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::enemy()));
-		if (DistanceTo(closestEnemy) < DistanceTo(ClosestPlanetInList(GameManager::Instance().State().Planets().OwnedBy(Player::self())))) {
+		Planet const * closestEnemy = ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy,Player::enemy()));
+		if (DistanceTo(closestEnemy) < DistanceTo(ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::self())))) {
 			return std::max(closestEnemy->Ships() - DistanceTo(closestEnemy) * Growth(), 0);
 		} else {
 			return 0;
@@ -252,7 +251,7 @@ Planet * Planet::ClosestPlanetInList( PlanetList list ) const
 {
 	list.Remove(this);
 	if (list.size() == 0) {
-		throw NoPlanetsOwnedByPlayerException(Player::enemy());
+		throw NoPlanetsInListException();
 	}
 	Planet * closestPlanet = list[0];
 	int closestDistance = std::numeric_limits<int>::max();
@@ -278,12 +277,12 @@ PlanetState Planet::CurrentState() const
 
 std::vector<PlanetState> const & Planet::FutureStates( unsigned int turns) const
 {
-	if (stateInFuture.size() > turns)
+	if (futureStates.size() > turns)
 	{
-		return stateInFuture;
+		return futureStates;
 	}
 	StateInTurns(turns);
-	return stateInFuture;
+	return futureStates;
 }
 
 bool Planet::IsSupplier()
@@ -333,7 +332,7 @@ int Planet::DistanceTo( Planet const * p ) const
 
 Planet const * Planet::ClosestPlanetOwnedBy( Player player ) const
 {
-	PlanetList playerPlanets = GameManager::Instance().State().Planets().OwnedBy(player);
+	PlanetList playerPlanets = GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, player);
 	if (playerPlanets.size() == 0) {
 		throw NoPlanetsOwnedByPlayerException(player);
 	}
@@ -364,12 +363,17 @@ Planet const * Planet::ClosestPlanetOwnedBy( Player player ) const
 
 void Planet::Reinforce( Planet const * p )
 {
-	GameManager::Instance().IssueOrder(this, p, ShipsAvailable());
+	SendShips(p, ShipsAvailable());
+}
+
+void Planet::ReinforceOnSafePath( Planet const * p )
+{
+	SendShipsOnSafePath(p, ShipsAvailable());
 }
 
 void Planet::AttemptToTakeover( Planet const * p )
 {
-	GameManager::Instance().IssueOrder(this, p, std::min(ShipsAvailable(), p->ShipsToTakeoverInTurns(DistanceTo(p))));
+	SendShips(p, std::min(ShipsAvailable(), p->ShipsToTakeoverInTurns(DistanceTo(p))));
 }
 
 bool Planet::CanTakeover( Planet const* p )
@@ -377,13 +381,13 @@ bool Planet::CanTakeover( Planet const* p )
 	return ShipsAvailable() >= p->ShipsToTakeoverInTurns(DistanceTo(p));
 }
 
-bool Planet::IsFront()
+bool Planet::IsFront() const
 {
 	if (OwnerInEndGame() != Player::self()) {
 		return false;
 	}
-	Planet const * closestEnemy = ClosestPlanetOwnedBy(Player::enemy());
-	return *(closestEnemy->ClosestPlanetOwnedBy(Player::self())) == *this;
+	Planet const * closestEnemy = ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::enemy()));
+	return *(closestEnemy->ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::self()))) == *this;
 }
 
 bool Planet::AttackPlanets( PlanetList targets, PlanetList::Prioritiser attackFirst)
@@ -422,7 +426,54 @@ bool Planet::AttackPlanets( PlanetList targets, PlanetList::Prioritiser attackFi
 	return attackSucceded;
 }
 
-Player Planet::OwnerInEndGame()
+Player Planet::OwnerInEndGame() const
 {
 	return OwnerInTurns(GameManager::Instance().TurnsRemaining());
+}
+
+bool Planet::OwnedBy( Player player ) const
+{
+	return player == Owner();
+}
+
+bool Planet::OwnedInEndgameBy( Player player ) const
+{
+	return player == OwnerInEndGame();
+}
+
+void Planet::SendShips( Planet const * const target, int ships )
+{
+	GameManager::Instance().IssueOrder(this, target, ships);
+}
+
+void Planet::SendShipsOnSafePath( Planet const * const target, int ships )
+{
+	SendShips(SafePathPlanet(target),ships);
+}
+
+int Planet::SafePathDistanceTo(Planet const * const target) {
+	return DistanceTo(SafePathPlanet(target)) + SafePathPlanet(target)->DistanceTo(target);
+}
+
+Planet const * const Planet::SafePathPlanet( Planet const * const target ) const
+{
+	const float safePathExpansionFactor = std::sqrt(2.0f);
+	PlanetList myPlanets = GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::self());
+	myPlanets.Remove(target);
+	myPlanets.Remove(this);
+	while (myPlanets.size() > 0)
+	{
+		
+		Planet const * closestAlly = ClosestPlanetInList(myPlanets);
+		int closestAllyDist = DistanceTo(closestAlly);
+		int closestAllyTargetDist = closestAlly->DistanceTo(target);
+		int targetDist = DistanceTo(target);
+		int safePathDist = closestAllyDist + closestAllyTargetDist;
+		if (closestAllyDist < targetDist && closestAllyTargetDist < targetDist && float(safePathDist)/float(targetDist) < safePathExpansionFactor)
+		{
+			return closestAlly;
+		}
+		myPlanets.Remove(closestAlly);
+	}
+	return target;
 }
