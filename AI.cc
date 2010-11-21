@@ -18,11 +18,11 @@ void AI::DoTurn() {
 		}
 		SupplyPhase();
 	}
-	catch (std::exception e)
-	{
-		CreateStaticLogger(uncaughtExceptions);
-		uncaughtExceptions.Log(e.what());
-	}
+ 	catch (std::exception e)
+ 	{
+ 		CreateStaticLogger(uncaughtExceptions);
+ 		uncaughtExceptions.Log(e.what());
+ 	}
 }
 
 void AI::FinishTurn() {

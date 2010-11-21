@@ -9,7 +9,7 @@ Logger GameManager::mapdata("orders.txt");
 
 int GameManager::MaxTurns()
 {
-	return 200;
+	return 201;
 }
 
 int GameManager::Turns()

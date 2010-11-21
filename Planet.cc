@@ -34,10 +34,6 @@ Player Planet::Owner() const {
 	return CurrentState().GetPlayer();
 }
 
-Player Planet::OwnerInTurns(unsigned int turnsInFuture) const {
-	return StateInTurns(turnsInFuture).GetPlayer();
-}
-
 int Planet::Ships() const {
 	return CurrentState().GetShips();
 }
@@ -160,7 +156,7 @@ int Planet::ShipsArrivingInTurns( Player fromPlayer, int turnsInFuture ) const
 	for (unsigned int i = 0; i < fleets.size(); ++i)
 	{
 		Force * curFleet = fleets[i];
-		if (curFleet->ArrivesInTurns(turnsInFuture) && curFleet->DestinationPlanet() == this) {
+		if (curFleet->DestinationPlanet() == this && curFleet->ArrivesInTurns(turnsInFuture)) {
 			shipsArriving += curFleet->ShipsFromPlayer(fromPlayer);
 		}
 	}
@@ -206,15 +202,19 @@ int Planet::ShipsAvailable()
 	return shipsAvailable;
 }
 
+Planet * Planet::PotentialAttacker() const {
+	try {
+		return ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy,Player::enemy()));
+	} catch (NoPlanetsInListException) {
+		return nullptr;
+	}
+}
+
 int Planet::PotentialAttackers() const
 {
 	try {
 		Planet const * closestEnemy = ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy,Player::enemy()));
-		if (DistanceTo(closestEnemy) < DistanceTo(ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::self())))) {
-			return std::max(closestEnemy->Ships() - DistanceTo(closestEnemy) * Growth(), 0);
-		} else {
-			return 0;
-		}
+		return closestEnemy->Ships() - reservedShips;
 	} catch (NoPlanetsInListException) {
 		return 0;
 	}
@@ -250,7 +250,7 @@ Planet * Planet::ClosestPlanet()
 Planet * Planet::ClosestPlanetInList( PlanetList list ) const
 {
 	list.Remove(this);
-	if (list.size() == 0) {
+	if (list.empty()) {
 		throw NoPlanetsInListException();
 	}
 	Planet * closestPlanet = list[0];
@@ -363,12 +363,14 @@ Planet const * Planet::ClosestPlanetOwnedBy( Player player ) const
 
 void Planet::Reinforce( Planet const * p )
 {
-	SendShips(p, ShipsAvailable());
+	SendShips(p, ShipsAvailable() - PotentialAttackers());
+	PotentialAttacker()->ReserveShips(PotentialAttackers());
 }
 
 void Planet::ReinforceOnSafePath( Planet const * p )
 {
-	SendShipsOnSafePath(p, ShipsAvailable());
+	SendShipsOnSafePath(p, ShipsAvailable() - PotentialAttackers());
+	PotentialAttacker()->ReserveShips(PotentialAttackers());
 }
 
 void Planet::AttemptToTakeover( Planet const * p )
@@ -386,8 +388,12 @@ bool Planet::IsFront() const
 	if (OwnerInEndGame() != Player::self()) {
 		return false;
 	}
-	Planet const * closestEnemy = ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::enemy()));
-	return *(closestEnemy->ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::self()))) == *this;
+	try {
+		Planet const * closestEnemy = ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::enemy()));
+		return *(closestEnemy->ClosestPlanetInList(GameManager::Instance().State().Planets().PlayerSubset(&Planet::OwnedBy, Player::self()))) == *this;
+	} catch (NoPlanetsInListException) {
+		return false;
+	}
 }
 
 bool Planet::AttackPlanets( PlanetList targets, PlanetList::Prioritiser attackFirst)
@@ -395,22 +401,25 @@ bool Planet::AttackPlanets( PlanetList targets, PlanetList::Prioritiser attackFi
 	bool attackSucceded = false;
 	while (targets.size() > 0) {
 		Planet * dest = (targets.*attackFirst)(this);
-		int sourceDestSeparation = DistanceTo(dest);
-		int destEnemySeparation;
+		int straightDistance = DistanceTo(dest);
+		int safeDistance = SafePathDistanceTo(dest);
+		int destEnemyDistance;
 		if (dest->Owner() == Player::neutral())
 		{
 			try {
-				destEnemySeparation = dest->DistanceTo(dest->ClosestPlanetOwnedBy(Player::enemy()));
+				destEnemyDistance = dest->DistanceTo(dest->ClosestPlanetOwnedBy(Player::enemy()));
 			} catch (NoPlanetsOwnedByPlayerException) {
-				destEnemySeparation = std::numeric_limits<int>::max();
+				destEnemyDistance = std::numeric_limits<int>::max();
 			}
 		} else {
-			destEnemySeparation = std::numeric_limits<int>::max();
+			destEnemyDistance = std::numeric_limits<int>::max();
 		}
-
-		if (dest != nullptr && (CanTakeover(dest)) && (sourceDestSeparation < destEnemySeparation)) {
+		if (dest != nullptr && (CanTakeover(dest)) && (straightDistance <= destEnemyDistance)) {
 			try {
-				if (dest->OptimalAttackTime() <= sourceDestSeparation) {
+				if (dest->OptimalAttackTime() <= safeDistance) {
+					int shipsToSend = dest->ShipsToTakeoverInTurns(safeDistance);
+					SendShips(dest, std::min(ShipsAvailable(), shipsToSend));
+				} else if (dest->OptimalAttackTime() <= straightDistance) {
 					AttemptToTakeover(dest);
 					attackSucceded = true;
 				} else {
@@ -476,4 +485,9 @@ Planet const * const Planet::SafePathPlanet( Planet const * const target ) const
 		myPlanets.Remove(closestAlly);
 	}
 	return target;
+}
+
+void Planet::ReserveShips( int numShips )
+{
+	reservedShips += numShips;
 }

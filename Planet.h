@@ -24,7 +24,7 @@ public:
 	// Returns the ID of this planets. Planets are numbered starting at zero.
 	int PlanetID() const;
 	Player Owner() const;
-	Player OwnerInTurns(unsigned int turnsInFuture) const;
+	inline Player OwnerInTurns(unsigned int turnsInFuture) const;
 	int Ships() const;
 
 	int DistanceTo( Planet const * p ) const;
@@ -67,6 +67,7 @@ public:
 	// Takes the list of planets specified and requests defense from them until the planet no longer needs defense
 	void SeekDefenseFrom(PlanetList &defendersAtOptimalTime, int optimalDefenseTime);
 
+	Planet * PotentialAttacker() const;
 	int PotentialAttackers() const;
 
 	// Sends all available ships to the target planet
@@ -124,12 +125,18 @@ private:
 	std::vector<PlanetState> const & FutureStates( unsigned int turns) const;
 	PlanetState CurrentState() const;
 	Player OwnerInEndGame()const;
+	void ReserveShips( int numShips );
 	PlanetState state;
 	int planet_id_;
 	int growth_rate_;
 	double x_, y_;
 
 	mutable std::vector<PlanetState> futureStates;
+	int reservedShips;
 };
+
+Player Planet::OwnerInTurns(unsigned int turnsInFuture) const {
+	return StateInTurns(turnsInFuture).GetPlayer();
+}
 
 #endif //PLANET_H_
