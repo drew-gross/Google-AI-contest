@@ -91,6 +91,16 @@ int PlanetList::Ships() const
 	return shipsAvailable;
 }
 
+int PlanetList::Growth() const
+{
+	int growth = 0;
+	for (unsigned int i = 0; i < size(); ++i)
+	{
+		growth += operator[](i)->Growth();
+	}
+	return growth;
+}
+
 int PlanetList::ShipsAvailable()
 {
 	int shipsAvailable = 0;
@@ -103,16 +113,16 @@ int PlanetList::ShipsAvailable()
 
 Planet* PlanetList::HighestROIFromPlanet( Planet const * const source ) const
 {
-	int ROI = std::numeric_limits<int>::min();
+	int highestROI = std::numeric_limits<int>::min();
 	Planet * highestROIPlanet = operator[](0);
 	for (unsigned int i = 0; i < size(); ++i)
 	{
 		Planet * curPlanet = operator[](i);
 		try
 		{
-			int curPlanetROI = curPlanet->ReturnOnInvestment(source->DistanceTo(curPlanet));
-			if (curPlanetROI > ROI) {
-				ROI = curPlanetROI;
+			int curPlanetROI = curPlanet->ROIFromPlanet(source);
+			if (curPlanetROI > highestROI) {
+				highestROI = curPlanetROI;
 				highestROIPlanet = curPlanet;
 			}
 		}
@@ -171,4 +181,26 @@ bool LowestGrowth(Planet const * const first, Planet const * const second) {
 void PlanetList::SortByHighestGrowth()
 {
 	std::sort(begin(), end(), &LowestGrowth);
+}
+
+class ClosestTo {
+public:
+	ClosestTo(Planet const * p) : planet(p) {}
+	bool operator()(Planet const * first, Planet const * second) {
+		if (first->DistanceTo(planet) < second->DistanceTo(planet))
+		{
+			return true;
+		} 
+		else
+		{
+			return false;
+		}
+	}
+private:
+	Planet const * planet;
+};
+
+void PlanetList::SortByClosestTo( Planet const * p )
+{
+	std::sort(begin(), end(), ClosestTo(p));
 }

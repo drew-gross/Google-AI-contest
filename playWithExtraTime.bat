@@ -1,0 +1,1 @@
+java -jar "C:\Users\Drew Gross\Documents\Projects\Google AI challenge\Version2\tools\PlayGame.jar" "C:\Users\Drew Gross\Documents\Projects\Google AI challenge\Version2\maps\map9.txt" 10000 200 log.txt ./Version2.exe "./example_bots/Version2.exe" | java -jar "C:\Users\Drew Gross\Documents\Projects\Google AI challenge\Version2\tools\ShowGame.jar"

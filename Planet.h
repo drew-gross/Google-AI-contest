@@ -30,8 +30,8 @@ public:
 	int DistanceTo( Planet const * p ) const;
 
 	// The number of ships that can be sent without causing loss of control of the planet.
-	int ShipsAvailable();
-	int MyShipsInTurns(int turns);
+	int ShipsAvailable()const;
+	int MyShipsInTurns(int turns)const;
 
 	// Returns true if the closest enemy planet is twice as far as the closest friendly planet
 	bool IsSupplier();
@@ -66,6 +66,7 @@ public:
 
 	// Takes the list of planets specified and requests defense from them until the planet no longer needs defense
 	void SeekDefenseFrom(PlanetList &defendersAtOptimalTime, int optimalDefenseTime);
+	void ReserveDefenseFrom( PlanetList &defenders, int optimalDefenseTime);
 
 	Planet * PotentialAttacker() const;
 	int PotentialAttackers() const;
@@ -95,7 +96,8 @@ public:
 
 	// Returns the return over the course of the game of taking a planet over
 	// in the specified amount of turns
-	int ReturnOnInvestment(int turns);
+	int ROI(int turns);
+	int ROIFromPlanet(Planet const * p);
 	int NeutralROI(int turns);
 	int EnemyROI(int turns);
 
@@ -120,6 +122,9 @@ public:
 
 	void ClearFutureCache() const;
 
+	bool IsSaveable() const;
+	void SetUnsaveable();
+
 private:
 	PlanetState StateInTurns(unsigned int turns) const;
 	std::vector<PlanetState> const & FutureStates( unsigned int turns) const;
@@ -133,10 +138,10 @@ private:
 
 	mutable std::vector<PlanetState> futureStates;
 	int reservedShips;
+	bool canSave;
 };
 
 Player Planet::OwnerInTurns(unsigned int turnsInFuture) const {
 	return StateInTurns(turnsInFuture).GetPlayer();
 }
-
 #endif //PLANET_H_

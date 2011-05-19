@@ -18,6 +18,8 @@ public:
 	int Ships() const;
 	int ShipsAvailable();
 
+	int Growth() const;
+
 	typedef bool (Planet::*Set)(void) const;
 	PlanetList Subset(PlanetList::Set matcher) const;
 
@@ -27,6 +29,7 @@ public:
 	PlanetList OwnedInTurnsBy( Player player, int turns ) const;
 
 	void SortByHighestGrowth();
+	void SortByClosestTo(Planet const * p);
 
 	void DeleteAll();
 

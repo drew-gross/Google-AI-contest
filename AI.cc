@@ -81,14 +81,25 @@ void AI::DefensePhase() {
 				defendersAfterOptimalTime.push_back(myPlanets[j]);
 			}
 		}
-		try {
-			needToDefend[i]->SeekDefenseFrom(defendersAtOptimalTime, optimalDefenseTime);
-			if (defendersBeforeOptimalTime.ShipsAvailable() < needToDefend[i]->ShipsInTurns(optimalDefenseTime)) {
-				needToDefend[i]->SeekDefenseFrom(defendersBeforeOptimalTime, optimalDefenseTime);
-				needToDefend[i]->SeekDefenseFrom(defendersAfterOptimalTime, optimalDefenseTime);
+		if (defendersAfterOptimalTime.ShipsAvailable() + defendersAtOptimalTime.ShipsAvailable() + defendersBeforeOptimalTime.ShipsAvailable() < needToDefend[i]->ShipsInTurns(optimalDefenseTime) )
+		{
+			needToDefend[i]->SetUnsaveable();
+		} else {
+			try {
+				defendersAtOptimalTime.SortByClosestTo(needToDefend[i]);
+				defendersAfterOptimalTime.SortByClosestTo(needToDefend[i]);
+				defendersBeforeOptimalTime.SortByClosestTo(needToDefend[i]);
+
+				needToDefend[i]->SeekDefenseFrom(defendersAtOptimalTime, optimalDefenseTime);
+				if (defendersBeforeOptimalTime.ShipsAvailable() < needToDefend[i]->ShipsInTurns(optimalDefenseTime)) {
+					needToDefend[i]->SeekDefenseFrom(defendersBeforeOptimalTime, optimalDefenseTime);
+					needToDefend[i]->SeekDefenseFrom(defendersAfterOptimalTime, optimalDefenseTime);
+				} else {
+					needToDefend[i]->ReserveDefenseFrom(defendersBeforeOptimalTime, optimalDefenseTime);
+				}
+			} catch (DontNeedToDefendException e) {
+				continue;
 			}
-		} catch (DontNeedToDefendException e) {
-			continue;
 		}
 	}
 }
